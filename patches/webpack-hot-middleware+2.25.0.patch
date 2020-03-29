@@ -1,0 +1,14 @@
+diff --git a/node_modules/webpack-hot-middleware/client.js b/node_modules/webpack-hot-middleware/client.js
+index abc95ed..b552b09 100644
+--- a/node_modules/webpack-hot-middleware/client.js
++++ b/node_modules/webpack-hot-middleware/client.js
+@@ -59,7 +59,8 @@ function setOverrides(overrides) {
+   }
+ 
+   if (overrides.dynamicPublicPath) {
+-    options.path = __webpack_public_path__ + options.path;
++    var url = require('url');
++    options.path = url.resolve(__webpack_public_path__, options.path);
+   }
+ 
+   if (overrides.ansiColors)

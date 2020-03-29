@@ -1,0 +1,21 @@
+diff --git a/node_modules/parse/lib/browser/Analytics.js b/node_modules/parse/lib/browser/Analytics.js
+index 49ae6e5..82f7716 100644
+--- a/node_modules/parse/lib/browser/Analytics.js
++++ b/node_modules/parse/lib/browser/Analytics.js
+@@ -79,11 +79,11 @@ function track(name
+     throw new TypeError('A name for the custom event must be provided');
+   }
+ 
+-  for (var _key in dimensions) {
+-    if (typeof _key !== 'string' || typeof dimensions[_key] !== 'string') {
+-      throw new TypeError('track() dimensions expects keys and values of type "string".');
+-    }
+-  }
++  // for (var _key in dimensions) {
++  //   if (typeof _key !== 'string' || typeof dimensions[_key] !== 'string') {
++  //     throw new TypeError('track() dimensions expects keys and values of type "string".');
++  //   }
++  // }
+ 
+   return _CoreManager.default.getAnalyticsController().track(name, dimensions);
+ }

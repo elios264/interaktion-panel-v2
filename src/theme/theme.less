@@ -1,0 +1,50 @@
+:root {
+  --black:#1B1C1D;
+  --gray: #545454;
+  --dark-red: #9F3A38;
+}
+
+@custom-media --breakpoint-not-small screen and (min-width: 768px);
+@custom-media --breakpoint-medium screen and (min-width: 768px) and (max-width: 1200px);
+@custom-media --breakpoint-large screen and (min-width: 1200px);
+
+
+.responsive-block(@suffix: ~'') {
+  .ma0@{suffix} { margin: 0 };
+  .mt-auto@{suffix} { margin-top: auto; }
+  .mb-auto@{suffix} { margin-bottom: auto; }
+  .ml-auto@{suffix} { margin-left: auto; }
+  .mr-auto@{suffix} { margin-right: auto; }
+  .flex@{suffix} { display: flex; }
+  .rm-cover@{suffix} { object-fit: cover; }
+  .rm-contain@{suffix} { object-fit: contain; }
+  .rm-fill@{suffix} { object-fit: fill; }
+  .pe-none@{suffix} { pointer-events: none; }
+  .pe-all@{suffix} { pointer-events: all; }
+}
+
+.responsive-block();
+.responsive-block(-important) !important;
+
+@media (--breakpoint-not-small) {
+  .responsive-block(-ns);
+  .responsive-block(-ns-important) !important;
+}
+@media (--breakpoint-medium) {
+  .responsive-block(-m);
+  .responsive-block(-m-important) !important;
+}
+@media (--breakpoint-large) {
+  .responsive-block(-l);
+  .responsive-block(-l-important) !important;
+}
+
+i.icon.clear-icon { //for allowClear prop in <Selector/> component
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  right: 2.5em;
+  line-height: 1;
+  z-index: 1;
+}

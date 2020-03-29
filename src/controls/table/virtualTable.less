@@ -1,0 +1,28 @@
+.virtual-table {
+  .header-column { text-transform: none; }
+  .ReactVirtualized__Table__headerTruncatedText { white-space: normal; line-height: normal; }
+  .ReactVirtualized__Table__headerRow:hover { background-color: transparent!important; }
+  .ReactVirtualized__Table__Grid { outline: none; }
+  .data-row {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s;
+    &:hover { background-color: #F7F8FA; }
+  }
+  .data-row.selected {
+    background-color: #F7F8FA;
+  }
+
+  .no-rows {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    color: #bdbdbd;
+  }
+
+  .no-wrap-header span {
+    white-space: nowrap;
+  }
+}
