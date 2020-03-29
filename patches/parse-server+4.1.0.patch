@@ -1,0 +1,12 @@
+diff --git a/node_modules/parse-server/lib/Routers/FilesRouter.js b/node_modules/parse-server/lib/Routers/FilesRouter.js
+index e0f62ca..4b651e8 100644
+--- a/node_modules/parse-server/lib/Routers/FilesRouter.js
++++ b/node_modules/parse-server/lib/Routers/FilesRouter.js
+@@ -63,6 +63,7 @@ class FilesRouter {
+     } else {
+       filesController.getFileData(config, filename).then(data => {
+         res.status(200);
++        res.set('Cache-Control', 'public, max-age=1296000');
+         res.set('Content-Type', contentType);
+         res.set('Content-Length', data.length);
+         res.end(data);
