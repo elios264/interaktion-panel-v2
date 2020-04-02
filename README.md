@@ -54,7 +54,8 @@
 
 
 --TODO---
-- File storage adapter.
 - Update libs
 - replace requires for imports
-- check email
+- check email work.
+- Multi-language support
+- Multi-image support.

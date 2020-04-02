@@ -1,6 +1,7 @@
 const ParseDashboard = require('parse-dashboard');
 const { ParseServer } = require('parse-server');
 const { AnalyticsAdapter, EmailAdapter } = require('../cloud/adapters');
+const { AzureStorageAdapter } = require('./azureStorageAdapter');
 
 const parseDefaults = require('parse-server/lib/defaults');
 parseDefaults.default.protectedFields = { }; // {"_User":{"*":["email"]}}, removing default
@@ -41,6 +42,7 @@ module.exports = ({ isDev }) => {
       invalidLink: `${process.env.APP_URL}${process.env.APP_ADMIN_PATH}/invalid-link`,
       passwordResetSuccess: `${process.env.APP_URL}${process.env.APP_ADMIN_PATH}/reset-success`,
     },
+    filesAdapter: new AzureStorageAdapter(process.env.PARSE_BLOB_STORAGE, process.env.PARSE_BLOB_STORAGE_CONTAINER),
   });
 
   const parseDashboard = new ParseDashboard({
