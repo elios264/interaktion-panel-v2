@@ -2,15 +2,14 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Joi from '@hapi/joi';
-import _ from 'lodash';
 import { Grid, Menu, Modal, Button, Segment, Form, Header, Input } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
-import { Popup, utils, ImageSelector, AwaitableButton, LoadingDots } from 'controls';
+import { Popup, utils, AwaitableButton, LoadingDots } from 'controls';
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
-import { Resource } from 'objects';
 import { logout } from 'admin/actions/authentication';
 import { updateProfile, deleteUser } from 'admin/actions/users';
+import { ResourceImageSelector } from 'admin/components/common';
 
 const editManagerSchema = {
   name: Joi.string().trim().required().max(50).label('Name'),
@@ -22,7 +21,6 @@ export const ManagerDetails = ({ match, history }) => {
 
   const dispatch = useDispatch();
   const isEditing = match.params.action === 'edit';
-  const resources = useSelector((state) => state.objects.resources);
   const user = useSelector((state) => state.userInfo.id === match.params.userId ? state.userInfo : state.objects.users[match.params.userId]);
   const isOwnProfile = useSelector((state) => state.userInfo.id === match.params.userId);
   const isWorking = useSelector((state) => state.siteInfo.isWorking);
@@ -72,11 +70,10 @@ export const ManagerDetails = ({ match, history }) => {
           <Form onSubmit={submit}>
             <Grid centered divided stackable>
               <Grid.Column computer={6} largeScreen={3} widescreen={3}>
-                <ImageSelector
+                <ResourceImageSelector
                   disabled={!isEditing}
-                  imageUrl={_.get(resources[_.get(photo.value, 'id')] || photo.value, 'fileUrl')}
-                  onImageSelected={(src) => photo.onChange(new Resource({ src }))}
-                  onDelete={photo.onChange} />
+                  value={photo.value}
+                  onChange={photo.onChange} />
               </Grid.Column>
               <Grid.Column computer={16} largeScreen={9} widescreen={9}>
                 <Grid.Row>

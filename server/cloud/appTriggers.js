@@ -56,7 +56,7 @@ const resourceSchema = Joi.object({
 cloud.setupFileWatch('Resource', ['src', 'thumbnail']);
 cloud.setupTrigger('beforeSave', 'Resource', validationsHooks.readOnly({ allowMaster: true }, 'refs', 'metadata', 'thumbnail'));
 cloud.setupTrigger('beforeSave', 'Resource', validationsHooks.validate(resourceSchema));
-cloud.setupTrigger('beforeSave', 'Resource', resourceHooks.extractData('src', { thumbnail: 'thumbnail', metadata: ['size'] }));
+cloud.setupTrigger('beforeSave', 'Resource', resourceHooks.extractData('src', { thumbnail: 'thumbnail', metadata: ['size', 'hash'] }));
 
 const eventLogSchema = Joi.object({
   timestamp: Joi.date().default(() => new Date()),

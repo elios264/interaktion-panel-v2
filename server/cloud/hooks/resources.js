@@ -1,7 +1,7 @@
 /* global Parse */
 const sharp = require('sharp');
-const cloud = require('../cloudUtils');
 const _ = require('lodash');
+const cloud = require('../cloudUtils');
 
 const isImage = (url) => (url.match(/\.(jpeg|jpg|gif|png)$/) !== null);
 
@@ -9,9 +9,9 @@ const generateResourceDerivedData = async (resourceUrl, newWidth, thumbnail) => 
 
   const response = await Parse.Cloud.httpRequest({ url: resourceUrl });
 
-  const size = response.headers['content-length'];
+  const { 'content-length': size, 'content-md5': hash } = response.headers;
   if (!isImage(resourceUrl)) {
-    return { size };
+    return { size, hash };
   }
 
   const image = sharp(response.buffer);
@@ -26,7 +26,7 @@ const generateResourceDerivedData = async (resourceUrl, newWidth, thumbnail) => 
 
   return {
     thumbnail: buffer ? buffer.toString('base64') : undefined,
-    height, width, format, size,
+    height, width, format, size, hash,
   };
 };
 
@@ -40,8 +40,7 @@ const extractData = (source, { thumbnail: thumbnailColumn, metadata, resizeTo = 
 
   const resource = object.get(source).url();
 
-  const { width, height, format, thumbnail, size } = await generateResourceDerivedData(resource, resizeTo, !!thumbnailColumn);
-  const metadataObject = { width, height, size };
+  const { format, thumbnail, ...metadataObject } = await generateResourceDerivedData(resource, resizeTo, !!thumbnailColumn);
 
   if (thumbnail) {
     const file = await new Parse.File(`thumb.${format}`, { base64: thumbnail }, `image/${format}`).save(cloud.masterPermissions);

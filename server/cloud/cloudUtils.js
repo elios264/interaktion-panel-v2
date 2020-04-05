@@ -1,18 +1,14 @@
 /* global Parse */
 const _ = require('lodash');
 const moment = require('moment');
-const nanoid = require('nanoid');
+const { nanoid } = require('nanoid');
 const { AppCache } = require('parse-server/lib/cache');
 
 const triggerHandlers = {};
 
-const deleteFile = async (fileUrl, silent = false) => {
+const deleteFile = async (file, silent = false) => {
   try {
-    await Parse.Cloud.httpRequest({
-      method: 'DELETE',
-      url: `http://localhost:${process.env.APP_PORT}${process.env.PARSE_PATH}/files/${fileUrl}`,
-      headers: { 'X-Parse-Master-Key': process.env.PARSE_MASTER_KEY, 'X-Parse-Application-Id': process.env.PARSE_APPID },
-    });
+    await file.destroy();
   } catch (err) {
     if (!silent) {
       throw err;
@@ -25,15 +21,11 @@ const fileWatch = (fieldNames) => (req) => {
   for (const field of fieldNames) {
     if (triggerName === 'afterSave') {
       const fileChanged = originalObject ? _.result(object.get(field), 'name') !== _.result(originalObject.get(field), 'name') : true;
-      const fileUrl = _.result(originalObject, `attributes.${field}.name`, false);
-      if (fileChanged && fileUrl) {
-        deleteFile(fileUrl, true);
+      if (fileChanged) {
+        deleteFile(originalObject.get(field), true);
       }
     } else if (triggerName === 'afterDelete') {
-      const fileUrl = _.result(object, `attributes.${field}.name`, false);
-      if (fileUrl) {
-        deleteFile(fileUrl, true);
-      }
+      deleteFile(object.get(field), true);
     } else {
       throw new Parse.Error(Parse.Error.INVALID_KEY_NAME, `${triggerName} is not a valid trigger for this hook`);
     }
@@ -126,7 +118,7 @@ const setAttr = (object, props) => {
 
 const masterPermissions = { useMasterKey: true };
 const getUserPermissions = (req) => ({ sessionToken: req.user.getSessionToken() });
-const getValue = (value, mapping = {}, defaultValue) => _.get(mapping, `[${value}]`, defaultValue);
+const getValue = (value, mapping = {}, defaultValue) => _.get(mapping, [value], defaultValue);
 const formatCurrency = new Intl.NumberFormat(process.env.APP_LOCALE, { style: 'currency', currency: process.env.APP_CURRENCY, minimumFractionDigits: 2 }).format;
 const formatDate = (date, format = 'DD-MMM-YYYY HH:mm') => moment(date).format(format);
 const getEmailAdapter = () => AppCache.cache[process.env.PARSE_APPID].value.userController.adapter;

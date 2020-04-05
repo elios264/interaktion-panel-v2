@@ -3,3 +3,4 @@ export * from './notFound';
 export * from './navigation';
 export * from './errorBoundary';
 export * from './dropdownItemWithPopup';
+export * from './resourceImageSelector';

@@ -1,37 +1,42 @@
 /* eslint brace-style: ["error", "1tbs", { "allowSingleLine": true }]*/
-
 import _ from 'lodash';
 import Parse from 'parse';
+import path from 'path';
+import { Buffer } from 'buffer';
+import { /* getValue, */ getMD5Base64Hash, loadImageBase64FromFile } from 'controls/utils';
+
 
 const isEmpty = (val) => (_.isPlainObject(val) ? _.isEmpty(val) : _.isNil(val) || val === '');
-// const getValue = (value, mapping = {}, defaultValue) => _.get(mapping, `[${value}]`, defaultValue);
 const copy = (object) => {
   const jsonObj = object.toJSON();
   jsonObj.className = object.className;
   const newObj = Parse.Object.fromJSON(jsonObj);
   return object.id ? newObj : newObj.clone();
 };
+export const fromJSON = (className, json) => BaseObject.fromJSON({ ...json, className });
+
 
 class BaseObject extends Parse.Object {
   setAttr(prop, value) { return isEmpty(value) ? super.unset(prop) : super.set(prop, value); }
   copy() { return copy(this); }
 }
 
-export const fromJSON = (className, json) => BaseObject.fromJSON({ ...json, className });
-
 export class File extends Parse.File {
   static getFileName = _.flow(_.partialRight(_.replace, /\.[^/.]+$/, ''), _.camelCase)
-
-  constructor(file, blob, type) {
-    if (blob) {
-      super(File.getFileName(file), blob, type);
-      this.localName = file;
-      this.localSize = blob.base64.length * 0.75;
-    } else {
-      super(File.getFileName(file.name), file);
-      this.localName = file.name;
-      this.localSize = file.size;
+  static fromNativeFile = async (file) => {
+    if (!file.base64) {
+      file.base64 = await loadImageBase64FromFile(file).then((image) => image.src);
     }
+    const name = File.getFileName(file.name);
+    const fileObject = new File(name, { base64: file.base64 }, file.type);
+    fileObject.localName = name;
+    fileObject.localUrl = file.base64;
+    fileObject.localSize = file.base64.length * 0.75;
+    fileObject.localHash = await fileObject
+      .getData()
+      .then((base64) => Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)))
+      .then((dataArray) => getMD5Base64Hash(Buffer.from(dataArray)));
+    return fileObject;
   }
 }
 
@@ -97,8 +102,10 @@ export class Resource extends BaseObject {
 
   get fileUrl() { return _.get(this.src, 'localUrl', _.result(this.src, 'url')); }
   get fileName() { return _.get(this.src, 'localName', _.replace(_.result(this.src, 'name'), /^[a-zA-Z0-9]*_/, '')); }
-  get fileExtension() { return _.split(this.fileName, '.')[1]; }
+  get fileExtension() { return path.extname(this.fileName); }
   get fileSize() { return _.get(this.src, 'localSize', _.get(this.metadata, 'size')); }
+  get fileHash() { return _.get(this.src, 'localHash', _.get(this.metadata, 'hash')); }
+
   get thumb() { return _.result(this.thumbnail, 'url', this.fileUrl); }
 }
 

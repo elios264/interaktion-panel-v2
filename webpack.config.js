@@ -49,7 +49,6 @@ module.exports = {
     },
   },
   node: { // allow Joi package to be bundled on browser since it is originally made for node.js
-    crypto: 'empty',
     net: 'empty',
     dns: 'empty',
   },

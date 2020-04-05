@@ -54,8 +54,10 @@
 
 
 --TODO---
-- Update libs
 - replace requires for imports
-- check email work.
+- start porting modules (contenidos.)
+
 - Multi-language support
 - Multi-image support.
+- clean unreferenced azure images job.
+- deploy ci

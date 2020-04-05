@@ -5,10 +5,8 @@ import XLSX from 'xlsx';
 import moment from 'moment';
 import downscale from 'downscale';
 import fileDialog from 'file-dialog';
-import nanoid from 'nanoid';
-
-import { File } from 'objects';
-
+import { nanoid } from 'nanoid';
+import crypto from 'crypto';
 
 const makeFilterable = (propName, columns) => (item) => {
   item[propName] = item[propName]
@@ -32,7 +30,7 @@ export const flattenReactChildren = (children) => _.flatten(React.Children.map(c
 export const formatCurrency = currencyFormatter.format;
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 export const formatDate = (date, format = 'DD-MMM-YYYY HH:mm') => moment(date).format(format);
-export const getValue = (value, mapping = {}, defaultValue) => _.get(mapping, `[${value}]`, defaultValue);
+export const getValue = (value, mapping = {}, defaultValue) => _.get(mapping, [value], defaultValue);
 export const selectFiles = (...args) => fileDialog(...args);
 export const toReadable = (file, readerFn = 'readAsDataURL') => new Promise((res, rej) => {
   const reader = new FileReader();
@@ -68,10 +66,8 @@ export const selectImages = async ({ multiple = true } = {}) => {
       ? await downscale(image, newWidth, newHeight, { imageType })
       : image.src;
 
-    const newFile = new File(file.name, { base64 });
-
-    newFile.localUrl = base64;
-    return newFile;
+    file.base64 = base64;
+    return file;
   }));
 };
 export const downloadBlob = (blob, fileName) => {
@@ -149,4 +145,10 @@ export const dataArrayAsXLSX = (dataArray, sheetName) => {
   XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
   const blobData = XLSX.write(workbook, { type: 'array', bookType: 'xlsx', compression: true, bookSST: true, cellDates: true });
   return new Blob([blobData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+};
+
+export const getMD5Base64Hash = (input) => {
+  const algorithm = crypto.createHash('md5');
+  algorithm.update(input);
+  return algorithm.digest('base64');
 };
