@@ -13,18 +13,20 @@ export const ImageSelector = ({ disabled, imageUrl, onDelete, onImageSelected, .
   }, [onImageSelected]);
 
   return (
-    <Reveal disabled={disabled} animated='fade' className='z-0' {...props} style={{ pointerEvents: disabled ? 'none' : 'auto', minHeight: '180px' }}>
-      <Reveal.Content visible className='w-100 bg-white flex items-center' style={{ pointerEvents: 'none', minHeight: '180px' }}>
-        <Image fluid src={imageUrl || require('img/empty.png')} />
-      </Reveal.Content>
-      <Reveal.Content hidden className='bg-white flex items-center' style={{ minHeight: '180px' }}>
-        <Image fluid src={imageUrl || require('img/empty.png')} />
-        <Dimmer active={!disabled}>
-          <Header className='pointer' size='tiny' inverted icon='picture' content='Select image...' onClick={selectImage} />
-          {(imageUrl && onDelete) && <Header className='pointer' size='tiny' inverted icon='trash' content='Remove image' onClick={_.partial(onDelete, null)} />}
-        </Dimmer>
-      </Reveal.Content>
-    </Reveal>
+    <div className={disabled && imageUrl ? 'pointer' : ''} onClick={disabled && imageUrl ? () => window.open(imageUrl, '_blank') : _.noop}>
+      <Reveal disabled={disabled} animated='fade' className='z-0' {...props} style={{ pointerEvents: disabled ? 'none' : 'auto', minHeight: '180px' }}>
+        <Reveal.Content visible className='w-100 bg-white flex items-center' style={{ pointerEvents: 'none', minHeight: '180px' }}>
+          <Image fluid src={imageUrl || require('img/empty.png')} />
+        </Reveal.Content>
+        <Reveal.Content hidden className='bg-white flex items-center' style={{ minHeight: '180px' }}>
+          <Image fluid src={imageUrl || require('img/empty.png')} />
+          <Dimmer active={!disabled}>
+            <Header className='pointer' size='tiny' inverted icon='picture' content='Select image...' onClick={selectImage} />
+            {(imageUrl && onDelete) && <Header className='pointer' size='tiny' inverted icon='trash' content='Remove image' onClick={_.partial(onDelete, null)} />}
+          </Dimmer>
+        </Reveal.Content>
+      </Reveal>
+    </div>
   );
 };
 
