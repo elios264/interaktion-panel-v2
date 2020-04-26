@@ -7,7 +7,9 @@ import { useCallback, useMemo, useState, useReducer, useRef, useEffect } from 'r
 import { useEffectSkipMount, useIsMounted } from './misc';
 import { delay } from 'controls/utils';
 
-const defaultClone = (source) => (source.copy ? source.copy() : _.cloneDeep(source));
+const defaultClone = (source) => _.isFunction(source.copy)
+  ? source.copy()
+  : _.cloneDeepWith(source, (value) => value && _.isFunction(value.copy) ? value.copy() : undefined);
 
 const errorsReducer = (state, { type, field, value }) => {
   switch (type) {

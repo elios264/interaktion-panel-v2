@@ -3,22 +3,23 @@ import _ from 'lodash';
 import Parse from 'parse';
 import path from 'path';
 import { Buffer } from 'buffer';
-import { /* getValue, */ getMD5Base64Hash, loadImageBase64FromFile } from 'controls/utils';
+import { /* getValue,*/ getMD5Base64Hash, loadImageBase64FromFile } from 'controls/utils';
 
 
 const isEmpty = (val) => (_.isPlainObject(val) ? _.isEmpty(val) : _.isNil(val) || val === '');
+const toFullJSON = (object) => object['_toFullJSON']();
 const copy = (object) => {
-  const jsonObj = object.toJSON();
-  jsonObj.className = object.className;
-  const newObj = Parse.Object.fromJSON(jsonObj);
+  const jsonObj = toFullJSON(object);
+  const newObj = BaseObject.fromJSON(jsonObj);
   return object.id ? newObj : newObj.clone();
 };
-export const fromJSON = (className, json) => BaseObject.fromJSON({ ...json, className });
 
-
-class BaseObject extends Parse.Object {
+export class BaseObject extends Parse.Object {
   setAttr(prop, value) { return isEmpty(value) ? super.unset(prop) : super.set(prop, value); }
   copy() { return copy(this); }
+  toFullJSON() { return toFullJSON(this); }
+  static toFullJSON = toFullJSON;
+  static copy = copy
 }
 
 export class File extends Parse.File {
@@ -59,11 +60,9 @@ export class User extends Parse.User {
   copy() { return copy(this); }
 
   static withSessionToken = (user, token) => {
-    const { className } = user;
-    user = user.toJSON();
-    user.className = className;
+    user = BaseObject.toFullJSON(user);
     user.sessionToken = token;
-    return Parse.Object.fromJSON(user);
+    return BaseObject.fromJSON(user);
   }
 }
 

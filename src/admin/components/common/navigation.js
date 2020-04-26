@@ -4,14 +4,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { NavLink, Link } from 'react-router-dom';
-import { Icon, Menu, Image, Loader, Label } from 'semantic-ui-react';
+import { Icon, Menu, Image, Loader, Label, List } from 'semantic-ui-react';
 
 import { Popup } from 'controls';
 
 const emptyResource = {};
 
 export const Navigation = ({ children }) => {
-  const { isWorking, workingMessage } = useSelector((state) => state.siteInfo);
+  const { isWorking, workingMessages } = useSelector((state) => state.siteInfo);
   const userInfo = useSelector((state) => state.userInfo);
   const userPhotoResource = useSelector((state) => state.objects.resources[_.get(state.userInfo.photo, 'id')] || emptyResource);
 
@@ -54,7 +54,11 @@ export const Navigation = ({ children }) => {
         {children}
       </div>
       {!!isWorking && (
-        <Popup message={workingMessage || 'Syncing...'} position='left center'>
+        <Popup
+          flowing
+          position='bottom right'
+          popperDependencies={[workingMessages]}
+          message={<List bulleted>{_.map(workingMessages, (message, key) => (<List.Item key={key}>{message}</List.Item>))}</List>}>
           <Label size='large' color='blue' corner='right' style={{ position: 'fixed' }}>
             <Loader active inline='centered' size='tiny' inverted className='icon pointer' />
           </Label>

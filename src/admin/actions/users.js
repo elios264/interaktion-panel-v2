@@ -1,4 +1,4 @@
-import { handleError, showSuccess, showConfirm } from './utils';
+import { handleError, showSuccess, showConfirm } from 'utils/actions';
 
 export const updateProfile = (user) => handleError(async (dispatch, getState, { api }) => {
   await api.updateProfile(user);

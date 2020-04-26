@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Parse from 'parse';
 import { debounceCall } from 'controls/utils';
-import { Config, User, Resource, EventLog } from 'objects';
+import { Config, User, Resource, EventLog, BaseObject } from 'objects';
 import { buildQuery, handleOperation } from 'utils/api';
 import { AnalyticsProvider } from './analyticsProvider';
 
@@ -80,23 +80,19 @@ export class Api {
     this.realTimeSubs = [];
   }
 
-  @handleOperation('Logging in', { login: true })
-  async login({ email, password }) {
+  login = ({ email, password }) => handleOperation(async () => {
     if (Parse.User.current()) {
       Parse.User.logOut();
     }
 
     let user = await Parse.User.logIn(email, password);
-
-    const userJSON = user.toJSON();
-    userJSON.className = '_User';
-    user = Parse.Object.fromJSON(userJSON);
+    user = BaseObject.copy(user);
 
     this.initializeRealTime();
 
     this.onEvent({ type: 'SET_USER', user });
     return user;
-  }
+  }, this, 'Logging in', { login: true })
 
   logout() {
     this.terminateRealTime();
@@ -104,8 +100,7 @@ export class Api {
     this.onEvent({ type: 'SET_USER', user: null });
   }
 
-  @handleOperation('Updating profile')
-  async updateProfile(user) {
+  updateProfile = (user) => handleOperation(async () => {
     if (user instanceof User) {
       await user.save();
     } else {
@@ -113,48 +108,28 @@ export class Api {
       await Parse.User.current().fetch();
     }
     return true;
-  }
+  }, this, 'Updating profile')
 
-  @handleOperation('Creating user')
-  createUser({ email, name }) {
-    return Parse.Cloud.run('create-user', { name, email });
-  }
+  createUser = ({ email, name }) => handleOperation(() => Parse.Cloud.run('create-user', { name, email }), this, 'Creating user')
 
-  @handleOperation('Deleting user')
-  deleteUser(user) {
-    return Parse.Cloud.run('delete-user', { id: user.id });
-  }
+  deleteUser = (user) => handleOperation(() => Parse.Cloud.run('delete-user', { id: user.id }), this, 'Deleting user')
 
-  @handleOperation('Requesting password reset')
-  requestPasswordReset(email) {
-    return Parse.User.requestPasswordReset(email);
-  }
+  requestPasswordReset = (email) => handleOperation(() => Parse.User.requestPasswordReset(email), this, 'Requesting password reset')
 
-  @handleOperation('Deleting record')
-  deleteObject(object) {
-    return object.destroy();
-  }
+  deleteObject = (object) => handleOperation(() => object.destroy(), this, 'Deleting record')
 
-  @handleOperation('Deleting records')
-  deleteObjects(objects) {
-    return Parse.Object.destroyAll(objects);
-  }
+  deleteObjects = (objects) => handleOperation(() => Parse.Object.destroyAll(objects), this, `Deleting ${_.size(objects)} records`)
 
-  @handleOperation('Saving record')
-  saveObject(object, attributes) {
+  saveObject = (object, attributes) => handleOperation(() => {
     _.each(attributes, (value, prop) => {
       object[prop] = value;
     });
     return object.save();
-  }
+  }, this, 'Saving record')
 
-  @handleOperation('Saving records')
-  saveObjects(objects) {
-    return Parse.Object.saveAll(objects);
-  }
+  saveObjects = (objects) => handleOperation(() => Parse.Object.saveAll(objects), this, `Saving ${_.size(objects)} records`)
 
-  @handleOperation('Fetching records')
-  async getObjects(className, queryParams = {}, { dispatch = true } = {}) {
+  getObjects = (className, queryParams = {}, { dispatch = true } = {}) => handleOperation(async () => {
     const query = buildQuery(className, queryParams);
     const objects = await query.find();
 
@@ -170,10 +145,9 @@ export class Api {
       }
     }
     return objects;
-  }
+  }, this, `Fetching records: ${className}`)
 
-  @handleOperation('Fetching related records')
-  async getRelatedObjects(object, relation, queryParams, dispatchEvent = false) {
+  getRelatedObjects = (object, relation, queryParams, dispatchEvent = false) => handleOperation(async () => {
     relation = object.relation(relation);
 
     const query = buildQuery(relation.query(), queryParams);
@@ -184,10 +158,9 @@ export class Api {
     }
 
     return objects;
-  }
+  }, this, 'Fetching related records')
 
-  @handleOperation('Deleting related records')
-  removeRelatedObjects(object, relation, objects) {
+  removeRelatedObjects = (object, relation, objects) => handleOperation(() => {
     if (!objects.length) {
       return false;
     }
@@ -196,15 +169,10 @@ export class Api {
     relation.remove(objects);
 
     return object.save();
-  }
+  }, this, 'Deleting related records')
 
-  @handleOperation('Performing backend operation')
-  runCloudCode(name, data) {
-    return Parse.Cloud.run(name, data);
-  }
+  runCloudCode = (name, data) => handleOperation(() => Parse.Cloud.run(name, data), this, `Performing operation: ${name}`)
 
-  @handleOperation('Logging event')
-  logEvent(actionName, dimensions) {
-    return this.analytics.log(actionName, dimensions);
-  }
+  logEvent = (actionName, dimensions) => handleOperation(() => this.analytics.log(actionName, dimensions), this, `Logging event: ${actionName}`)
+
 }

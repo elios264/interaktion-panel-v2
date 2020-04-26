@@ -1,13 +1,12 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Dropdown } from 'semantic-ui-react';
-import { Popup } from 'controls';
+import { Popup, AwaitableDropdownItem } from 'controls';
 
 export const DropdownItemWithPopup = ({ disabled, onClick, popupMessage, ...rest }) => {
 
   const dropdown = (
-    <Dropdown.Item
+    <AwaitableDropdownItem
       {...rest}
       disabled={disabled}
       style={{ pointerEvents: 'all' }}
@@ -19,7 +18,7 @@ export const DropdownItemWithPopup = ({ disabled, onClick, popupMessage, ...rest
   }
 
   return (
-    <Popup message={popupMessage}>
+    <Popup message={popupMessage} inverted>
       {dropdown}
     </Popup>
   );

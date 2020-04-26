@@ -26,7 +26,7 @@ export const handleError = (fn, errorMessage = '', { rethrow = false, silent = f
     }
 
     if (rethrow) {
-      throw new Error(`${errorMessage}\n${exceptionMessage}`);
+      throw new Error(errorMessage ? `${errorMessage}\n${exceptionMessage}` : exceptionMessage);
     }
   }
 };

@@ -39,7 +39,7 @@ export const Logbook = ({ location, history }) => {
   const onSearchChange = useUrlParamsHandler({ history, location, key: 'search' });
 
   const exportToExcel = () => {
-    const blob = utils.dataArrayAsXLSX(tableRef.current.getAsDataArray(), 'Logbook');
+    const blob = utils.arrayToXLSXBlob(tableRef.current.getAsDataArray(), 'Logbook');
     utils.downloadBlob(blob, `Logbook at ${utils.formatDate()}.xlsx`);
   };
 

@@ -10,7 +10,6 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const ChunksAssetsPlugin = require('./server/tools/chunksAssetsPlugin');
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -62,7 +61,6 @@ module.exports = {
     new ChunksAssetsPlugin({ fileName: 'rendering-manifest.json' }),
     new MiniCssExtractPlugin({ filename: isDev ? '[name].css' : '[name].bundle.[contenthash].css' }),
     ifProd(new CopyWebpackPlugin([{ from: path.resolve(__dirname, './assets/static') }])),
-    ifProd(new BundleAnalyzerPlugin({ analyzerMode: 'static', reportFilename: 'bundles-report.html', openAnalyzer: false })),
   ].filter(_.identity),
   module: {
     rules: [{

@@ -1,4 +1,4 @@
-import { handleError, showSuccess } from './utils';
+import { handleError, showSuccess } from 'utils/actions';
 import { downloadInitialData } from './initializers';
 
 

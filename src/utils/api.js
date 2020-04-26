@@ -28,31 +28,28 @@ export const buildQuery = (classNameOrQuery, queries) => {
   return queries[0].limit(Number.MAX_SAFE_INTEGER);
 };
 
-export const handleOperation = (message = '', { login = false } = {}) => (value, key, descriptor) => {
-  const originalMethod = descriptor.value;
-  descriptor.value = async function value(...args) {
-    try {
-      this.onEvent({ type: 'BEGIN_OPERATION', message });
-      return await originalMethod.apply(this, args);
-    } catch (err) {
-      console.warn(err.code, err.message);
+export const handleOperation = async (fn, invoker, message = '', { login = false } = {}) => {
+  const id = _.uniqueId();
+  try {
+    invoker.onEvent({ type: 'BEGIN_OPERATION', id, message });
+    return await fn();
+  } catch (err) {
+    console.warn(err.code, err.message);
 
-      if (err.code === Parse.Error.AGGREGATE_ERROR) {
-        err.messages = _(err.errors).map('message').uniq().join(',');
-      } else {
-        err.message = getValue(err.code, {
-          [Parse.Error.OPERATION_FORBIDDEN]: login ? 'Incorrect access credentials.' : 'Access denied.',
-          [Parse.Error.OBJECT_NOT_FOUND]: login ? 'Incorrect access credentials.' : 'The record was not found.',
-          [Parse.Error.INVALID_SESSION_TOKEN]: 'Invalid session, please log in again',
-          [Parse.Error.CONNECTION_FAILED]: 'Could not connect to the server, please check your internet connection.',
-          [Parse.Error.DUPLICATE_VALUE]: 'A duplicate value was provided for a field with unique values.',
-          [Parse.Error.COMMAND_UNAVAILABLE]: 'Command unavailable, try again later.',
-        }, err.message);
-      }
-      throw err;
-    } finally {
-      this.onEvent({ type: 'END_OPERATION', message });
+    if (err.code === Parse.Error.AGGREGATE_ERROR) {
+      err.messages = _(err.errors).map('message').uniq().join(',');
+    } else {
+      err.message = getValue(err.code, {
+        [Parse.Error.OPERATION_FORBIDDEN]: login ? 'Incorrect access credentials.' : 'Access denied.',
+        [Parse.Error.OBJECT_NOT_FOUND]: login ? 'Incorrect access credentials.' : 'The record was not found.',
+        [Parse.Error.INVALID_SESSION_TOKEN]: 'Invalid session, please log in again',
+        [Parse.Error.CONNECTION_FAILED]: 'Could not connect to the server, please check your internet connection.',
+        [Parse.Error.DUPLICATE_VALUE]: 'A duplicate value was provided for a field with unique values.',
+        [Parse.Error.COMMAND_UNAVAILABLE]: 'Command unavailable, try again later.',
+      }, err.message);
     }
-  };
-  return descriptor;
+    throw err;
+  } finally {
+    invoker.onEvent({ type: 'END_OPERATION', id });
+  }
 };

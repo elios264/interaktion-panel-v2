@@ -11,7 +11,7 @@ export class ConfirmModal extends PureComponent {
     onCancel: PropTypes.func,
     onAccept: PropTypes.func,
     options: PropTypes.arrayOf(PropTypes.string),
-    content: PropTypes.node.isRequired,
+    content: PropTypes.node,
     onClose: PropTypes.func,
     cancelText: PropTypes.string,
     acceptText: PropTypes.string,
@@ -54,10 +54,9 @@ export class ConfirmModal extends PureComponent {
       <Modal {...rest} open onClose={this.onCloseRequest} closeOnDimmerClick={false}>
         <Modal.Header icon='question' content={header} />
         <Modal.Content>
-          {content}
+          {content && <div className='mb3'>{content}</div>}
           {options && (
-            <Form className='mt3'>
-
+            <Form>
               {_.map(options, (optionName, index) => (
                 <Form.Field key={index}>
                   <Radio

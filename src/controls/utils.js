@@ -8,6 +8,7 @@ import fileDialog from 'file-dialog';
 import { nanoid } from 'nanoid';
 import crypto from 'crypto';
 
+
 const makeFilterable = (propName, columns) => (item) => {
   item[propName] = item[propName]
     ? item[propName]
@@ -32,6 +33,25 @@ export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 export const formatDate = (date, format = 'DD-MMM-YYYY HH:mm') => moment(date).format(format);
 export const getValue = (value, mapping = {}, defaultValue) => _.get(mapping, [value], defaultValue);
 export const selectFiles = (...args) => fileDialog(...args);
+export const equalBy = (fst, snd, ...properties) => _.every(properties, (prop) => _.isEqual(_.get(fst, prop), _.get(snd, prop)));
+export const joinAndSeparatorJSX = (elements, separator = ', ', lastSeparator = ' and ') => _(elements).compact().transform((acc, cur, i, arr) => {
+  if (i > 0) {
+    acc.push(<Fragment key={`${i}.`}>{i < arr.length - 1 ? separator : lastSeparator}</Fragment>);
+  }
+  acc.push(<Fragment key={i}>{cur}</Fragment>);
+}, []).value();
+export const joinAndSeparator = (elements, separator = ', ', lastSeparator = ' and ') => _.join(_(elements).compact().transform((acc, cur, i, arr) => {
+  if (i > 0) {
+    acc.push(i < arr.length - 1 ? separator : lastSeparator);
+  }
+  acc.push(cur);
+}, []).value(), '');
+
+export const getMD5Base64Hash = (input) => {
+  const algorithm = crypto.createHash('md5');
+  algorithm.update(input);
+  return algorithm.digest('base64');
+};
 export const toReadable = (file, readerFn = 'readAsDataURL') => new Promise((res, rej) => {
   const reader = new FileReader();
   reader[readerFn](file);
@@ -139,7 +159,7 @@ export const toDataArray = (entries, columns, formattedColumns) => {
     ...(_.map(entries, formatRow)),
   ];
 };
-export const dataArrayAsXLSX = (dataArray, sheetName) => {
+export const arrayToXLSXBlob = (dataArray, sheetName) => {
   const worksheet = XLSX.utils.aoa_to_sheet(dataArray);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
@@ -147,8 +167,4 @@ export const dataArrayAsXLSX = (dataArray, sheetName) => {
   return new Blob([blobData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 };
 
-export const getMD5Base64Hash = (input) => {
-  const algorithm = crypto.createHash('md5');
-  algorithm.update(input);
-  return algorithm.digest('base64');
-};
+export const objectToJSONBlob = (object) => new Blob([JSON.stringify(object, null, 2)], { type: 'application/json' });

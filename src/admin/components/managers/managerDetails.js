@@ -11,6 +11,7 @@ import { logout } from 'admin/actions/authentication';
 import { updateProfile, deleteUser } from 'admin/actions/users';
 import { ResourceImageSelector } from 'admin/components/common';
 
+
 const editManagerSchema = {
   name: Joi.string().trim().required().max(50).label('Name'),
   email: Joi.string().email().required().max(50).label('Email'),

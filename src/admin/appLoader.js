@@ -4,13 +4,8 @@ import 'semantic-ui-less/semantic.less';
 import 'tachyons-custom/src/tachyons.css';
 import 'theme/theme.less';
 
-import React from 'react';
-if (process.env.NODE_ENV !== 'production') {
-  const whyDidYouRender = require('@welldone-software/why-did-you-render');
-  whyDidYouRender(React);
-}
-
 import _ from 'lodash';
+import React from 'react';
 import moment from 'moment';
 
 moment.locale(_.first(_.words(window.__ENVIRONMENT__.APP_LOCALE)));

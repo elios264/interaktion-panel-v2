@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { handleError } from './utils';
+import { handleError } from 'utils/actions';
 
 export const initialize = () => handleError(async (dispatch, getState, { api }) => {
   dispatch({ type: 'INITIALIZING', running: true });

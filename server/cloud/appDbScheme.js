@@ -4,13 +4,6 @@ const mongoAdapter = require('parse-server/lib/Config').get(process.env.PARSE_AP
 
 const cloud = require('./cloudUtils');
 
-const updateClp = (schema, classLevelPermissions) => Parse.Cloud.httpRequest({
-  method: 'PUT',
-  url: `http://localhost:${process.env.APP_PORT}${process.env.PARSE_PATH}/schemas/${schema}`,
-  headers: { 'X-Parse-Master-Key': process.env.PARSE_MASTER_KEY, 'X-Parse-Application-Id': process.env.PARSE_APPID, 'Content-Type': 'application/json' },
-  body: { classLevelPermissions },
-});
-
 const noAccess = {};
 const publicAccess = { '*': true };
 const adminAccess = { 'role:Admin': true };
@@ -40,14 +33,13 @@ const schemas = [{
 }];
 
 cloud.setupJob('setup-app-db-schemes', async () => {
-  let count = 0;
   const db = await mongoAdapter.client.db(mongoAdapter.client.s.options.dbName);
+  const existingSchemas = await Parse.Schema.all().then((schemas) => _.keyBy(schemas, 'className'));
 
   await Promise.all(_.map(schemas, async (schemaInfo) => {
     const { className, clp, columns, indices } = schemaInfo;
-    const prevSchema = await new Parse.Schema(className).get(cloud.masterPermissions).then(_.identity, () => false);
-
-    const newSchema = _.reduce(columns, (s, data, name) => {
+    const prevSchema = existingSchemas[className];
+    const schema = _.reduce(columns, (s, data, name) => {
       const { type, targetClass } = _.isString(data) ? { type: data } : data;
 
       if (prevSchema && prevSchema.fields[name]) {
@@ -61,17 +53,15 @@ cloud.setupJob('setup-app-db-schemes', async () => {
       }
     }, new Parse.Schema(className));
 
-    await (prevSchema ? newSchema.update() : newSchema.save());
-
     if (clp) {
-      await updateClp(className, clp);
+      schema.setCLP(clp);
     }
+
+    await (prevSchema ? schema.update() : schema.save());
 
     if (indices) {
       await db.collection(className).createIndexes(indices);
     }
-
-    count++;
   }));
 
   const hasRoles = await new Parse.Query(Parse.Role).containedIn('name', ['Admin']).count(cloud.masterPermissions);
@@ -82,5 +72,5 @@ cloud.setupJob('setup-app-db-schemes', async () => {
     await Parse.Object.saveAll([adminRole], cloud.masterPermissions);
   }
 
-  return `${count} schemas where successfully created/updated`;
+  return `${_.size(schemas)} schemas where successfully created/updated`;
 });

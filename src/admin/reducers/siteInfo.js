@@ -18,10 +18,10 @@ const isWorking = (state = 0, action) => {
     default: return state;
   }
 };
-const workingMessage = (state = '', action) => {
+const workingMessages = (state = {}, action) => {
   switch (action.type) {
-    case 'BEGIN_OPERATION': return action.message;
-    case 'END_OPERATION': return '';
+    case 'BEGIN_OPERATION': return { ...state, [action.id]: action.message };
+    case 'END_OPERATION': return _.omit(state, action.id);
     default: return state;
   }
 };
@@ -29,6 +29,6 @@ const workingMessage = (state = '', action) => {
 export const siteInfoInfoReducer = combineReducers({
   config,
   isWorking,
-  workingMessage,
+  workingMessages,
   initializing: (state = false, action) => action.type === 'INITIALIZING' ? action.running : state,
 });

@@ -1,8 +1,9 @@
+import _ from 'lodash';
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 
-export const makeAwaitable = ({ event, props }) => (WrappedComponent) => {
+export const makeAwaitable = ({ event, props }) => (wrappedComponent) => {
   const Awaitable = ({ [event]: onEvent, ...extraProps }) => {
     const [awaiting, setAwaiting] = useState(false);
     const mounted = useRef(true);
@@ -21,10 +22,10 @@ export const makeAwaitable = ({ event, props }) => (WrappedComponent) => {
       }
     };
 
-    return <WrappedComponent {...{ [event]: handleEvent }} {...extraProps} {...awaitingProps} />;
+    return React.createElement(wrappedComponent, { [event]: handleEvent, ...extraProps, ...awaitingProps });
   };
 
   Awaitable.propTypes = { [event]: PropTypes.func.isRequired };
-  Awaitable.displayName = `Awaitable(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
+  Awaitable.displayName = `Awaitable(${_.isString(wrappedComponent) ? wrappedComponent : (wrappedComponent.displayName || wrappedComponent.name || 'Component')})`;
   return Awaitable;
 };
