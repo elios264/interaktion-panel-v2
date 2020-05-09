@@ -74,7 +74,7 @@ module.exports = {
         { loader: 'css-loader', options: { importLoaders: 2, sourceMap: isDev } },
         { loader: 'postcss-loader', options: { ident: 'postcss', sourceMap: isDev,
           plugins: () => [require('postcss-custom-media')()] } },
-        { loader: 'less-loader', options: { noIeCompat: true, sourceMap: isDev } },
+        { loader: 'less-loader', options: { sourceMap: isDev } },
       ],
     }, {
       test: /\.jpe?g$|\.gif$|\.png$|\.ico$|\.ttf$|\.eot$|\.svg$|\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
