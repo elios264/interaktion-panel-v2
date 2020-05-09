@@ -3,18 +3,21 @@ const _ = require('lodash');
 const mongoAdapter = require('parse-server/lib/Config').get(process.env.PARSE_APPID).database.adapter;
 
 const cloud = require('./cloudUtils');
+const { role } = require('./types');
 
 const noAccess = {};
 const publicAccess = { '*': true };
-const adminAccess = { 'role:Admin': true };
+const adminAccess = { [`role:${role.admin}`]: true };
+const clientAccess = { [`role:${role.client}`]: true };
+
 
 const schemas = [{
   className: '_Role',
   clp: { get: noAccess, find: noAccess, create: noAccess, update: noAccess, delete: noAccess, addField: noAccess },
 }, {
   className: '_User',
-  clp: { get: adminAccess, find: adminAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },
-  columns: { name: 'String', lastActivity: 'Date', photo: { type: 'Pointer', targetClass: 'Resource' } },
+  clp: { get: { ...adminAccess, ...clientAccess }, find: adminAccess, create: adminAccess, update: { ...adminAccess, ...clientAccess }, delete: adminAccess, addField: noAccess },
+  columns: { name: 'String', lastActivity: 'Date', photo: { type: 'Pointer', targetClass: 'Resource' }, role: 'String' },
 }, {
   className: 'Config',
   clp: { get: publicAccess, find: publicAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },
@@ -30,6 +33,18 @@ const schemas = [{
   clp: { get: adminAccess, find: adminAccess, create: adminAccess, update: noAccess, delete: noAccess, addField: noAccess },
   columns: { timestamp: 'Date', userId: 'String', eventName: 'String', dimensions: 'Object' },
   indices: [{ name: 'timestamp_idx', unique: false, key: { 'timestamp': 1 }, expireAfterSeconds: 60 * 60 * 24 * 365 }],
+}, {
+  className: 'ContentDefinition',
+  clp: { get: publicAccess, find: publicAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },
+  columns: { active: 'Boolean', title: 'Object', mobileView: 'String', image: { type: 'Pointer', targetClass: 'Resource' }, description: 'Object', refs: 'Number' },
+}, {
+  className: 'Document',
+  clp: { get: publicAccess, find: adminAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },
+  columns: { title: 'String', description: 'String', content: 'String', contentResources: 'Array', language: 'String' },
+}, {
+  className: 'Content',
+  clp: { get: publicAccess, find: publicAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },
+  columns: { definition: { type: 'Pointer', targetClass: 'ContentDefinition' }, images: 'Array', visibility: 'String', contents: 'Array', entityType: 'String', entityInfo: 'Object' },
 }];
 
 cloud.setupJob('setup-app-db-schemes', async () => {
@@ -64,12 +79,13 @@ cloud.setupJob('setup-app-db-schemes', async () => {
     }
   }));
 
-  const hasRoles = await new Parse.Query(Parse.Role).containedIn('name', ['Admin']).count(cloud.masterPermissions);
-  if (!hasRoles) {
+  const existingRoles = await new Parse.Query(Parse.Role).containedIn('name', [role.admin, role.client]).count(cloud.masterPermissions);
+  if (existingRoles < 2) {
     const masterAcl = new Parse.ACL();
-    const adminRole = new Parse.Role('Admin', masterAcl);
+    const adminRole = new Parse.Role(role.admin, masterAcl);
+    const clientRole = new Parse.Role(role.client, masterAcl);
 
-    await Parse.Object.saveAll([adminRole], cloud.masterPermissions);
+    await Parse.Object.saveAll([adminRole, clientRole], cloud.masterPermissions);
   }
 
   return `${_.size(schemas)} schemas where successfully created/updated`;

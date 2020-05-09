@@ -1,5 +1,6 @@
 /* global Parse */
 const cloud = require('./cloudUtils');
+const { role } = require('./types');
 
 cloud.setupFunction('set-last-activity-now', (req) => {
   const { user } = req;
@@ -19,7 +20,20 @@ cloud.setupFunction('create-user', async (req) => {
   const password = `5${cloud.generateUniqueId()}a`;
   const username = cloud.generateUniqueId(20);
 
-  const user = await Parse.User.signUp(username, password, { name, email }, cloud.masterPermissions);
+  const user = await Parse.User.signUp(username, password, { name, email, role: role.admin }, cloud.masterPermissions);
+  return { success: true, userId: user.id };
+});
+
+cloud.setupFunction('register-user', async (req) => {
+
+  const { name, email } = req.params;
+  const password = `5${cloud.generateUniqueId()}a`;
+  const username = cloud.generateUniqueId(20);
+
+  const user = await Parse.User.signUp(username, password, { name, email, role: role.client }, cloud.masterPermissions);
+
+  await Parse.User.requestPasswordReset(email);
+
   return { success: true, userId: user.id };
 });
 

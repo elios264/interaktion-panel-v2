@@ -1,7 +1,16 @@
 /* global Parse */
 const cloud = require('../cloudUtils');
+const { role } = require('../types');
 
-const assignToAdminRole = async (req) => {
+const ensureAppropriateRole = (req) => {
+  switch (req.object.get('role')) {
+    case role.admin: cloud.ensureIsAdmin(req); break;
+    case role.client: cloud.ensureIsUser(req); break;
+    default: throw new Error('Invalid role');
+  }
+};
+
+const assignToCorrespondingRole = async (req) => {
   const { object: user, original: originalUser } = req;
 
   const isNewUser = !originalUser;
@@ -10,13 +19,13 @@ const assignToAdminRole = async (req) => {
   }
 
   // find role
-  const adminRole = await new Parse.Query(Parse.Role).equalTo('name', 'Admin').first(cloud.masterPermissions);
+  const role = await new Parse.Query(Parse.Role).equalTo('name', user.get('role')).first(cloud.masterPermissions);
 
   // assign role
-  adminRole.getUsers().add(user);
+  role.getUsers().add(user);
 
   // save changes
-  await adminRole.save(null, cloud.masterPermissions);
+  await role.save(null, cloud.masterPermissions);
 };
 
 const removeSessionsAndRoles = async (req) => {
@@ -34,8 +43,8 @@ const removeSessionsAndRoles = async (req) => {
 };
 
 const setupUsersRoleManagement = () => {
-  cloud.setupTrigger('beforeSave', Parse.User, cloud.ensureIsAdmin);
-  cloud.setupTrigger('afterSave', Parse.User, assignToAdminRole);
+  cloud.setupTrigger('beforeSave', Parse.User, ensureAppropriateRole);
+  cloud.setupTrigger('afterSave', Parse.User, assignToCorrespondingRole);
   cloud.setupTrigger('beforeDelete', Parse.User, removeSessionsAndRoles);
 };
 

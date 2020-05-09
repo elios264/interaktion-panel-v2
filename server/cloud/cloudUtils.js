@@ -4,6 +4,8 @@ const moment = require('moment');
 const { nanoid } = require('nanoid');
 const { AppCache } = require('parse-server/lib/cache');
 
+const { role } = require('./types');
+
 const triggerHandlers = {};
 
 const deleteFile = async (file, silent = false) => {
@@ -92,11 +94,18 @@ const httpRequestJson = async ({ method, url, body, headers = {} }) => {
 };
 
 const ensureIsAdmin = (req) => {
-  const isAdmin = req.master || req.user || false;
+  const isAdmin = req.master || (req.user && req.user.get('role') === role.admin) || false;
   if (!isAdmin) {
     throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, 'Access denied');
   }
 };
+const ensureIsUser = (req) => {
+  const isUser = req.master || req.user || false;
+  if (!isUser) {
+    throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, 'Access denied');
+  }
+};
+
 const ensureIsMaster = (req) => {
   if (!req.master) {
     throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, 'Access denied');
@@ -132,6 +141,7 @@ module.exports = {
   setupFunction,
   setupFileWatch,
   ensureIsAdmin,
+  ensureIsUser,
   ensureIsMaster,
   masterPermissions,
   getUserPermissions,

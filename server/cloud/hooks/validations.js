@@ -40,14 +40,19 @@ const readOnly = (options, ...fieldNames) => (req) => {
     }
   }
 };
-const cascadeDelete = (...columns) => async (req) => {
+const cascadeDelete = ({ query }) => async (req) => {
+  let [target, prop] = _.split(query, '.');
+  if (prop === undefined) {
+    [prop, target] = [target, prop];
+  }
 
-  const objectsToDelete = await Promise.all(_.map(columns, ({ field, className }) =>
-    new Parse.Query(className).select([]).equalTo(field, req.object).find(cloud.masterPermissions)
-  ));
+  const objectsToDelete = await (target
+    ? new Parse.Query(target).select([]).equalTo(prop, req.object).find(cloud.masterPermissions)
+    : _.castArray(req.object.get(prop)));
 
   await Parse.Object.destroyAll(_.flatten(objectsToDelete), cloud.masterPermissions);
 };
+
 const assignACL = ({ getPermission }) => (req) => {
   const { object } = req;
 
