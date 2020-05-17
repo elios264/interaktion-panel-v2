@@ -1,8 +1,8 @@
 /* eslint-disable import/first */
 import 'react-virtualized/styles.css';
 import 'semantic-ui-less/semantic.less';
-import 'tachyons-custom/src/tachyons.css';
 import 'theme/theme.less';
+import 'tachyons';
 
 import _ from 'lodash';
 import React from 'react';

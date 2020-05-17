@@ -60,7 +60,7 @@ module.exports = {
     ifDev(new webpack.HotModuleReplacementPlugin()),
     new ChunksAssetsPlugin({ fileName: 'rendering-manifest.json' }),
     new MiniCssExtractPlugin({ filename: isDev ? '[name].css' : '[name].bundle.[contenthash].css' }),
-    ifProd(new CopyWebpackPlugin([{ from: path.resolve(__dirname, './assets/static') }])),
+    ifProd(new CopyWebpackPlugin({ patterns: [{ from: path.resolve(__dirname, './assets/static') }] })),
   ].filter(_.identity),
   module: {
     rules: [{
@@ -71,9 +71,7 @@ module.exports = {
       test: /\.(css|less)$/,
       use: [
         { loader: MiniCssExtractPlugin.loader, options: { hmr: isDev } },
-        { loader: 'css-loader', options: { importLoaders: 2, sourceMap: isDev } },
-        { loader: 'postcss-loader', options: { ident: 'postcss', sourceMap: isDev,
-          plugins: () => [require('postcss-custom-media')()] } },
+        { loader: 'css-loader', options: { importLoaders: 1, sourceMap: isDev } },
         { loader: 'less-loader', options: { sourceMap: isDev } },
       ],
     }, {

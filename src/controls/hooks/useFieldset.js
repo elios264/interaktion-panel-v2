@@ -70,7 +70,7 @@ export const useFieldset = ({
   }, [submitValueToParentCount]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
-  const reset = useCallback(validator ? _.noop : () => {
+  const reset = useCallback(validator ? _.noop : () => { // eslint-disable-line react-hooks/exhaustive-deps
     setLoading(false);
     setErrors({ type: 'SET_ALL', value: {} });
     setSource({ type: 'SET_ALL', value: cloneSource(templateSource || {}) });

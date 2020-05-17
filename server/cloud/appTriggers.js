@@ -37,7 +37,7 @@ const userSchema = Joi.object({
   role: Joi.string().valid(..._.values(role)).required(),
 });
 
-cloud.setupTrigger('beforeSave', Parse.User, validationsHooks.readOnly('username', 'role'));
+cloud.setupTrigger('beforeSave', Parse.User, validationsHooks.readOnly({ allowMaster: true }, 'username', 'role'));
 cloud.setupTrigger('beforeSave', Parse.User, validationsHooks.validate(userSchema));
 validationsHooks.setupPointerRefCountWatch({ watch: '_User.photo', counter: 'Resource.refs' });
 usersHooks.setupUsersRoleManagement();
@@ -75,7 +75,7 @@ const contentDefinitionSchema = Joi.object({
   active: Joi.boolean().default(true),
   title: Joi.object({ us: Joi.string().trim().max(200).required() }).pattern(/.*/, Joi.string().trim().max(200)).required(),
   description: Joi.object({ us: Joi.string().trim().max(2000).required() }).pattern(/.*/, Joi.string().trim().max(2000)).required(),
-  image: Joi.object().type(Parse.Object).required(),
+  image: Joi.object().instance(Parse.Object).required(),
   mobileView: Joi.string().valid(..._.values(mobileView)).required(),
   refs: Joi.number().default(0),
 });
@@ -89,7 +89,7 @@ const documentSchema = Joi.object({
   title: Joi.string().trim().required().max(100),
   description: Joi.string().trim().required().max(400),
   content: Joi.string().required(),
-  contentResources: Joi.array().items(Joi.object().type(Parse.Object)).max(50),
+  contentResources: Joi.array().items(Joi.object().instance(Parse.Object)).max(50),
   language: Joi.string().max(5).default(process.env.APP_LOCALE),
 });
 cloud.setupTrigger('beforeSave', 'Document', validationsHooks.validate(documentSchema));
@@ -97,9 +97,9 @@ cloud.setupTrigger('beforeSave', 'Document', validationsHooks.readOnly({ allowMa
 validationsHooks.setupPointerRefCountWatch({ watch: 'Document.contentResources', counter: 'Resource.refs' });
 
 const contentSchema = Joi.object({
-  definition: Joi.object().type(Parse.Object).required(),
+  definition: Joi.object().instance(Parse.Object).required(),
   visibility: Joi.string().max(20).default(visibility.none),
-  contents: Joi.array().items(Joi.object().type(Parse.Object)).max(50),
+  contents: Joi.array().items(Joi.object().instance(Parse.Object)).max(50),
   entityType: Joi.string().valid(..._.values(contentType)).required(),
   entityInfo: Joi.object().required(),
 });
