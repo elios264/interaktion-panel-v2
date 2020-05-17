@@ -54,6 +54,9 @@ export class User extends Parse.User {
   get photo() { return this.get('photo'); }
   set photo(value) { this.setAttr('photo', value); }
 
+  get role() { return this.get('role'); }
+  set role(value) { this.setAttr('role', value); }
+
   get lastActivity() { return this.get('lastActivity'); }
   get sessionToken() { return this.getSessionToken(); }
 
@@ -115,5 +118,71 @@ export class EventLog extends BaseObject {
   get eventName() { return this.get('eventName'); }
   get userId() { return this.get('userId'); }
   get dimensions() { return this.get('dimensions'); }
+
+}
+
+export class ContentDefinition extends BaseObject {
+  constructor(attributes) { super('ContentDefinition', attributes); }
+
+  get active() { return this.get('active'); }
+  set active(value) { this.setAttr('active', value); }
+
+  get title() { return this.get('title'); }
+  set title(value) { this.setAttr('title', value); }
+
+  get mobileView() { return this.get('mobileView'); }
+  set mobileView(value) { this.setAttr('mobileView', value); }
+
+  get image() { return this.get('image'); }
+  set image(value) { this.setAttr('image', value); }
+
+  get description() { return this.get('description'); }
+  set description(value) { this.setAttr('description', value); }
+
+  get refs() { return this.get('refs'); }
+  set refs(value) { this.setAttr('refs', value); }
+
+}
+
+export class Document extends BaseObject {
+  constructor(attributes) { super('Document', attributes); }
+
+  get title() { return this.get('title'); }
+  set title(value) { this.setAttr('title', value); }
+
+  get description() { return this.get('description'); }
+  set description(value) { this.setAttr('description', value); }
+
+  get content() { return this.get('content'); }
+  set content(value) { this.setAttr('content', value); }
+
+  get contentResources() { return this.get('contentResources'); }
+  set contentResources(value) { this.setAttr('contentResources', value); }
+
+  get language() { return this.get('language'); }
+  set language(value) { this.setAttr('language', value); }
+
+}
+
+export class Content extends BaseObject {
+  constructor(attributes) { super('Content', attributes); }
+
+  get definition() { return this.get('definition'); }
+  set definition(value) { this.setAttr('definition', value); }
+
+  get images() { return this.get('images'); }
+  set images(value) { this.setAttr('images', value); }
+
+  get visibility() { return this.get('visibility'); }
+  set visibility(value) { this.setAttr('visibility', value); }
+
+  get contents() { return this.get('contents'); }
+  set contents(value) { this.setAttr('contents', value); }
+
+  get entityType() { return this.get('entityType'); }
+  set entityType(value) { this.setAttr('entityType', value); }
+
+  get entityInfo() { return this.get('entityInfo'); }
+  set entityInfo(value) { this.setAttr('entityInfo', value); }
 
 }

@@ -53,12 +53,6 @@
 - APP_LOCALE
 
 
---TODO---
-- replace requires for imports
-- start porting modules (contenidos.)
-
-- Multi-language support
-- Multi-image support.
-- clean unreferenced azure images job.
-- deploy ci
+Objetivo:
+Publicar contenidos y eventos que soporten multiidioma y reportes de sus visitas.
 

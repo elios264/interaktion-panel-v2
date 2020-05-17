@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Parse from 'parse';
 import { debounceCall } from 'controls/utils';
-import { Config, User, Resource, EventLog, BaseObject } from 'objects';
+import { ContentDefinition, Document, Content, Config, User, Resource, EventLog, BaseObject } from 'objects';
 import { buildQuery, handleOperation } from 'utils/api';
 import { AnalyticsProvider } from './analyticsProvider';
 
@@ -10,6 +10,9 @@ Parse.Object.registerSubclass('_User', User);
 Parse.Object.registerSubclass('Resource', Resource);
 Parse.Object.registerSubclass('Config', Config);
 Parse.Object.registerSubclass('EventLog', EventLog);
+Parse.Object.registerSubclass('ContentDefinition', ContentDefinition);
+Parse.Object.registerSubclass('Document', Document);
+Parse.Object.registerSubclass('Content', Content);
 
 export class Api {
 

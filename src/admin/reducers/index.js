@@ -9,6 +9,9 @@ const objectsReducer = combineReducers({
   users: createCRUDObjectReducer('_User'),
   resources: createCRUDObjectReducer('Resource'),
   eventLogs: createCRUDObjectReducer('EventLog'),
+  contentDefinitions: createCRUDObjectReducer('ContentDefinition'),
+  documents: createCRUDObjectReducer('Document'),
+  contents: createCRUDObjectReducer('Content'),
 });
 
 export const rootReducer = combineReducers({
