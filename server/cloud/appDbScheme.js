@@ -36,7 +36,7 @@ const schemas = [{
 }, {
   className: 'ContentDefinition',
   clp: { get: publicAccess, find: publicAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },
-  columns: { active: 'Boolean', title: 'Object', mobileView: 'String', image: { type: 'Pointer', targetClass: 'Resource' }, description: 'Object', refs: 'Number' },
+  columns: { enabled: 'Boolean', title: 'Object', mobileView: 'String', image: { type: 'Pointer', targetClass: 'Resource' }, description: 'Object', refs: 'Number' },
 }, {
   className: 'Document',
   clp: { get: publicAccess, find: adminAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },

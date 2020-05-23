@@ -31,7 +31,7 @@ export const ImageSelector = ({ disabled, imageUrl, onDelete, onImageSelected, .
 };
 
 ImageSelector.propTypes = {
-  disabled: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool,
   imageUrl: PropTypes.string,
   onImageSelected: PropTypes.func.isRequired,
   onDelete: PropTypes.func,

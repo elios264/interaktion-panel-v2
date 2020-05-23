@@ -4,11 +4,10 @@ import 'semantic-ui-less/semantic.less';
 import 'theme/theme.less';
 import 'tachyons';
 
-import _ from 'lodash';
 import React from 'react';
 import moment from 'moment';
 
-moment.locale(_.first(_.words(window.__ENVIRONMENT__.APP_LOCALE)));
+moment.locale(window.__ENVIRONMENT__.APP_LOCALE);
 
 import ReactDOM from 'react-dom';
 import thunk from 'redux-thunk';

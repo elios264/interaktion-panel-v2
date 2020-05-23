@@ -72,16 +72,16 @@ cloud.setupTrigger('beforeSave', 'EventLog', validationsHooks.readOnly('timestam
 cloud.setupTrigger('beforeSave', 'EventLog', validationsHooks.validate(eventLogSchema));
 
 const contentDefinitionSchema = Joi.object({
-  active: Joi.boolean().default(true),
-  title: Joi.object({ us: Joi.string().trim().max(200).required() }).pattern(/.*/, Joi.string().trim().max(200)).required(),
-  description: Joi.object({ us: Joi.string().trim().max(2000).required() }).pattern(/.*/, Joi.string().trim().max(2000)).required(),
+  enabled: Joi.boolean().default(true),
+  title: Joi.object({ [process.env.APP_LOCALE]: Joi.string().trim().max(200).required() }).pattern(/.*/, Joi.string().trim().max(200)).required(),
+  description: Joi.object({ [process.env.APP_LOCALE]: Joi.string().trim().max(2000).required() }).pattern(/.*/, Joi.string().trim().max(2000)).required(),
   image: Joi.object().instance(Parse.Object).required(),
   mobileView: Joi.string().valid(..._.values(mobileView)).required(),
   refs: Joi.number().default(0),
 });
 cloud.setupTrigger('beforeSave', 'ContentDefinition', validationsHooks.validate(contentDefinitionSchema));
 cloud.setupTrigger('beforeSave', 'ContentDefinition', validationsHooks.readOnly({ allowMaster: true }, 'refs'));
-cloud.setupTrigger('beforeSave', 'ContentDefinition', validationsHooks.assignACL({ getPermission: ({ active }) => active ? '*' : 'Admin' }));
+cloud.setupTrigger('beforeSave', 'ContentDefinition', validationsHooks.assignACL({ getPermission: ({ enabled }) => enabled ? '*' : 'Admin' }));
 cloud.setupTrigger('afterDelete', 'ContentDefinition', validationsHooks.cascadeDelete({ query: 'Content.definition' }));
 validationsHooks.setupPointerRefCountWatch({ watch: 'ContentDefinition.image', counter: 'Resource.refs' });
 

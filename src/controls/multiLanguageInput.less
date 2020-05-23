@@ -1,0 +1,24 @@
+.attached-bottom {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  &:not(:focus) { border-top: 0 !important; }
+}
+.attached-top {
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  &:not(:focus) { border-bottom: 0 !important; }
+}
+
+.button-dropdown-fix-description {
+  .item {
+    display: flex !important;
+    justify-content: space-between;
+    & > .description { order: 1 }
+  }
+}
+
+.fix-borders.disabled {
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-color: rgba(34, 36, 38, 0.15) !important;
+}

@@ -3,7 +3,7 @@ import _ from 'lodash';
 import Parse from 'parse';
 import path from 'path';
 import { Buffer } from 'buffer';
-import { /* getValue,*/ getMD5Base64Hash, loadImageBase64FromFile } from 'controls/utils';
+import { getValue, getMD5Base64Hash, loadImageBase64FromFile } from 'controls/utils';
 
 
 const isEmpty = (val) => (_.isPlainObject(val) ? _.isEmpty(val) : _.isNil(val) || val === '');
@@ -124,8 +124,8 @@ export class EventLog extends BaseObject {
 export class ContentDefinition extends BaseObject {
   constructor(attributes) { super('ContentDefinition', attributes); }
 
-  get active() { return this.get('active'); }
-  set active(value) { this.setAttr('active', value); }
+  get enabled() { return this.get('enabled'); }
+  set enabled(value) { this.setAttr('enabled', value); }
 
   get title() { return this.get('title'); }
   set title(value) { this.setAttr('title', value); }
@@ -142,6 +142,13 @@ export class ContentDefinition extends BaseObject {
   get refs() { return this.get('refs'); }
   set refs(value) { this.setAttr('refs', value); }
 
+  get enabledName() { return ContentDefinition.getEnabledName(this.enabled); }
+  get mobileViewName() { return ContentDefinition.getMobileViewName(this.mobileView); }
+
+  static getEnabledName = (value) => value ? 'Enabled' : 'Disabled';
+  static mobileView = Object.freeze({ chess: 'chess', full: 'full', list: 'list' });
+
+  static getMobileViewName = (mobileView) => getValue(mobileView, { [ContentDefinition.mobileView.chess]: 'Chess', [ContentDefinition.mobileView.full]: 'Full', [ContentDefinition.mobileView.list]: 'List' }, mobileView);
 }
 
 export class Document extends BaseObject {

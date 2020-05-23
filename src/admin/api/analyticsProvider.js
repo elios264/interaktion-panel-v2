@@ -2,6 +2,8 @@ import _ from 'lodash';
 import Parse from 'parse';
 
 const emailParams = ({ email }) => ({ email });
+const titleLanguageParams = ({ title }) => ({ name: title[window.__ENVIRONMENT__.APP_LOCALE] });
+
 
 export class AnalyticsProvider {
 
@@ -18,6 +20,8 @@ export class AnalyticsProvider {
       'create-user': emailParams,
       'delete-user': emailParams,
       'reset-password-user': emailParams,
+
+      'save-content-definition': titleLanguageParams,
     };
 
     const definition = definitions[actionName];

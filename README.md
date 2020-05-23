@@ -56,3 +56,5 @@
 Objetivo:
 Publicar contenidos y eventos que soporten multiidioma y reportes de sus visitas.
 
+Objetivos tecnicos:
+import-export.

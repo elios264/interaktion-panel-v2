@@ -38,7 +38,6 @@ const dayPickerStyles = `
  .DayPicker-Month {width:290px; }
 `;
 
-const simpleLocale = _.first(_.words(window.__ENVIRONMENT__.APP_LOCALE));
 const rangeDateFormat = 'DD-MMM-YYYY';
 const preventBlur = (e) => e.preventDefault();
 
@@ -233,7 +232,7 @@ class DatePicker extends PureComponent {
               <Helmet><style>{dayPickerStyles}</style></Helmet>
               <DayPicker
                 localeUtils={MomentLocaleUtils}
-                locale={simpleLocale}
+                locale={window.__ENVIRONMENT__.APP_LOCALE}
                 numberOfMonths={1}
                 initialMonth={value || initialDate}
                 onDayClick={this.onDaySelected}
@@ -347,7 +346,7 @@ class RangePicker extends PureComponent {
         <div>
           <DayPicker
             localeUtils={MomentLocaleUtils}
-            locale={simpleLocale}
+            locale={window.__ENVIRONMENT__.APP_LOCALE}
             className='Range'
             numberOfMonths={2}
             initialMonth={value.start}

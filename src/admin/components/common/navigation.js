@@ -14,6 +14,7 @@ export const Navigation = ({ children }) => {
   const { isWorking, workingMessages } = useSelector((state) => state.siteInfo);
   const userInfo = useSelector((state) => state.userInfo);
   const userPhotoResource = useSelector((state) => state.objects.resources[_.get(state.userInfo.photo, 'id')] || emptyResource);
+  const contentDefinitions = useSelector((state) => state.objects.contentDefinitions);
 
   return (
     <div className='min-vh-100 relative'>
@@ -31,6 +32,20 @@ export const Navigation = ({ children }) => {
           <Menu.Menu>
             <Menu.Item as={NavLink} to='/managers' name='managers'>
               Managers
+            </Menu.Item>
+          </Menu.Menu>
+        </Menu.Item>
+        <Menu.Item>
+          <Icon name='signup' />
+          Sections
+          <Menu.Menu>
+            {_.map(contentDefinitions, ({ id, title }) => (
+              <Menu.Item key={id} as={NavLink} to={`/contents/${id}`} name={id}>
+                {title[window.__ENVIRONMENT__.APP_LOCALE]}
+              </Menu.Item>
+            ))}
+            <Menu.Item as={NavLink} to='/contents/create' name='createContent'>
+              <Icon name='plus' />New section
             </Menu.Item>
           </Menu.Menu>
         </Menu.Item>

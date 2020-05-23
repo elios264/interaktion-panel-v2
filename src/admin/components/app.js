@@ -7,10 +7,11 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
 
 import { ModalController } from 'controls/modals';
-import { DisplayMessage, NotFound, Navigation, ErrorBoundary } from './common';
+import { DisplayMessage, Navigation, ErrorBoundary } from './common';
 import { LoginForm, ForgotPasswordForm, ResetPasswordForm } from './authentication';
 import { ManagersList, ManagerDetails } from './managers';
 import { Logbook } from './logbook';
+import { ContentDefinitionDetails } from './contents';
 
 export const App = hot(() => {
   const modals = useSelector((state) => state.modals);
@@ -31,7 +32,6 @@ export const App = hot(() => {
           <Route path='/reset-success' render={(props) => <DisplayMessage header='Your password has been successfully set.' {...props} redirect content={'You\'ll be redirected to the main page'} />} />
           <Route path='/reset-password' component={ResetPasswordForm} />
           <Route path='/forgot-password' component={ForgotPasswordForm} />
-          <Route path='/404' component={NotFound} />
 
           {initializing && <Route render={(props) => <DisplayMessage header='Accessing, wait a moment please...' {...props} />} />}
           {userInfo ? <Redirect to='/' from='/login' /> : <Route path='/login' component={LoginForm} />}
@@ -44,9 +44,11 @@ export const App = hot(() => {
                 <Route exact path='/managers/:action(create)?' component={ManagersList} />
                 <Route exact path='/managers/details/:userId/:action(edit)?' component={ManagerDetails} />
 
+                <Route exact path='/contents/:action(create)' component={ContentDefinitionDetails} />
+
                 <Route exact path='/logbook' component={Logbook} />
 
-                <Redirect to='/404' />
+                <Redirect to='/' />
               </Switch>
             </Navigation>
           )} />
