@@ -99,6 +99,7 @@ validationsHooks.setupPointerRefCountWatch({ watch: 'Document.contentResources',
 const contentSchema = Joi.object({
   definition: Joi.object().instance(Parse.Object).required(),
   visibility: Joi.string().max(20).default(visibility.none),
+  images: Joi.array().items(Joi.object().instance(Parse.Object).required()).max(20),
   contents: Joi.array().items(Joi.object().instance(Parse.Object)).max(50),
   entityType: Joi.string().valid(..._.values(contentType)).required(),
   entityInfo: Joi.object().required(),
@@ -108,3 +109,4 @@ cloud.setupTrigger('beforeSave', 'Content', validationsHooks.validate(contentSch
 cloud.setupTrigger('beforeSave', 'Content', validationsHooks.assignACL({ getPermission: ({ visibility }) => visibility }));
 cloud.setupTrigger('afterDelete', 'Content', validationsHooks.cascadeDelete({ query: 'contents' }));
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.definition', counter: 'ContentDefinition.refs' });
+validationsHooks.setupPointerRefCountWatch({ watch: 'Content.images', counter: 'Resource.refs' });

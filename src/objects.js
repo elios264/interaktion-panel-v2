@@ -168,7 +168,6 @@ export class Document extends BaseObject {
 
   get language() { return this.get('language'); }
   set language(value) { this.setAttr('language', value); }
-
 }
 
 export class Content extends BaseObject {
@@ -182,14 +181,22 @@ export class Content extends BaseObject {
 
   get visibility() { return this.get('visibility'); }
   set visibility(value) { this.setAttr('visibility', value); }
+  get visibilityName() { return Content.getVisibilityName(this.visibility); }
 
   get contents() { return this.get('contents'); }
   set contents(value) { this.setAttr('contents', value); }
 
   get entityType() { return this.get('entityType'); }
   set entityType(value) { this.setAttr('entityType', value); }
+  get entityTypeName() { return Content.getEntityTypeName(this.entityType); }
 
   get entityInfo() { return this.get('entityInfo'); }
   set entityInfo(value) { this.setAttr('entityInfo', value); }
 
+  static entityType = Object.freeze({ event: 'event', content: 'content' });
+  static getEntityTypeName = (entityType) => getValue(entityType, { [Content.entityType.event]: 'Event', [Content.entityType.content]: 'Content' }, entityType);
+
+  static visibility = Object.freeze({ none: 'Admin', public: '*', members: 'Client' });
+  static getVisibilityName = (visibility) => getValue(visibility, { [Content.visibility.none]: 'Hidden', [Content.visibility.public]: 'Public', [Content.visibility.members]: 'Members' }, visibility);
+  static getVisibilityColor = (visibility) => getValue(visibility, { [Content.visibility.none]: 'grey', [Content.visibility.public]: 'blue', [Content.visibility.members]: 'green' }, 'grey');
 }
