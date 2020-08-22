@@ -151,33 +151,14 @@ export class ContentDefinition extends BaseObject {
   static getMobileViewName = (mobileView) => getValue(mobileView, { [ContentDefinition.mobileView.chess]: 'Chess', [ContentDefinition.mobileView.full]: 'Full', [ContentDefinition.mobileView.list]: 'List' }, mobileView);
 }
 
-export class Document extends BaseObject {
-  constructor(attributes) { super('Document', attributes); }
-
-  get title() { return this.get('title'); }
-  set title(value) { this.setAttr('title', value); }
-
-  get description() { return this.get('description'); }
-  set description(value) { this.setAttr('description', value); }
-
-  get content() { return this.get('content'); }
-  set content(value) { this.setAttr('content', value); }
-
-  get contentResources() { return this.get('contentResources'); }
-  set contentResources(value) { this.setAttr('contentResources', value); }
-
-  get language() { return this.get('language'); }
-  set language(value) { this.setAttr('language', value); }
-}
-
 export class Content extends BaseObject {
   constructor(attributes) { super('Content', attributes); }
 
   get definition() { return this.get('definition'); }
   set definition(value) { this.setAttr('definition', value); }
 
-  get images() { return this.get('images'); }
-  set images(value) { this.setAttr('images', value); }
+  get image() { return this.get('image'); }
+  set image(value) { this.setAttr('image', value); }
 
   get visibility() { return this.get('visibility'); }
   set visibility(value) { this.setAttr('visibility', value); }
@@ -185,6 +166,15 @@ export class Content extends BaseObject {
 
   get contents() { return this.get('contents'); }
   set contents(value) { this.setAttr('contents', value); }
+
+  get title() { return this.get('title'); }
+  set title(value) { this.setAttr('title', value); }
+
+  get description() { return this.get('description'); }
+  set description(value) { this.setAttr('description', value); }
+
+  get contentsResources() { return this.get('contentsResources'); }
+  set contentsResources(value) { this.setAttr('contentsResources', value); }
 
   get entityType() { return this.get('entityType'); }
   set entityType(value) { this.setAttr('entityType', value); }

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Parse from 'parse';
 import { debounceCall } from 'controls/utils';
-import { ContentDefinition, Document, Content, Config, User, Resource, EventLog, BaseObject } from 'objects';
+import { ContentDefinition, Content, Config, User, Resource, EventLog, BaseObject } from 'objects';
 import { buildQuery, handleOperation } from 'utils/api';
 import { AnalyticsProvider } from './analyticsProvider';
 
@@ -11,7 +11,6 @@ Parse.Object.registerSubclass('Resource', Resource);
 Parse.Object.registerSubclass('Config', Config);
 Parse.Object.registerSubclass('EventLog', EventLog);
 Parse.Object.registerSubclass('ContentDefinition', ContentDefinition);
-Parse.Object.registerSubclass('Document', Document);
 Parse.Object.registerSubclass('Content', Content);
 
 export class Api {
@@ -59,6 +58,8 @@ export class Api {
       buildQuery('Config'),
       buildQuery('Resource'),
       buildQuery('EventLog'),
+      buildQuery('ContentDefinition'),
+      buildQuery('Content'),
     ];
 
     this.realTimeSubs = await Promise.all(realTimeQueries.map(async (query) => {

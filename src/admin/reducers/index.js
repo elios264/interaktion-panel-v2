@@ -10,7 +10,6 @@ const objectsReducer = combineReducers({
   resources: createCRUDObjectReducer('Resource'),
   eventLogs: createCRUDObjectReducer('EventLog'),
   contentDefinitions: createCRUDObjectReducer('ContentDefinition'),
-  documents: createCRUDObjectReducer('Document'),
   contents: createCRUDObjectReducer('Content'),
 });
 

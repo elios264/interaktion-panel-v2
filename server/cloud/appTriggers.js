@@ -85,28 +85,20 @@ cloud.setupTrigger('beforeSave', 'ContentDefinition', validationsHooks.assignACL
 cloud.setupTrigger('afterDelete', 'ContentDefinition', validationsHooks.cascadeDelete({ query: 'Content.definition' }));
 validationsHooks.setupPointerRefCountWatch({ watch: 'ContentDefinition.image', counter: 'Resource.refs' });
 
-const documentSchema = Joi.object({
-  title: Joi.string().trim().required().max(100),
-  description: Joi.string().trim().required().max(400),
-  content: Joi.string().required(),
-  contentResources: Joi.array().items(Joi.object().instance(Parse.Object)).max(50),
-  language: Joi.string().max(5).default(process.env.APP_LOCALE),
-});
-cloud.setupTrigger('beforeSave', 'Document', validationsHooks.validate(documentSchema));
-cloud.setupTrigger('beforeSave', 'Document', validationsHooks.readOnly({ allowMaster: true }, 'refs'));
-validationsHooks.setupPointerRefCountWatch({ watch: 'Document.contentResources', counter: 'Resource.refs' });
-
 const contentSchema = Joi.object({
   definition: Joi.object().instance(Parse.Object).required(),
-  visibility: Joi.string().max(20).default(visibility.none),
-  images: Joi.array().items(Joi.object().instance(Parse.Object).required()).max(20),
-  contents: Joi.array().items(Joi.object().instance(Parse.Object)).max(50),
+  visibility: Joi.string().valid(..._.values(visibility)).default(visibility.none),
+  image: Joi.object().instance(Parse.Object).required(),
   entityType: Joi.string().valid(..._.values(contentType)).required(),
   entityInfo: Joi.object().required(),
+  title: Joi.object({ [process.env.APP_LOCALE]: Joi.string().trim().max(200).required() }).pattern(/.*/, Joi.string().trim().max(200)).required(),
+  description: Joi.object({ [process.env.APP_LOCALE]: Joi.string().trim().max(2000).required() }).pattern(/.*/, Joi.string().trim().max(2000)).required(),
+  contents: Joi.object({ [process.env.APP_LOCALE]: Joi.string().max(10000).required() }).pattern(/.*/, Joi.string().trim().max(10000)).required(),
+  contentsResources: Joi.array().items(Joi.object().instance(Parse.Object)).max(50),
 });
 
 cloud.setupTrigger('beforeSave', 'Content', validationsHooks.validate(contentSchema));
 cloud.setupTrigger('beforeSave', 'Content', validationsHooks.assignACL({ getPermission: ({ visibility }) => visibility }));
 cloud.setupTrigger('afterDelete', 'Content', validationsHooks.cascadeDelete({ query: 'contents' }));
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.definition', counter: 'ContentDefinition.refs' });
-validationsHooks.setupPointerRefCountWatch({ watch: 'Content.images', counter: 'Resource.refs' });
+validationsHooks.setupPointerRefCountWatch({ watch: 'Content.image', counter: 'Resource.refs' });

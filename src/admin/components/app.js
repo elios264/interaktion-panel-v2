@@ -11,7 +11,7 @@ import { DisplayMessage, Navigation, ErrorBoundary } from './common';
 import { LoginForm, ForgotPasswordForm, ResetPasswordForm } from './authentication';
 import { ManagersList, ManagerDetails } from './managers';
 import { Logbook } from './logbook';
-import { ContentDefinitionDetails, ContentList } from './contents';
+import { ContentDefinitionDetails, ContentList, ContentDetails } from './contents';
 
 export const App = hot(() => {
   const modals = useSelector((state) => state.modals);
@@ -47,6 +47,8 @@ export const App = hot(() => {
                 <Route exact path='/contents/:action(create)' component={ContentDefinitionDetails} />
                 <Route exact path='/contents/:definitionId/:action(edit)' component={ContentDefinitionDetails} />
                 <Route exact path='/contents/:definitionId' component={ContentList} />
+                <Route exact path='/contents/:definitionId/:action(create)' component={ContentDetails} />
+                <Route exact path='/contents/:definitionId/details/:contentId/:action(edit)?' component={ContentDetails} />
 
                 <Route exact path='/logbook' component={Logbook} />
 

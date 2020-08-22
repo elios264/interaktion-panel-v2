@@ -38,13 +38,9 @@ const schemas = [{
   clp: { get: publicAccess, find: publicAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },
   columns: { enabled: 'Boolean', title: 'Object', mobileView: 'String', image: { type: 'Pointer', targetClass: 'Resource' }, description: 'Object', refs: 'Number' },
 }, {
-  className: 'Document',
-  clp: { get: publicAccess, find: adminAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },
-  columns: { title: 'String', description: 'String', content: 'String', contentResources: 'Array', language: 'String' },
-}, {
   className: 'Content',
   clp: { get: publicAccess, find: publicAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },
-  columns: { definition: { type: 'Pointer', targetClass: 'ContentDefinition' }, images: 'Array', visibility: 'String', contents: 'Array', entityType: 'String', entityInfo: 'Object' },
+  columns: { definition: { type: 'Pointer', targetClass: 'ContentDefinition' }, image: { type: 'Pointer', targetClass: 'Resource' }, visibility: 'String', entityType: 'String', entityInfo: 'Object', title: 'Object', description: 'Object', contents: 'Object', contentsResources: 'Array' },
 }];
 
 cloud.setupJob('setup-app-db-schemes', async () => {

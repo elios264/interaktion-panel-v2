@@ -82,7 +82,7 @@ export const ContentList = ({ match, location, history }) => {
             sortSearchParams={urlParams}
             onSortChange={onSortChange}>
             <Column
-              dataKey='images[0]'
+              dataKey='image'
               label='Image'
               width={60}
               flexGrow={1}
@@ -93,7 +93,7 @@ export const ContentList = ({ match, location, history }) => {
               cellRenderer={resourceImageRenderer}
               searchKey={getImageUrl} />
             <Column
-              dataKey='contents[0].title'
+              dataKey={`contents[${window.__ENVIRONMENT__.APP_LOCALE}].title`}
               label='Title'
               width={250}
               flexGrow={1}

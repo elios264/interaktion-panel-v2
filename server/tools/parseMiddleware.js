@@ -24,7 +24,7 @@ module.exports = ({ isDev }) => {
     publicServerURL: `${process.env.APP_URL}${process.env.PARSE_PATH}`,
     cloud: './server/cloud',
     serverURL: `http://localhost:${process.env.APP_PORT}${process.env.PARSE_PATH}`,
-    liveQuery: { classNames: ['_User', 'Config', 'Resource', 'EventLog', 'ContentDefinition', 'Document', 'Content'] },
+    liveQuery: { classNames: ['_User', 'Config', 'Resource', 'EventLog', 'ContentDefinition', 'Content'] },
     passwordPolicy: { validatorPattern: /^(?=.*[a-z])(?=.*[0-9])(?=.{8,})/ },
     analyticsAdapter: new AnalyticsAdapter(),
     emailAdapter: {
