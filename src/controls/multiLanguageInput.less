@@ -9,16 +9,19 @@
   &:not(:focus) { border-bottom: 0 !important; }
 }
 
-.button-dropdown-fix-description {
+.button-dropdown-fix {
   .item {
     display: flex !important;
     justify-content: space-between;
     & > .description { order: 1 }
   }
-}
+  .search {
+    width: 100% !important;
+  }
 
-.fix-borders.disabled {
+  &.disabled {
     border-width: 1px !important;
     border-style: solid !important;
     border-color: rgba(34, 36, 38, 0.15) !important;
+  }
 }

@@ -11,3 +11,4 @@ export * from './imageSelector';
 export * from './selector';
 export * from './loadingDots';
 export * from './multiLanguageInput';
+export * from './richTextEditor';

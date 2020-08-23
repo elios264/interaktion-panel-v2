@@ -35,7 +35,7 @@ export const MultiLanguageInput = ({ value, onChange, defaultLanguage, disabled,
     <Input
       action={(
         <Dropdown
-          className='button-dropdown-fix-description fix-borders'
+          className='button-dropdown-fix'
           button
           basic
           floating
@@ -83,7 +83,7 @@ export const MultiLanguageTextArea = ({ value, onChange, className, defaultLangu
         disabled={disabled}
         {...props} />
       <Dropdown
-        className='attached-bottom button-dropdown-fix-description fix-borders'
+        className='attached-bottom button-dropdown-fix'
         button
         basic
         floating

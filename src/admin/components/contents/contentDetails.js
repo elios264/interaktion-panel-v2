@@ -2,14 +2,14 @@ import _ from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Grid, Menu, Modal, Button, Segment, Form, Label, Input, TextArea, Divider, Sticky, Message, Icon, Dropdown } from 'semantic-ui-react';
+import { Grid, Menu, Modal, Button, Segment, Form, Divider } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 import Joi from '@hapi/joi';
 
 import { Content } from 'objects';
 import { ResourceImageSelector } from 'admin/components/common';
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
-import { Popup, LoadingDots, Selector, AwaitableButton, getJoiLanguagesValidationSchema, MultiLanguageInput, MultiLanguageTextArea } from 'controls';
+import { Popup, LoadingDots, Selector, AwaitableButton, getJoiLanguagesValidationSchema, MultiLanguageInput, MultiLanguageTextArea, RichTextEditor } from 'controls';
 
 
 const visibilityOptions = _.map(Content.visibility, (value, key) => ({ key, value, text: Content.getVisibilityName(value) }));
@@ -41,7 +41,7 @@ const contentSchema = {
   }).required(),
   title: getJoiLanguagesValidationSchema('Title', 200),
   description: getJoiLanguagesValidationSchema('Description', 2000),
-  // contents: Joi.array().items(Joi.object(contentDocumentSchema).instance(Document).required()).max(50),
+  contents: getJoiLanguagesValidationSchema('Contents', 10000),
 };
 
 export const ContentDetails = ({ history, match }) => {
@@ -189,7 +189,7 @@ export const ContentDetails = ({ history, match }) => {
                 )}
               </Grid.Column>
               <Grid.Column computer={16} largeScreen={8} widescreen={8}>
-                WYSIWYG
+                <RichTextEditor value={contents.value} onChange={contents.onChange} />
               </Grid.Column>
             </Grid>
           </Form>
