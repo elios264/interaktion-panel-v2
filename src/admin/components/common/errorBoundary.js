@@ -41,7 +41,7 @@ export class ErrorBoundary extends PureComponent {
             Click <a href='/'>here</a> to return to the main page.
             <br />
             <br />
-            If you want to help us, send us this message by mail to (elios264@outlook.com):
+            If you want to help us, send us this message by email to (elios264@outlook.com):
             <br />
             <br />
             <TextArea

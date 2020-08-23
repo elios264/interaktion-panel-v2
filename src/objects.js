@@ -3,7 +3,7 @@ import _ from 'lodash';
 import Parse from 'parse';
 import path from 'path';
 import { Buffer } from 'buffer';
-import { getValue, getMD5Base64Hash, loadImageBase64FromFile } from 'controls/utils';
+import { getValue, getMD5Base64Hash, toReadable } from 'controls/utils';
 
 
 const isEmpty = (val) => (_.isPlainObject(val) ? _.isEmpty(val) : _.isNil(val) || val === '');
@@ -23,14 +23,14 @@ export class BaseObject extends Parse.Object {
 }
 
 export class File extends Parse.File {
-  static getFileName = _.flow(_.partialRight(_.replace, /\.[^/.]+$/, ''), _.camelCase)
+  static getFileName = (fileName) => _.flow(_.partialRight(_.replace, /\.[^/.]+$/, ''), _.camelCase)(fileName) + path.extname(fileName)
+
   static fromNativeFile = async (file) => {
     if (!file.base64) {
-      file.base64 = await loadImageBase64FromFile(file).then((image) => image.src);
+      file.base64 = await toReadable(file);
     }
     const name = File.getFileName(file.name);
     const fileObject = new File(name, { base64: file.base64 }, file.type);
-    fileObject.localName = name;
     fileObject.localUrl = file.base64;
     fileObject.localSize = file.base64.length * 0.75;
     fileObject.localHash = await fileObject
@@ -102,8 +102,8 @@ export class Resource extends BaseObject {
   get thumbnail() { return this.get('thumbnail'); }
   set thumbnail(value) { this.setAttr('thumbnail', value); }
 
+  get fileName() { return _.result(this.src, 'name'); }
   get fileUrl() { return _.get(this.src, 'localUrl', _.result(this.src, 'url')); }
-  get fileName() { return _.get(this.src, 'localName', _.replace(_.result(this.src, 'name'), /^[a-zA-Z0-9]*_/, '')); }
   get fileExtension() { return path.extname(this.fileName); }
   get fileSize() { return _.get(this.src, 'localSize', _.get(this.metadata, 'size')); }
   get fileHash() { return _.get(this.src, 'localHash', _.get(this.metadata, 'hash')); }
