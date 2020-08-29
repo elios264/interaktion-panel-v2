@@ -4,6 +4,7 @@ import Parse from 'parse';
 import path from 'path';
 import { Buffer } from 'buffer';
 import { getValue, getMD5Base64Hash, toReadable } from 'controls/utils';
+import { throws } from 'assert';
 
 
 const isEmpty = (val) => (_.isPlainObject(val) ? _.isEmpty(val) : _.isNil(val) || val === '');
@@ -32,7 +33,7 @@ export class File extends Parse.File {
     const name = File.getFileName(file.name);
     const fileObject = new File(name, { base64: file.base64 }, file.type);
     fileObject.localUrl = file.base64;
-    fileObject.localSize = file.base64.length * 0.75;
+    fileObject.localSize = file.size || (file.base64.length * 0.75);
     fileObject.localHash = await fileObject
       .getData()
       .then((base64) => Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)))
@@ -182,6 +183,47 @@ export class Content extends BaseObject {
 
   get entityInfo() { return this.get('entityInfo'); }
   set entityInfo(value) { this.setAttr('entityInfo', value); }
+
+  get documents() {
+
+    if (!this.documentsCache) {
+      const contents = this.contents || {};
+      const resources = this.contentsResources || [];
+
+      this.documentsCache = _.mapValues(contents, (json) => {
+        const document = JSON.parse(json);
+        return [{ children: _.map(document[0].children, (node) => {
+          switch (node.type) {
+            case 'img': return { ...node, image: resources[node.image] };
+            case 'attachment': return { ...node, attachment: resources[node.attachment] };
+            default: return node;
+          }
+        }) }];
+      });
+    }
+
+    return this.documentsCache;
+  }
+
+  set documents(value) {
+    this.documentsCache = value;
+
+    if (!value) {
+      this.contents = undefined;
+      this.contentsResources = undefined;
+      return;
+    }
+
+    const resources = [];
+    this.contentsResources = resources;
+    this.contents = _.mapValues(value, (value) => JSON.stringify([{ children: _.map(value[0].children, (node) => {
+      switch (node.type) {
+        case 'img': return { ...node, image: resources.push(node.image) - 1 };
+        case 'attachment': return { ...node, attachment: resources.push(node.attachment) - 1 };
+        default: return node;
+      }
+    }) }]));
+  }
 
   static entityType = Object.freeze({ event: 'event', content: 'content' });
   static getEntityTypeName = (entityType) => getValue(entityType, { [Content.entityType.event]: 'Event', [Content.entityType.content]: 'Content' }, entityType);

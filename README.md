@@ -53,8 +53,15 @@
 - APP_LOCALE
 
 
-Objetivo:
-Publicar contenidos y eventos que soporten multiidioma y reportes de sus visitas.
+TODO weekend:
+- multi languague rich text
+- read only mode
 
-Objetivos tecnicos:
-import-export.
+- events section
+- save contents
+- import-export
+- delete selection
+- clone
+- users section
+- endpoint to return all the contents
+- delete section

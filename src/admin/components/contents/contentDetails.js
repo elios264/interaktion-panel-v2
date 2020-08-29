@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Grid, Menu, Modal, Button, Segment, Form, Divider } from 'semantic-ui-react';
+import { Grid, Menu, Modal, Button, Segment, Form, Divider, Message } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 import Joi from '@hapi/joi';
 
@@ -41,7 +41,7 @@ const contentSchema = {
   }).required(),
   title: getJoiLanguagesValidationSchema('Title', 200),
   description: getJoiLanguagesValidationSchema('Description', 2000),
-  contents: getJoiLanguagesValidationSchema('Contents', 10000),
+  documents: Joi.object({ [window.__ENVIRONMENT__.APP_LOCALE]: Joi.array().required() }).pattern(/.*/, Joi.array()).required(),
 };
 
 export const ContentDetails = ({ history, match }) => {
@@ -63,7 +63,7 @@ export const ContentDetails = ({ history, match }) => {
     onSubmit: saveContentAndGoToDetails,
     source: content || contentTemplate,
   });
-  const { image, contents, visibility, entityType, entityInfo, title, description } = fields;
+  const { image, documents, visibility, entityType, entityInfo, title, description } = fields;
 
 
   if (!contentDefinition || (!isCreating && !content)) {
@@ -189,7 +189,12 @@ export const ContentDetails = ({ history, match }) => {
                 )}
               </Grid.Column>
               <Grid.Column computer={16} largeScreen={8} widescreen={8}>
-                <RichTextEditor value={contents.value} onChange={contents.onChange} />
+                {documents.errored && <Message negative content={documents.message} /> }
+                <RichTextEditor
+                  value={documents.value}
+                  onChange={documents.onChange}
+                  disabled={!isEditing && !isCreating}
+                  placeholder='Enter your text here...' />
               </Grid.Column>
             </Grid>
           </Form>

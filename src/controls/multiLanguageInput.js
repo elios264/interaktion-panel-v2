@@ -42,8 +42,6 @@ export const MultiLanguageInput = ({ value, onChange, defaultLanguage, disabled,
           options={languageOptionsWithTranslation}
           value={currentLanguage}
           onChange={onLanguageChange}
-          search
-          deburr
           disabled={disabled} />
       )}
       value={value[currentLanguage] || ''}
@@ -88,8 +86,6 @@ export const MultiLanguageTextArea = ({ value, onChange, className, defaultLangu
         basic
         floating
         fluid
-        search
-        deburr
         options={languageOptionsWithTranslation}
         value={currentLanguage}
         disabled={disabled}

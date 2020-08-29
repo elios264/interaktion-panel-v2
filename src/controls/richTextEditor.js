@@ -3,6 +3,7 @@
 import _ from 'lodash';
 import cx from 'classnames';
 import React, { useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
 import { createEditor, Transforms } from 'slate';
 import { Slate, useSlate, withReact, useSelected } from 'slate-react';
 import { Menu, Icon, Dropdown } from 'semantic-ui-react';
@@ -13,7 +14,6 @@ import {
   EditablePlugins,
   ItalicPlugin,
   UnderlinePlugin,
-  HighlightPlugin,
   AlignPlugin,
   HeadingPlugin,
   ListPlugin,
@@ -23,7 +23,6 @@ import {
   ResetBlockTypePlugin,
   LinkPlugin,
   MediaEmbedPlugin,
-  ImagePlugin,
 
   withToggleType,
   withList,
@@ -31,14 +30,12 @@ import {
   withTransforms,
   withLink,
   withInlineVoid,
-  withImageUpload,
 
   pipe,
   isUrl,
   isMarkActive,
   isNodeTypeIn,
   toggleMark,
-  insertImage,
   upsertAlign,
   upsertLinkAtSelection,
   toggleList,
@@ -64,11 +61,35 @@ import {
   MARK_ITALIC,
   MARK_BOLD,
   MARK_UNDERLINE,
-  MARK_HIGHLIGHT,
 } from '@udecode/slate-plugins';
 
 import * as utils from './utils';
 import { File, Resource } from 'objects';
+import { languageOptions } from './multiLanguageInput';
+import { useEffectSkipMount } from './hooks/misc';
+
+
+const ImageElement = ({ attributes, className, children, element }) => {
+  const selected = useSelected();
+  const { image } = element;
+
+  return (
+    <div {...attributes} className={cx(className, 'flex justify-center')}>
+      <div contentEditable={false}>
+        <img src={image.fileUrl} alt={image.fileName} className={cx('db pv2 ph0', { 'ba b--green bw1': selected })} style={{ maxHeight: '20em' }} />
+      </div>
+      {children}
+    </div>
+  );
+};
+
+
+const ImagePlugin = () => ({
+  renderElement: getRenderElement({ component: ImageElement, type: 'img', rootProps: { className: 'slate-img' } }),
+  deserialize: { element: getNodeDeserializer({ type: 'img', rules: [{ nodeNames: 'IMG' }] }) },
+  voidTypes: ['img'],
+});
+
 
 const AttachmentElement = ({ attributes, className, children, element }) => {
   const selected = useSelected();
@@ -98,7 +119,7 @@ const AttachmentElement = ({ attributes, className, children, element }) => {
 
   return (
     <div {...attributes} className={cx(className, 'flex justify-center')} contentEditable={false}>
-      <a target='_blank' className={`${cx({ 'bg-light-gray bw1': selected })} pointer black flex items-center flex-column flex-row-ns ph3 pv3 ba b--light-gray w-100 w-50-ns br2`} onClick={(e) => e.preventDefault()}>
+      <a target='_blank' className={`${cx({ 'bg-light-gray bw1': selected })} pointer black flex items-center flex-column flex-row-ns pa3 mv2 m ba b--light-gray w-100 w-50-ns br2`} onClick={(e) => e.preventDefault()}>
         <Icon color='black' name={getFileIcon(attachment.fileExtension)} size='huge' />
         <div className='ml3 flex-auto mt3 mt0-ns'>
           <div className='gray' style={{ wordBreak: 'break-all' }}>{attachment.fileName}</div>
@@ -131,83 +152,6 @@ const DividerPlugin = () => ({
   deserialize: { element: getNodeDeserializer({ type: 'divider', rules: [{ nodeNames: 'DIVIDER' }] }) },
   voidTypes: ['divider'],
 });
-
-
-const headingTypes = [ELEMENT_H1, ELEMENT_H2, ELEMENT_H3, ELEMENT_H4, ELEMENT_H5, ELEMENT_H6];
-const emptyDocument = [{ children: [{ type: ELEMENT_PARAGRAPH, children: [{ text: '' }] }] }];
-
-const plugins = [
-  ParagraphPlugin(),
-  BlockquotePlugin(),
-  HeadingPlugin(),
-  ListPlugin(),
-  AlignPlugin(),
-  BoldPlugin(),
-  ItalicPlugin(),
-  HighlightPlugin(),
-  UnderlinePlugin(),
-  LinkPlugin(),
-  MediaEmbedPlugin(),
-  ImagePlugin(),
-  DividerPlugin(),
-  AttachmentPlugin(),
-  ResetBlockTypePlugin({ rules: [
-    { types: [ELEMENT_BLOCKQUOTE], defaultType: ELEMENT_PARAGRAPH, hotkey: 'Enter', predicate: isBlockAboveEmpty },
-    { types: [ELEMENT_BLOCKQUOTE], defaultType: ELEMENT_PARAGRAPH, hotkey: 'Backspace', predicate: isSelectionAtBlockStart },
-  ] }),
-  SoftBreakPlugin({ rules: [
-    { hotkey: 'shift+enter' },
-    { hotkey: 'enter', query: { allow: [ELEMENT_BLOCKQUOTE] } },
-  ] }),
-  ExitBreakPlugin({ rules: [
-    { hotkey: 'mod+enter' },
-    { hotkey: 'mod+shift+enter', before: true },
-    { hotkey: 'enter', query: { start: true, end: true, allow: headingTypes } },
-  ] }),
-];
-
-const withPlugins = [
-  withReact,
-  withHistory,
-  withLink(),
-  withList(),
-  withToggleType({ defaultType: ELEMENT_PARAGRAPH }),
-  withTransforms(),
-  withTrailingNode({ type: ELEMENT_PARAGRAPH, level: 1 }),
-  withImageUpload(),
-  withInlineVoid({ plugins }),
-];
-
-export const RichTextEditor = () => {
-  const [value, setValue] = useState(emptyDocument);
-  const editor = useMemo(() => pipe(createEditor(), ...withPlugins), []);
-
-  return (
-    <Slate
-      editor={editor}
-      value={value}
-      onChange={(newValue) => (console.log(newValue), setValue(newValue))}>
-      <Menu icon size='tiny' className='flex-wrap'>
-        <MenuMark type={MARK_BOLD} icon={<Icon name='bold' />} />
-        <MenuMark type={MARK_ITALIC} icon={<Icon name='italic' />} />
-        <MenuMark type={MARK_UNDERLINE} icon={<Icon name='underline' />} />
-        <MenuMark type={MARK_HIGHLIGHT} icon={<Icon name='paint brush' />} />
-        <MenuSize />
-        <MenuElement type={ELEMENT_BLOCKQUOTE} icon={<Icon name='quote right' />} />
-        <MenuAlign type={ELEMENT_ALIGN_LEFT} icon={<Icon name='align left' />} />
-        <MenuAlign type={ELEMENT_ALIGN_CENTER} icon={<Icon name='align center' />} />
-        <MenuAlign type={ELEMENT_ALIGN_RIGHT} icon={<Icon name='align right' />} />
-        <MenuList type={ELEMENT_UL} icon={<Icon name='list ul' />} />
-        <MenuLink />
-        <MenuImage />
-        <MenuVideo />
-        <MenuDivider />
-        <MenuAttachment />
-      </Menu>
-      <EditablePlugins plugins={plugins} spellCheck placeholder='Enter your text here...' />
-    </Slate>
-  );
-};
 
 const MenuMark = ({ type, icon, clear }) => {
   const editor = useSlate();
@@ -308,41 +252,6 @@ const MenuLink = () => {
     </Menu.Item>
   );
 };
-const MenuVideo = () => {
-  const editor = useSlate();
-
-  return (
-    <Menu.Item
-      name='video'
-      onClick={_.noop}
-      active={isNodeTypeIn(editor, ELEMENT_MEDIA_EMBED)}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        const url = window.prompt('Enter the URL of the media embed:'); // eslint-disable-line no-alert
-        if (isUrl(url)) {
-          Transforms.insertNodes(editor, { type: ELEMENT_MEDIA_EMBED, url, children: [{ text: '' }] });
-        }
-      }}>
-      <Icon name='video' />
-    </Menu.Item>
-  );
-};
-const MenuImage = () => {
-  const editor = useSlate();
-
-  return (
-    <Menu.Item
-      name='image'
-      onClick={_.noop}
-      onMouseDown={async (e) => {
-        e.preventDefault();
-        const [image] = await utils.selectImages({ multiple: false });
-        insertImage(editor, image.base64);
-      }}>
-      <Icon name='image' />
-    </Menu.Item>
-  );
-};
 
 const MenuDivider = () => {
   const editor = useSlate();
@@ -360,20 +269,155 @@ const MenuDivider = () => {
   );
 };
 
-const MenuAttachment = () => {
+const MenuMedia = () => {
   const editor = useSlate();
 
   return (
-    <Menu.Item
-      name='attachment'
-      onClick={_.noop}
-      onMouseDown={async (e) => {
-        e.preventDefault();
-        const files = await utils.selectFiles({ multiple: false });
-        const attachment = new Resource({ src: await File.fromNativeFile(files[0]) });
-        Transforms.insertNodes(editor, { type: 'attachment', attachment, children: [{ text: '' }] });
-      }}>
-      <Icon name='attach' />
-    </Menu.Item>
+    <Dropdown item simple icon='attach'>
+      <Dropdown.Menu>
+        <Dropdown.Item
+          icon='image'
+          content='Image'
+          onMouseDown={async (e) => {
+            e.preventDefault();
+            const [file] = await utils.selectImages({ multiple: false });
+            const image = new Resource({ src: await File.fromNativeFile(file) });
+            Transforms.insertNodes(editor, { type: 'img', image, children: [{ text: '' }] });
+          }} />
+        <Dropdown.Item
+          icon='video'
+          content='Video'
+          onMouseDown={(e) => {
+            e.preventDefault();
+            const url = window.prompt('Enter the URL of the media embed:'); // eslint-disable-line no-alert
+            if (isUrl(url)) {
+              Transforms.insertNodes(editor, { type: ELEMENT_MEDIA_EMBED, url, children: [{ text: '' }] });
+            }
+          }} />
+        <Dropdown.Item
+          icon='attach'
+          content='Attachment'
+          onMouseDown={async (e) => {
+            e.preventDefault();
+            const [file] = await utils.selectFiles({ multiple: false });
+            const attachment = new Resource({ src: await File.fromNativeFile(file) });
+            Transforms.insertNodes(editor, { type: 'attachment', attachment, children: [{ text: '' }] });
+          }} />
+      </Dropdown.Menu>
+    </Dropdown>
   );
+};
+
+const headingTypes = [ELEMENT_H1, ELEMENT_H2, ELEMENT_H3, ELEMENT_H4, ELEMENT_H5, ELEMENT_H6];
+const emptyDocument = [{ children: [{ type: ELEMENT_PARAGRAPH, children: [{ text: '' }] }] }];
+
+const plugins = [
+  ParagraphPlugin({ p: { rootProps: { className: 'slate-p ma0' } } }),
+  BlockquotePlugin(),
+  HeadingPlugin(),
+  ListPlugin(),
+  AlignPlugin(),
+  BoldPlugin(),
+  ItalicPlugin(),
+  UnderlinePlugin(),
+  LinkPlugin(),
+  MediaEmbedPlugin(),
+  ImagePlugin(),
+  DividerPlugin(),
+  AttachmentPlugin(),
+  ResetBlockTypePlugin({ rules: [
+    { types: [ELEMENT_BLOCKQUOTE], defaultType: ELEMENT_PARAGRAPH, hotkey: 'Enter', predicate: isBlockAboveEmpty },
+    { types: [ELEMENT_BLOCKQUOTE], defaultType: ELEMENT_PARAGRAPH, hotkey: 'Backspace', predicate: isSelectionAtBlockStart },
+  ] }),
+  SoftBreakPlugin({ rules: [
+    { hotkey: 'shift+enter' },
+    { hotkey: 'enter', query: { allow: [ELEMENT_BLOCKQUOTE] } },
+  ] }),
+  ExitBreakPlugin({ rules: [
+    { hotkey: 'mod+enter' },
+    { hotkey: 'mod+shift+enter', before: true },
+    { hotkey: 'enter', query: { start: true, end: true, allow: headingTypes } },
+  ] }),
+];
+
+const withPlugins = [
+  withReact,
+  withHistory,
+  withLink(),
+  withList(),
+  withToggleType({ defaultType: ELEMENT_PARAGRAPH }),
+  withTransforms(),
+  withTrailingNode({ type: ELEMENT_PARAGRAPH, level: 1 }),
+  withInlineVoid({ plugins }),
+];
+
+export const RichTextEditor = ({ value, onChange, defaultLanguage, disabled, placeholder, ...props }) => {
+  const editor = useMemo(() => pipe(createEditor(), ...withPlugins), []);
+
+  const [currentLanguage, setCurrentLanguage] = useState(defaultLanguage);
+  const [document, setDocument] = useState(() => value[currentLanguage] || emptyDocument);
+
+  useEffectSkipMount(() => setCurrentLanguage(defaultLanguage), [disabled]);
+  useEffectSkipMount(() => {
+    const newDoc = value[currentLanguage] || emptyDocument;
+    if (newDoc !== document) {
+      Transforms.deselect(editor);
+      setDocument(newDoc);
+    }
+  }, [value, currentLanguage]);
+
+  const onLanguageChange = (e, { value: selectedLanguage }) => setCurrentLanguage(selectedLanguage);
+  const onDocumentChange = (newDocument) => {
+    if (document === newDocument) {
+      return;
+    }
+    setDocument(newDocument);
+    onChange({ ...value, [currentLanguage]: newDocument });
+  };
+
+  return (
+    <div {...props}>
+      <Slate
+        editor={editor}
+        value={document}
+        onChange={onDocumentChange}>
+        {!disabled && (
+          <Menu icon size='tiny' className='flex-wrap'>
+            <MenuMark type={MARK_BOLD} icon={<Icon name='bold' />} />
+            <MenuMark type={MARK_ITALIC} icon={<Icon name='italic' />} />
+            <MenuMark type={MARK_UNDERLINE} icon={<Icon name='underline' />} />
+            <MenuSize />
+            <MenuElement type={ELEMENT_BLOCKQUOTE} icon={<Icon name='quote right' />} />
+            <MenuAlign type={ELEMENT_ALIGN_LEFT} icon={<Icon name='align left' />} />
+            <MenuAlign type={ELEMENT_ALIGN_CENTER} icon={<Icon name='align center' />} />
+            <MenuAlign type={ELEMENT_ALIGN_RIGHT} icon={<Icon name='align right' />} />
+            <MenuList type={ELEMENT_UL} icon={<Icon name='list ul' />} />
+            <MenuLink />
+            <MenuMedia />
+            <MenuDivider />
+            <Dropdown
+              item
+              floating
+              options={languageOptions}
+              value={currentLanguage}
+              onChange={onLanguageChange} />
+          </Menu>
+        )}
+        <EditablePlugins plugins={plugins} spellCheck placeholder={placeholder} readOnly={disabled} />
+      </Slate>
+    </div>
+  );
+};
+
+RichTextEditor.propTypes = {
+  value: PropTypes.objectOf(PropTypes.array),
+  onChange: PropTypes.func.isRequired,
+  defaultLanguage: PropTypes.string,
+  disabled: PropTypes.bool,
+  placeholder: PropTypes.string,
+};
+
+RichTextEditor.defaultProps = {
+  defaultLanguage: window.__ENVIRONMENT__.APP_LOCALE,
+  value: {},
 };
