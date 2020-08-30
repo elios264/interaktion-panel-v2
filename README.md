@@ -56,12 +56,16 @@
 TODO weekend:
 - multi languague rich text
 - read only mode
-
 - events section
 - save contents
+
+- fix rtf read from resources and display empty img when not found.
+- fix hash and check delete of: files.
+- get content on demand and by date range and check what original interaktion has.
 - import-export
 - delete selection
 - clone
 - users section
 - endpoint to return all the contents
 - delete section
+- settings section (darkMode, loginType, menuOrder)

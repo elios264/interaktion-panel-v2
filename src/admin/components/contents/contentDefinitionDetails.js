@@ -10,7 +10,7 @@ import { Popup, getJoiLanguagesValidationSchema, LoadingDots, MultiLanguageInput
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
 import { ContentDefinition } from 'objects';
 import { ResourceImageSelector } from 'admin/components/common';
-import { saveContentDefinition } from 'admin/actions/contents';
+import { saveContentDefinition } from 'admin/actions/contentsDefinitions';
 
 
 export const enabledOptions = [{ key: 1, text: ContentDefinition.getEnabledName(true), value: true }, { key: 2, text: ContentDefinition.getEnabledName(true), value: false }];

@@ -1,11 +1,11 @@
 import { handleError, showSuccess } from 'utils/actions';
 
-export const saveContentDefinition = (contentDefinition, silentAndRethrow = false) => handleError(async (dispatch, getState, { api }) => {
+export const saveContent = (content, silentAndRethrow = false) => handleError(async (dispatch, getState, { api }) => {
 
-  const result = await api.saveObject(contentDefinition);
+  const result = await api.saveObject(content);
   if (!silentAndRethrow) {
-    dispatch(showSuccess({ content: 'The section has been successfully saved!' }));
+    dispatch(showSuccess({ content: 'The content has been successfully saved!' }));
   }
-  api.logEvent('save-content-definition', result);
+  api.logEvent('save-content', result);
   return result;
-}, silentAndRethrow ? null : 'The section could not be saved', { silent: silentAndRethrow, rethrow: silentAndRethrow });
+}, silentAndRethrow ? null : 'The content could not be saved', { silent: silentAndRethrow, rethrow: silentAndRethrow });

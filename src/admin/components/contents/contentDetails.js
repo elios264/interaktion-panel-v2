@@ -1,25 +1,26 @@
 import _ from 'lodash';
-import React from 'react';
+import React, { useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Grid, Menu, Modal, Button, Segment, Form, Divider, Message } from 'semantic-ui-react';
+import { Grid, Menu, Modal, Button, Segment, Form, Divider, Message, Input } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 import Joi from '@hapi/joi';
 
 import { Content } from 'objects';
 import { ResourceImageSelector } from 'admin/components/common';
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
-import { Popup, LoadingDots, Selector, AwaitableButton, getJoiLanguagesValidationSchema, MultiLanguageInput, MultiLanguageTextArea, RichTextEditor } from 'controls';
+import { Popup, LoadingDots, Selector, AwaitableButton, getJoiLanguagesValidationSchema, MultiLanguageInput, MultiLanguageTextArea, RichTextEditor, DatePicker, utils } from 'controls';
+
+import { saveContent } from 'admin/actions/contents';
 
 
 const visibilityOptions = _.map(Content.visibility, (value, key) => ({ key, value, text: Content.getVisibilityName(value) }));
 const entityTypeOptions = _.map(Content.entityType, (value, key) => ({ key, value, text: Content.getEntityTypeName(value) }));
 
-
 const contentTemplate = new Content({
   visibility: Content.visibility.public,
   entityType: Content.entityType.content,
-  entityInfo: {},
 });
 
 const entityTypeContentSchema = {};
@@ -34,14 +35,37 @@ const contentSchema = {
   entityType: Joi.string().valid(..._.values(Content.entityType)).label('Type'),
   entityInfo: Joi.any().when('entityType', {
     switch: [
-      { is: Content.entityType.content, then: Joi.object(entityTypeContentSchema).required() },
-      { is: Content.entityType.event, then: Joi.object(entityTypeEventSchema).required() },
+      { is: Content.entityType.content, then: Joi.object().strip() },
+      { is: Content.entityType.event, then: Joi.object(entityTypeEventSchema).pattern(/.*/, Joi.any().strip()).required() },
     ],
     otherwise: Joi.forbidden(),
-  }).required(),
+  }),
   title: getJoiLanguagesValidationSchema('Title', 200),
   description: getJoiLanguagesValidationSchema('Description', 2000),
-  documents: Joi.object({ [window.__ENVIRONMENT__.APP_LOCALE]: Joi.array().required() }).pattern(/.*/, Joi.array()).required(),
+  documents: Joi.object({ [window.__ENVIRONMENT__.APP_LOCALE]: Joi.array().required().label('Content') }).pattern(/.*/, Joi.array().label('Content')).required().label('Content'),
+};
+
+const EntityInfoContent = () => null;
+const EntityInfoEvent = ({ location, start, disabled }) => (
+  <Form.Group widths='equal'>
+    <Form.Field error={location.errored} required>
+      <label>Location</label>
+      <Popup message={location.message} enabled={location.errored}>
+        <Input value={location.value || ''} onChange={location.onChange} autoComplete='off' disabled={disabled} />
+      </Popup>
+    </Form.Field>
+    <Form.Field error={start.errored} required>
+      <label>Start</label>
+      <Popup message={start.message} enabled={start.errored}>
+        <DatePicker value={start.value} onChange={start.onChange} disabled={disabled} time />
+      </Popup>
+    </Form.Field>
+  </Form.Group>
+);
+EntityInfoEvent.propTypes = {
+  start: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  disabled: PropTypes.bool,
 };
 
 export const ContentDetails = ({ history, match }) => {
@@ -54,17 +78,35 @@ export const ContentDetails = ({ history, match }) => {
   const contentDefinition = useSelector((state) => state.objects.contentDefinitions[match.params.definitionId]);
 
   const switchToDetailsMode = (newContent) => history.replace(`/contents/${match.params.definitionId}/details/${(newContent instanceof Content) ? newContent.id : content.id}`);
-  const saveContentAndGoToDetails = useAsyncSubmit(useDispatchCallback(_.noop), switchToDetailsMode);
+  const saveContentAndGoToDetails = useAsyncSubmit(useDispatchCallback(saveContent), switchToDetailsMode);
   const deleteContentAndGoToListing = useAsyncSubmit(useDispatchCallback(_.noop, content), () => history.replace(`/contents/${match.params.definitionId}`));
+  const cloneSourceContent = useCallback((content) => {
+    const clonedContent = content.copy();
+    clonedContent.definition = contentDefinition;
+    return clonedContent;
+  }, [contentDefinition]);
 
   const { fields, submit, loading, reset, validator } = useFieldset({
     schema: contentSchema,
     enabled: isEditing || isCreating,
     onSubmit: saveContentAndGoToDetails,
     source: content || contentTemplate,
+    cloneSource: cloneSourceContent,
   });
   const { image, documents, visibility, entityType, entityInfo, title, description } = fields;
 
+  const { fields: entityInfoFields } = useFieldset({
+    validator,
+    source: entityInfo.value,
+    onSubmit: entityInfo.onChange,
+    schema: utils.getValue(entityType.value, { [Content.entityType.content]: entityTypeContentSchema, [Content.entityType.event]: entityTypeEventSchema }),
+    enabled: isEditing || isCreating,
+  });
+
+  const EntityInfoFields = utils.getValue(entityType.value, {
+    [Content.entityType.content]: EntityInfoContent,
+    [Content.entityType.event]: EntityInfoEvent,
+  });
 
   if (!contentDefinition || (!isCreating && !content)) {
     return (
@@ -77,7 +119,6 @@ export const ContentDetails = ({ history, match }) => {
       </Modal>
     );
   }
-
 
   return (
     <section className='content-details'>
@@ -131,6 +172,7 @@ export const ContentDetails = ({ history, match }) => {
                       </Popup>
                     </Form.Field>
                   </Form.Group>
+                  <EntityInfoFields {...entityInfoFields} disabled={!isEditing && !isCreating} />
                   <Grid stackable columns={2}>
                     <Grid.Row stretched>
                       <Grid.Column>
@@ -203,32 +245,3 @@ export const ContentDetails = ({ history, match }) => {
     </section>
   );
 };
-
-
-/*
-
-imagenes: []
-visibilidad: none, public, members
-contenidos: { titulo, descripcion, wyiwyg, idioma }
-tipo: evento, contenido,
-entitityInfo
-
-
-  columns: { definition: { type: 'Pointer', targetClass: 'ContentDefinition' }, images: 'Array', visibility: 'String', contents: 'Array', entityType: 'String', entityInfo: 'Object' },
-
-  columns: { title: 'String', description: 'String', content: 'String', contentResources: 'Array', language: 'String' },
-
-
-Titulo,
-visibilidad, tipo
-- - -
-precio, cupo, etc.
-- - -
-Imagenes, descripcion
-
-WYSISYG editor
-
-
-solo el contenido será multiidioma.
-
-*/

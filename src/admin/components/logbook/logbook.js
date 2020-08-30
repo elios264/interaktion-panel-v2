@@ -17,6 +17,7 @@ const actionDefinitions = {
   'reset-password-user': { desc: ({ email }) => `Has sent a password reset email to the manager with email ${email}` },
 
   'save-content-definition': { desc: ({ name }) => `Has saved the section "${name}"` },
+  'save-content': { desc: ({ name }) => `Has saved the content "${name}"` },
 
 };
 

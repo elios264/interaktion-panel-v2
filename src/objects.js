@@ -4,8 +4,6 @@ import Parse from 'parse';
 import path from 'path';
 import { Buffer } from 'buffer';
 import { getValue, getMD5Base64Hash, toReadable } from 'controls/utils';
-import { throws } from 'assert';
-
 
 const isEmpty = (val) => (_.isPlainObject(val) ? _.isEmpty(val) : _.isNil(val) || val === '');
 const toFullJSON = (object) => object['_toFullJSON']();

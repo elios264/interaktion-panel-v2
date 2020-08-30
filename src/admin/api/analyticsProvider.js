@@ -22,6 +22,7 @@ export class AnalyticsProvider {
       'reset-password-user': emailParams,
 
       'save-content-definition': titleLanguageParams,
+      'save-content': titleLanguageParams,
     };
 
     const definition = definitions[actionName];

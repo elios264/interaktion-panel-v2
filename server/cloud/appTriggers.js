@@ -90,7 +90,7 @@ const contentSchema = Joi.object({
   visibility: Joi.string().valid(..._.values(visibility)).default(visibility.none),
   image: Joi.object().instance(Parse.Object).required(),
   entityType: Joi.string().valid(..._.values(contentType)).required(),
-  entityInfo: Joi.object().required(),
+  entityInfo: Joi.any().when('entityType', { is: contentType.content, then: Joi.object().strip(), otherwise: Joi.object().required() }),
   title: Joi.object({ [process.env.APP_LOCALE]: Joi.string().trim().max(200).required() }).pattern(/.*/, Joi.string().trim().max(200)).required(),
   description: Joi.object({ [process.env.APP_LOCALE]: Joi.string().trim().max(2000).required() }).pattern(/.*/, Joi.string().trim().max(2000)).required(),
   contents: Joi.object({ [process.env.APP_LOCALE]: Joi.string().max(10000).required() }).pattern(/.*/, Joi.string().trim().max(10000)).required(),
@@ -102,3 +102,4 @@ cloud.setupTrigger('beforeSave', 'Content', validationsHooks.assignACL({ getPerm
 cloud.setupTrigger('afterDelete', 'Content', validationsHooks.cascadeDelete({ query: 'contents' }));
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.definition', counter: 'ContentDefinition.refs' });
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.image', counter: 'Resource.refs' });
+validationsHooks.setupPointerRefCountWatch({ watch: 'Content.contentsResources', counter: 'Resource.refs' });
