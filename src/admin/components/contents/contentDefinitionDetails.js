@@ -3,7 +3,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import Joi from '@hapi/joi';
 import { Link } from 'react-router-dom';
-import { Grid, Menu, Button, Segment, Form, Divider, Image, Modal } from 'semantic-ui-react';
+import { Grid, Menu, Button, Segment, Form, Divider, Modal } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
 import { Popup, getJoiLanguagesValidationSchema, LoadingDots, MultiLanguageInput, MultiLanguageTextArea, Selector } from 'controls';
@@ -18,17 +18,20 @@ export const mobileViewOptions = [
   {
     key: 0,
     value: ContentDefinition.mobileView.chess,
-    text: <><Image src={require('img/contents/chessView.png')} /> <span>{ContentDefinition.getMobileViewName(ContentDefinition.mobileView.chess)}</span></>,
+    text: ContentDefinition.getMobileViewName(ContentDefinition.mobileView.chess),
+    image: { src: require('img/contents/chessView.png') },
   },
   {
     key: 1,
     value: ContentDefinition.mobileView.full,
-    text: <><Image src={require('img/contents/landView.png')} /> <span>{ContentDefinition.getMobileViewName(ContentDefinition.mobileView.full)}</span></>,
+    text: ContentDefinition.getMobileViewName(ContentDefinition.mobileView.full),
+    image: { src: require('img/contents/landView.png') },
   },
   {
     key: 2,
     value: ContentDefinition.mobileView.list,
-    text: <><Image src={require('img/contents/listingView.png')} /> <span>{ContentDefinition.getMobileViewName(ContentDefinition.mobileView.list)}</span></>,
+    text: ContentDefinition.getMobileViewName(ContentDefinition.mobileView.list),
+    image: { src: require('img/contents/listingView.png') },
   },
 ];
 

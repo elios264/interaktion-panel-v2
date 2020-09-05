@@ -7,23 +7,23 @@ import { Form, Button, Modal, Input } from 'semantic-ui-react';
 import { User } from 'objects';
 import { Popup } from 'controls';
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
-import { createManager } from 'admin/actions/managers';
+import { createUser } from 'admin/actions/users';
 
-const newManagerTemplate = new User();
-const newManagerSchema = {
+const newUserTemplate = new User();
+const newUserSchema = {
   name: Joi.string().trim().required().max(50).label('Name'),
   email: Joi.string().email().required().max(50).label('Email'),
 };
 
-export const CreateManagerModal = ({ onCancel }) => {
+export const CreateUserModal = ({ onCancel }) => {
 
-  const onSubmit = useAsyncSubmit(useDispatchCallback(createManager), onCancel);
-  const { fields: { name, email }, submit, loading } = useFieldset({ schema: newManagerSchema, source: newManagerTemplate, onSubmit });
+  const onSubmit = useAsyncSubmit(useDispatchCallback(createUser), onCancel);
+  const { fields: { name, email }, submit, loading } = useFieldset({ schema: newUserSchema, source: newUserTemplate, onSubmit });
 
   return (
     <Modal size='tiny' onClose={onCancel} open closeOnDimmerClick={false} closeIcon={false}>
-      <Helmet title='New manager' />
-      <Modal.Header content='New manager' />
+      <Helmet title='New user' />
+      <Modal.Header content='New user' />
       <Modal.Content as={Form}>
         <Form.Field error={name.errored} required>
           <label>Name</label>
@@ -46,6 +46,6 @@ export const CreateManagerModal = ({ onCancel }) => {
   );
 };
 
-CreateManagerModal.propTypes = {
+CreateUserModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
 };

@@ -9,12 +9,17 @@ import { VirtualTable, Column, dateRenderer, labelRenderer } from 'controls/tabl
 import { useUrlParams, useUrlParamsHandler } from 'controls/hooks';
 
 const actionDefinitions = {
-  'login-user': { desc: () => 'Has logged in' },
-  'logout-user': { desc: () => 'Has logged out' },
+  'login-manager': { desc: () => 'Has logged in' },
+  'logout-manager': { desc: () => 'Has logged out' },
   'update-profile': { desc: () => 'Has updated their profile' },
-  'create-user': { desc: ({ email }) => `Has created a manager with email ${email}` },
-  'delete-user': { desc: ({ email }) => `Has deleted a manager with email ${email}` },
-  'reset-password-user': { desc: ({ email }) => `Has sent a password reset email to the manager with email ${email}` },
+  'create-manager': { desc: ({ email }) => `Has created a manager with email ${email}` },
+  'delete-manager': { desc: ({ email }) => `Has deleted a manager with email ${email}` },
+  'reset-password-manager': { desc: ({ email }) => `Has sent a password reset email to the manager with email ${email}` },
+
+  'update-profile-user': { desc: ({ email }) => `Has updated an user with email ${email}` },
+  'create-user': { desc: ({ email }) => `Has created an user with email ${email}` },
+  'delete-user': { desc: ({ email }) => `Has deleted an user with email ${email}` },
+  'reset-password-user': { desc: ({ email }) => `Has sent a password reset email to the user with email ${email}` },
 
   'save-content-definition': { desc: ({ name }) => `Has saved the section "${name}"` },
   'save-content': { desc: ({ name }) => `Has saved the content "${name}"` },
@@ -33,7 +38,7 @@ const defaultParams = { sortBy: 'timestamp', sortDir: 'desc', search: '' };
 export const Logbook = ({ location, history }) => {
 
   const eventLogs = useSelector((state) => state.objects.eventLogs);
-  const managers = useSelector((state) => state.objects.users);
+  const users = useSelector((state) => state.objects.users);
 
   const tableRef = useRef();
   const urlParams = useUrlParams(location.search, defaultParams);
@@ -45,7 +50,7 @@ export const Logbook = ({ location, history }) => {
     utils.downloadBlob(blob, `Logbook at ${utils.formatDate()}.xlsx`);
   };
 
-  const userSearch = useCallback(({ rowData: { userId } }) => _.get(managers[userId], 'name', userId), [managers]);
+  const userSearch = useCallback(({ rowData: { userId } }) => _.get(users[userId], 'name', userId), [users]);
   const userRenderer = useCallback(({ rowData, ...extra }) => labelRenderer({ ...extra, cellData: userSearch({ rowData }) }), [userSearch]);
 
   return (

@@ -10,6 +10,7 @@ import { ModalController } from 'controls/modals';
 import { DisplayMessage, Navigation, ErrorBoundary } from './common';
 import { LoginForm, ForgotPasswordForm, ResetPasswordForm } from './authentication';
 import { ManagersList, ManagerDetails } from './managers';
+import { UsersList, UserDetails } from './users';
 import { Logbook } from './logbook';
 import { ContentDefinitionDetails, ContentList, ContentDetails } from './contents';
 
@@ -43,6 +44,9 @@ export const App = hot(() => {
               <Switch>
                 <Route exact path='/managers/:action(create)?' component={ManagersList} />
                 <Route exact path='/managers/details/:userId/:action(edit)?' component={ManagerDetails} />
+
+                <Route exact path='/users/:action(create)?' component={UsersList} />
+                <Route exact path='/users/details/:userId/:action(edit)?' component={UserDetails} />
 
                 <Route exact path='/contents/:action(create)' component={ContentDefinitionDetails} />
                 <Route exact path='/contents/:definitionId/:action(edit)' component={ContentDefinitionDetails} />

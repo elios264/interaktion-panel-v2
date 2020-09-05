@@ -1,4 +1,5 @@
 /* global Parse */
+const _ = require('lodash');
 const cloud = require('./cloudUtils');
 const { role } = require('./types');
 
@@ -13,7 +14,7 @@ cloud.setupFunction('set-last-activity-now', (req) => {
   return false;
 });
 
-cloud.setupFunction('create-user', async (req) => {
+cloud.setupFunction('create-manager', async (req) => {
   cloud.ensureIsAdmin(req);
 
   const { name, email } = req.params;
@@ -21,10 +22,13 @@ cloud.setupFunction('create-user', async (req) => {
   const username = cloud.generateUniqueId(20);
 
   const user = await Parse.User.signUp(username, password, { name, email, role: role.admin }, cloud.masterPermissions);
+
+  await Parse.User.requestPasswordReset(email);
+
   return { success: true, userId: user.id };
 });
 
-cloud.setupFunction('register-user', async (req) => {
+cloud.setupFunction('create-user', async (req) => {
 
   const { name, email } = req.params;
   const password = `5${cloud.generateUniqueId()}a`;
@@ -33,6 +37,18 @@ cloud.setupFunction('register-user', async (req) => {
   const user = await Parse.User.signUp(username, password, { name, email, role: role.client }, cloud.masterPermissions);
 
   await Parse.User.requestPasswordReset(email);
+
+  return { success: true, userId: user.id };
+});
+
+cloud.setupFunction('update-user', async (req) => {
+
+  const { user: userJson, fields } = req.params;
+  const user = Parse.Object.fromJSON(userJson);
+
+  _.each(fields, (field) => user.set(field, user.get(field))); // make them dirty again
+
+  await user.save(null, cloud.masterPermissions);
 
   return { success: true, userId: user.id };
 });

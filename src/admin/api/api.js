@@ -92,6 +92,11 @@ export class Api {
     let user = await Parse.User.logIn(email, password);
     user = BaseObject.copy(user);
 
+    if (user.role !== User.role.admin) {
+      Parse.User.logOut();
+      throw new Error('Invalid role');
+    }
+
     this.initializeRealTime();
 
     this.onEvent({ type: 'SET_USER', user });
@@ -114,14 +119,22 @@ export class Api {
     return true;
   }, this, 'Updating profile')
 
+  updateUser = (user) => handleOperation(async () => {
+
+    if (user.photo && user.dirty('photo') && !user.photo.id) {
+      await user.photo.save();
+    }
+    await Parse.Cloud.run('update-user', { user: BaseObject.toFullJSON(user), fields: user.dirtyKeys() });
+
+  }, this, 'Updating user');
+
+  createManager = ({ email, name }) => handleOperation(() => Parse.Cloud.run('create-manager', { name, email }), this, 'Creating manager')
   createUser = ({ email, name }) => handleOperation(() => Parse.Cloud.run('create-user', { name, email }), this, 'Creating user')
 
   deleteUser = (user) => handleOperation(() => Parse.Cloud.run('delete-user', { id: user.id }), this, 'Deleting user')
-
   requestPasswordReset = (email) => handleOperation(() => Parse.User.requestPasswordReset(email), this, 'Requesting password reset')
 
   deleteObject = (object) => handleOperation(() => object.destroy(), this, 'Deleting record')
-
   deleteObjects = (objects) => handleOperation(() => Parse.Object.destroyAll(objects), this, `Deleting ${_.size(objects)} records`)
 
   saveObject = (object, attributes) => handleOperation(() => {

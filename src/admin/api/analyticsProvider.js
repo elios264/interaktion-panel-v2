@@ -14,9 +14,14 @@ export class AnalyticsProvider {
   async log(actionName, dimensions) {
 
     const definitions = {
-      'login-user': _.stubObject,
-      'logout-user': _.stubObject,
+      'login-manager': _.stubObject,
+      'logout-manager': _.stubObject,
       'update-profile': _.stubObject,
+      'create-manager': emailParams,
+      'delete-manager': emailParams,
+      'reset-password-manager': emailParams,
+
+      'update-profile-user': emailParams,
       'create-user': emailParams,
       'delete-user': emailParams,
       'reset-password-user': emailParams,

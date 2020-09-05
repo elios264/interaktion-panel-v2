@@ -66,6 +66,8 @@ export class User extends Parse.User {
     user.sessionToken = token;
     return BaseObject.fromJSON(user);
   }
+
+  static role = Object.freeze({ client: 'Client', admin: 'Admin' });
 }
 
 export class Config extends BaseObject {

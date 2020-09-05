@@ -9,44 +9,44 @@ import { User } from 'objects';
 import { useUrlParams, useUrlParamsHandler } from 'controls/hooks';
 import { VirtualTable, Column, dateRenderer } from 'controls/table';
 import { useResourceImageRenderer } from 'admin/hooks';
-import { CreateManagerModal } from './createManagerModal';
+import { CreateUserModal } from './createUserModal';
 
 
-const linkRenderer = ({ cellData, rowData, columnData: { id } }) => <Link to={`/managers/details/${rowData.id}`}>{rowData.id === id ? `${cellData} (you)` : cellData}</Link>; // eslint-disable-line react/prop-types
+const linkRenderer = ({ cellData, rowData }) => <Link to={`/users/details/${rowData.id}`}>{cellData}</Link>; // eslint-disable-line react/prop-types
 const defaultParams = { sortBy: 'lastActivity', sortDir: 'desc', search: '' };
 
-export const ManagersList = ({ match, location, history }) => {
+export const UsersList = ({ match, location, history }) => {
   const isCreating = match.params.action === 'create';
 
   const resourceImageRenderer = useResourceImageRenderer();
-  const me = useSelector((state) => state.userInfo);
+
   const users = useSelector((state) => state.objects.users);
-  const managers = useMemo(() => _.filter(users, ['role', User.role.admin]), [users]);
+  const clients = useMemo(() => _.filter(users, ['role', User.role.client]), [users]);
 
   const resources = useSelector((state) => state.objects.resources);
   const urlParams = useUrlParams(location.search, defaultParams);
   const onSortChange = useUrlParamsHandler({ history, location });
   const onSearchChange = useUrlParamsHandler({ history, location, key: 'search' });
-  const switchToListingMode = useCallback(() => history.replace(`/managers${location.search}`), [history, location]);
+  const switchToListingMode = useCallback(() => history.replace(`/users${location.search}`), [history, location]);
   const getImageUrl = useCallback(({ cellData }) => _.get(resources[_.get(cellData, 'id')], 'fileUrl'), [resources]); // so export the file url works.
 
 
   return (
-    <section className='manager-list'>
-      <Helmet title='Managers listing' />
+    <section className='users-list'>
+      <Helmet title='Users listing' />
       <Menu attached stackable className='sticky-ns z-1'>
         <Menu.Item>
-          <Button fluid color='teal' as={Link} to={`/managers/create${location.search}`} icon='add user' content='New manager' />
+          <Button fluid color='teal' as={Link} to={`/users/create${location.search}`} icon='add user' content='New user' />
         </Menu.Item>
         <Menu.Item position='right' className='w-50-m w-33-l'>
           <Input icon='search' placeholder='Search...' transparent value={urlParams.search} onChange={onSearchChange} />
         </Menu.Item>
       </Menu>
-      { isCreating && <CreateManagerModal onCancel={switchToListingMode} /> }
+      { isCreating && <CreateUserModal onCancel={switchToListingMode} /> }
       <div className='pa2'>
         <Segment raised>
           <VirtualTable
-            source={managers}
+            source={clients}
             minWidth={900}
             sortSearchParams={urlParams}
             onSortChange={onSortChange}>
@@ -67,9 +67,14 @@ export const ManagersList = ({ match, location, history }) => {
               width={200}
               flexGrow={1}
               maxWidth={350}
-              columnData={me}
               searchKey='name'
               cellRenderer={linkRenderer} />
+            <Column
+              dataKey='email'
+              label='Email'
+              width={200}
+              flexGrow={1}
+              maxWidth={350} />
             <Column
               label='Last activity'
               dataKey='lastActivity'

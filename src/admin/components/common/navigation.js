@@ -33,6 +33,9 @@ export const Navigation = ({ children }) => {
             <Menu.Item as={NavLink} to='/managers' name='managers'>
               Managers
             </Menu.Item>
+            <Menu.Item as={NavLink} to='/users' name='users'>
+              Users
+            </Menu.Item>
           </Menu.Menu>
         </Menu.Item>
         <Menu.Item>

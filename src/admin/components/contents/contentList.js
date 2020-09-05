@@ -109,12 +109,19 @@ export const ContentList = ({ match, location, history }) => {
               cellRenderer={visibilityRenderer} />
             <Column
               label='Type'
-              dataKey='entityType'
+              dataKey='entityTypeName'
               width={140}
               flexGrow={1}
               maxWidth={250}
               columnData={{ color: 'orange' }}
               cellRenderer={labelRenderer} />
+            <Column
+              label='Updated'
+              dataKey='updatedAt'
+              width={140}
+              flexGrow={1}
+              maxWidth={250}
+              cellRenderer={dateRenderer} />
             <Column
               label='Created'
               dataKey='createdAt'

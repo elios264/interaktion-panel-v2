@@ -5,7 +5,7 @@ const { role } = require('../types');
 const ensureAppropriateRole = (req) => {
   switch (req.object.get('role')) {
     case role.admin: cloud.ensureIsAdmin(req); break;
-    case role.client: cloud.ensureIsUser(req); break;
+    case role.client: break; // allow signup
     default: throw new Error('Invalid role');
   }
 };

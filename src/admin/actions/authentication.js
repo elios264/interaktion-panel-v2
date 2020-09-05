@@ -5,13 +5,13 @@ import { downloadInitialData } from './initializers';
 export const login = (loginData) => handleError(async (dispatch, getState, { api }) => {
   await api.login(loginData);
   dispatch(downloadInitialData());
-  api.logEvent('login-user');
+  api.logEvent('login-manager');
   return true;
 }, 'Could not login');
 
 export const logout = () => handleError(async (dispatch, getState, { api }) => {
   try {
-    await api.logEvent('logout-user');
+    await api.logEvent('logout-manager');
   } catch { /* let's just try, if there's an error let's logout anyways */ }
   api.logout();
   return true;

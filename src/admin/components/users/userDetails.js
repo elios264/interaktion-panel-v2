@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Joi from '@hapi/joi';
 import { Grid, Menu, Modal, Button, Segment, Form, Header, Input } from 'semantic-ui-react';
@@ -8,63 +8,55 @@ import { Helmet } from 'react-helmet';
 import { User } from 'objects';
 import { Popup, utils, AwaitableButton, LoadingDots } from 'controls';
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
-import { logout } from 'admin/actions/authentication';
-import { updateProfile, deleteManager } from 'admin/actions/managers';
+import { updateProfile, deleteUser } from 'admin/actions/users';
 import { ResourceImageSelector } from 'admin/components/common';
 
 
-const editManagerSchema = {
+const editUserSchema = {
   name: Joi.string().trim().required().max(50).label('Name'),
   email: Joi.string().email().required().max(50).label('Email'),
   photo: Joi.object().label('Profile pic'),
 };
 
-export const ManagerDetails = ({ match, history }) => {
+export const UserDetails = ({ match, history }) => {
 
-  const dispatch = useDispatch();
   const isEditing = match.params.action === 'edit';
   const user = useSelector((state) => state.userInfo.id === match.params.userId ? state.userInfo : state.objects.users[match.params.userId]);
-  const isOwnProfile = useSelector((state) => state.userInfo.id === match.params.userId);
   const isWorking = useSelector((state) => state.siteInfo.isWorking);
 
-  const switchToDetailsMode = () => history.replace(`/managers/details/${user.id}`);
+  const switchToDetailsMode = () => history.replace(`/users/details/${user.id}`);
   const updateProfileAndGoToDetails = useAsyncSubmit(useDispatchCallback(updateProfile), switchToDetailsMode);
 
-  const goToListing = () => history.replace('/managers');
-  const deleteManagerAndGoToListing = useAsyncSubmit(useDispatchCallback(deleteManager, user), goToListing);
+  const goToListing = () => history.replace('/users');
+  const deleteUserAndGoToListing = useAsyncSubmit(useDispatchCallback(deleteUser, user), goToListing);
 
-  const { fields: { name, photo, email }, submit, loading } = useFieldset({ schema: editManagerSchema, source: user, onSubmit: updateProfileAndGoToDetails, enabled: isEditing });
+  const { fields: { name, photo, email }, submit, loading } = useFieldset({ schema: editUserSchema, source: user, onSubmit: updateProfileAndGoToDetails, enabled: isEditing });
 
-  if (!user || user.role !== User.role.admin) {
+  if (!user || user.role === User.role.admin) {
     return (
       <Modal dimmer='blurring' open size='tiny'>
-        <Modal.Header content={isWorking ? 'Loading manager details' : 'Manager not found'} />
-        <Modal.Content content={isWorking ? <LoadingDots prefix='We are getting the info you requested' /> : 'We could not locate the specified manager.'} />
+        <Modal.Header content={isWorking ? 'Loading user details' : 'User not found'} />
+        <Modal.Content content={isWorking ? <LoadingDots prefix='We are getting the info you requested' /> : 'We could not locate the specified user.'} />
         <Modal.Actions>
-          <Button as={Link} to='/managers' primary icon='external' labelPosition='right' content='Go back to listing...' />
+          <Button as={Link} to='/users' primary icon='external' labelPosition='right' content='Go back to listing...' />
         </Modal.Actions>
       </Modal>
     );
   }
 
   return (
-    <section className='manager-details'>
+    <section className='user-details'>
       <Helmet title={`${user.name} | Profile`} />
       <Menu attached stackable className='sticky-ns z-1'>
 
-        { isOwnProfile ?
-          <Menu.Item>
-            <Button disabled={isEditing} as={Link} to={`/managers/details/${user.id}/edit`} replace fluid color='yellow' icon='edit' content='Edit' />
-          </Menu.Item> :
-          <Menu.Item>
-            <AwaitableButton fluid icon='trash' negative content='Delete' onClick={deleteManagerAndGoToListing} />
-          </Menu.Item>
-        }
+        <Menu.Item>
+          <Button disabled={isEditing} as={Link} to={`/users/details/${user.id}/edit`} replace fluid color='yellow' icon='edit' content='Edit' />
+        </Menu.Item>
+        <Menu.Item>
+          <AwaitableButton fluid icon='trash' negative content='Delete' onClick={deleteUserAndGoToListing} />
+        </Menu.Item>
         <Menu.Item position='right'>
-          { isOwnProfile
-            ? <AwaitableButton icon='sign out' fluid content='Logout' negative onClick={() => dispatch(logout())} />
-            : <Button as={Link} to='/managers' icon='external' fluid content='Back to listing' />
-          }
+          <Button as={Link} to='/users' icon='external' fluid content='Back to listing' />
         </Menu.Item>
       </Menu>
       <div className='pa2'>
