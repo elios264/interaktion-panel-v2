@@ -93,12 +93,12 @@ export const ContentList = ({ match, location, history }) => {
               cellRenderer={resourceImageRenderer}
               searchKey={getImageUrl} />
             <Column
-              dataKey={`contents[${window.__ENVIRONMENT__.APP_LOCALE}].title`}
+              dataKey={`title[${window.__ENVIRONMENT__.APP_LOCALE}]`}
               label='Title'
               width={250}
               flexGrow={1}
               maxWidth={350}
-              searchKey='name'
+              searchKey={`title[${window.__ENVIRONMENT__.APP_LOCALE}]`}
               cellRenderer={linkRenderer} />
             <Column
               label='Visibility'

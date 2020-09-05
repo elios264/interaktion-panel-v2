@@ -2,10 +2,10 @@
 
 import _ from 'lodash';
 import cx from 'classnames';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { createEditor, Transforms } from 'slate';
-import { Slate, useSlate, withReact, useSelected } from 'slate-react';
+import { Slate, useSlate, withReact, useSelected, useReadOnly } from 'slate-react';
 import { Menu, Icon, Dropdown } from 'semantic-ui-react';
 import { withHistory } from 'slate-history';
 import {
@@ -68,32 +68,35 @@ import { File, Resource } from 'objects';
 import { languageOptions } from './multiLanguageInput';
 import { useEffectSkipMount } from './hooks/misc';
 
+const ResourcesContext = React.createContext({});
 
 const ImageElement = ({ attributes, className, children, element }) => {
+  const resources = useContext(ResourcesContext);
   const selected = useSelected();
-  const { image } = element;
+  const readOnly = useReadOnly();
 
+  const image = resources[element.image.id] || element.image;
   return (
     <div {...attributes} className={cx(className, 'flex justify-center')}>
-      <div contentEditable={false}>
-        <img src={image.fileUrl} alt={image.fileName} className={cx('db pv2 ph0', { 'ba b--green bw1': selected })} style={{ maxHeight: '20em' }} />
-      </div>
+      <a contentEditable={false} target='_blank' rel='noreferrer' className='pointer' href={readOnly ? image.fileUrl : undefined}>
+        <img src={image.fileUrl || require('img/empty.png')} alt={image.fileName || 'Not found'} className={cx('db pv2 ph0', { 'ba b--green bw1': selected })} style={{ maxHeight: '20em' }} />
+      </a>
       {children}
     </div>
   );
 };
-
-
 const ImagePlugin = () => ({
   renderElement: getRenderElement({ component: ImageElement, type: 'img', rootProps: { className: 'slate-img' } }),
   deserialize: { element: getNodeDeserializer({ type: 'img', rules: [{ nodeNames: 'IMG' }] }) },
   voidTypes: ['img'],
 });
 
-
 const AttachmentElement = ({ attributes, className, children, element }) => {
   const selected = useSelected();
-  const { attachment } = element;
+  const readOnly = useReadOnly();
+
+  const resources = useContext(ResourcesContext);
+  const attachment = resources[element.attachment.id] || element.attachment;
 
   const getFileIcon = (fileExtension) => {
     switch (fileExtension) {
@@ -111,6 +114,10 @@ const AttachmentElement = ({ attributes, className, children, element }) => {
   };
 
   const formatFileSize = (size) => {
+    if (!size) {
+      return '';
+    }
+
     if (size <= 1024 * 1024) {
       return `${_.round(size / 1024, 2)} Kb.`;
     }
@@ -119,10 +126,10 @@ const AttachmentElement = ({ attributes, className, children, element }) => {
 
   return (
     <div {...attributes} className={cx(className, 'flex justify-center')} contentEditable={false}>
-      <a target='_blank' className={`${cx({ 'bg-light-gray bw1': selected })} pointer black flex items-center flex-column flex-row-ns pa3 mv2 m ba b--light-gray w-100 w-50-ns br2`} onClick={(e) => e.preventDefault()}>
+      <a target='_blank' rel='noreferrer' className={`${cx({ 'bg-light-gray bw1': selected })} pointer black flex items-center flex-column flex-row-ns pa3 mv2 m ba b--light-gray w-100 w-50-ns br2`} href={readOnly ? attachment.fileUrl : undefined}>
         <Icon color='black' name={getFileIcon(attachment.fileExtension)} size='huge' />
         <div className='ml3 flex-auto mt3 mt0-ns'>
-          <div className='gray' style={{ wordBreak: 'break-all' }}>{attachment.fileName}</div>
+          <div className='gray' style={{ wordBreak: 'break-all' }}>{attachment.fileName || `Filename with id ${attachment.id} not found`}</div>
           <div className='flex justify-between mt2'>
             <div className='gray b'>{formatFileSize(attachment.fileSize)}</div>
             <div> <Icon name='cloud download' color='black' size='small' /></div>
@@ -133,7 +140,6 @@ const AttachmentElement = ({ attributes, className, children, element }) => {
     </div>
   );
 };
-
 const AttachmentPlugin = () => ({
   renderElement: getRenderElement({ component: AttachmentElement, type: 'attachment', rootProps: { className: 'slate-attachment' } }),
   deserialize: { element: getNodeDeserializer({ type: 'attachment', rules: [{ nodeNames: 'ATTACHMENT' }] }) },
@@ -146,7 +152,6 @@ const DividerElement = ({ attributes, className, children }) => {
     <div {...attributes} className={cx(className, 'mv3 bw1 bb mh3', { 'b--black': selected, 'b--moon-gray': !selected })} contentEditable={false}>{children}</div>
   );
 };
-
 const DividerPlugin = () => ({
   renderElement: getRenderElement({ component: DividerElement, type: 'divider', rootProps: { className: 'slate-divider' } }),
   deserialize: { element: getNodeDeserializer({ type: 'divider', rules: [{ nodeNames: 'DIVIDER' }] }) },
@@ -271,6 +276,7 @@ const MenuDivider = () => {
 
 const MenuMedia = () => {
   const editor = useSlate();
+  const resources = useContext(ResourcesContext);
 
   return (
     <Dropdown item simple icon='attach'>
@@ -281,7 +287,8 @@ const MenuMedia = () => {
           onMouseDown={async (e) => {
             e.preventDefault();
             const [file] = await utils.selectImages({ multiple: false });
-            const image = new Resource({ src: await File.fromNativeFile(file) });
+            const src = await File.fromNativeFile(file);
+            const image = _.find(resources, ['fileHash', src.localHash]) || new Resource({ src });
             Transforms.insertNodes(editor, { type: 'img', image, children: [{ text: '' }] });
           }} />
         <Dropdown.Item
@@ -300,7 +307,8 @@ const MenuMedia = () => {
           onMouseDown={async (e) => {
             e.preventDefault();
             const [file] = await utils.selectFiles({ multiple: false });
-            const attachment = new Resource({ src: await File.fromNativeFile(file) });
+            const src = await File.fromNativeFile(file);
+            const attachment = _.find(resources, ['fileHash', src.localHash]) || new Resource({ src });
             Transforms.insertNodes(editor, { type: 'attachment', attachment, children: [{ text: '' }] });
           }} />
       </Dropdown.Menu>
@@ -347,11 +355,12 @@ const withPlugins = [
   withList(),
   withToggleType({ defaultType: ELEMENT_PARAGRAPH }),
   withTransforms(),
-  withTrailingNode({ type: ELEMENT_PARAGRAPH, level: 1 }),
   withInlineVoid({ plugins }),
+  withTrailingNode({ type: ELEMENT_PARAGRAPH, level: 1 }),
 ];
 
-export const RichTextEditor = ({ value, onChange, defaultLanguage, disabled, placeholder, ...props }) => {
+
+export const RichTextEditor = ({ value, onChange, defaultLanguage, disabled, placeholder, resources, ...props }) => {
   const editor = useMemo(() => pipe(createEditor(), ...withPlugins), []);
 
   const [currentLanguage, setCurrentLanguage] = useState(defaultLanguage);
@@ -377,34 +386,36 @@ export const RichTextEditor = ({ value, onChange, defaultLanguage, disabled, pla
 
   return (
     <div {...props}>
-      <Slate
-        editor={editor}
-        value={document}
-        onChange={onDocumentChange}>
-        {!disabled && (
-          <Menu icon size='tiny' className='flex-wrap'>
-            <MenuMark type={MARK_BOLD} icon={<Icon name='bold' />} />
-            <MenuMark type={MARK_ITALIC} icon={<Icon name='italic' />} />
-            <MenuMark type={MARK_UNDERLINE} icon={<Icon name='underline' />} />
-            <MenuSize />
-            <MenuElement type={ELEMENT_BLOCKQUOTE} icon={<Icon name='quote right' />} />
-            <MenuAlign type={ELEMENT_ALIGN_LEFT} icon={<Icon name='align left' />} />
-            <MenuAlign type={ELEMENT_ALIGN_CENTER} icon={<Icon name='align center' />} />
-            <MenuAlign type={ELEMENT_ALIGN_RIGHT} icon={<Icon name='align right' />} />
-            <MenuList type={ELEMENT_UL} icon={<Icon name='list ul' />} />
-            <MenuLink />
-            <MenuMedia />
-            <MenuDivider />
-            <Dropdown
-              item
-              floating
-              options={languageOptions}
-              value={currentLanguage}
-              onChange={onLanguageChange} />
-          </Menu>
-        )}
-        <EditablePlugins plugins={plugins} spellCheck placeholder={placeholder} readOnly={disabled} />
-      </Slate>
+      <ResourcesContext.Provider value={resources}>
+        <Slate
+          editor={editor}
+          value={document}
+          onChange={onDocumentChange}>
+          {!disabled && (
+            <Menu icon size='tiny' className='flex-wrap'>
+              <MenuMark type={MARK_BOLD} icon={<Icon name='bold' />} />
+              <MenuMark type={MARK_ITALIC} icon={<Icon name='italic' />} />
+              <MenuMark type={MARK_UNDERLINE} icon={<Icon name='underline' />} />
+              <MenuSize />
+              <MenuElement type={ELEMENT_BLOCKQUOTE} icon={<Icon name='quote right' />} />
+              <MenuAlign type={ELEMENT_ALIGN_LEFT} icon={<Icon name='align left' />} />
+              <MenuAlign type={ELEMENT_ALIGN_CENTER} icon={<Icon name='align center' />} />
+              <MenuAlign type={ELEMENT_ALIGN_RIGHT} icon={<Icon name='align right' />} />
+              <MenuList type={ELEMENT_UL} icon={<Icon name='list ul' />} />
+              <MenuLink />
+              <MenuMedia />
+              <MenuDivider />
+              <Dropdown
+                item
+                floating
+                options={languageOptions}
+                value={currentLanguage}
+                onChange={onLanguageChange} />
+            </Menu>
+          )}
+          <EditablePlugins plugins={plugins} spellCheck placeholder={placeholder} readOnly={disabled} />
+        </Slate>
+      </ResourcesContext.Provider>
     </div>
   );
 };
@@ -415,6 +426,7 @@ RichTextEditor.propTypes = {
   defaultLanguage: PropTypes.string,
   disabled: PropTypes.bool,
   placeholder: PropTypes.string,
+  resources: PropTypes.object.isRequired,
 };
 
 RichTextEditor.defaultProps = {

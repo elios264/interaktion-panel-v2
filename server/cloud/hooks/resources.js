@@ -1,6 +1,7 @@
 /* global Parse */
 const sharp = require('sharp');
 const _ = require('lodash');
+const crypto = require('crypto');
 const cloud = require('../cloudUtils');
 
 const isImage = (url) => (url.match(/\.(jpeg|jpg|gif|png)$/) !== null);
@@ -8,8 +9,10 @@ const isImage = (url) => (url.match(/\.(jpeg|jpg|gif|png)$/) !== null);
 const generateResourceDerivedData = async (resourceUrl, newWidth, thumbnail) => {
 
   const response = await Parse.Cloud.httpRequest({ url: resourceUrl });
+  const { 'content-length': size } = response.headers;
 
-  const { 'content-length': size, 'content-md5': hash } = response.headers;
+  const hash = response.headers['content-md5'] || crypto.createHash('md5').update(response.buffer).digest('base64');
+
   if (!isImage(resourceUrl)) {
     return { size, hash };
   }

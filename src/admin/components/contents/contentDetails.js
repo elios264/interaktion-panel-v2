@@ -76,6 +76,7 @@ export const ContentDetails = ({ history, match }) => {
   const isWorking = useSelector((state) => state.siteInfo.isWorking);
   const content = useSelector((state) => state.objects.contents[match.params.contentId]);
   const contentDefinition = useSelector((state) => state.objects.contentDefinitions[match.params.definitionId]);
+  const resources = useSelector((state) => state.objects.resources);
 
   const switchToDetailsMode = (newContent) => history.replace(`/contents/${match.params.definitionId}/details/${(newContent instanceof Content) ? newContent.id : content.id}`);
   const saveContentAndGoToDetails = useAsyncSubmit(useDispatchCallback(saveContent), switchToDetailsMode);
@@ -236,6 +237,7 @@ export const ContentDetails = ({ history, match }) => {
                   value={documents.value}
                   onChange={documents.onChange}
                   disabled={!isEditing && !isCreating}
+                  resources={resources}
                   placeholder='Enter your text here...' />
               </Grid.Column>
             </Grid>

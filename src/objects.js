@@ -101,7 +101,7 @@ export class Resource extends BaseObject {
   get thumbnail() { return this.get('thumbnail'); }
   set thumbnail(value) { this.setAttr('thumbnail', value); }
 
-  get fileName() { return _.result(this.src, 'name'); }
+  get fileName() { return _.replace(_.result(this.src, 'name'), /^[a-zA-Z0-9]*_/, ''); }
   get fileUrl() { return _.get(this.src, 'localUrl', _.result(this.src, 'url')); }
   get fileExtension() { return path.extname(this.fileName); }
   get fileSize() { return _.get(this.src, 'localSize', _.get(this.metadata, 'size')); }
@@ -188,16 +188,13 @@ export class Content extends BaseObject {
       const contents = this.contents || {};
       const resources = this.contentsResources || [];
 
-      this.documentsCache = _.mapValues(contents, (json) => {
-        const document = JSON.parse(json);
-        return [{ children: _.map(document[0].children, (node) => {
-          switch (node.type) {
-            case 'img': return { ...node, image: resources[node.image] };
-            case 'attachment': return { ...node, attachment: resources[node.attachment] };
-            default: return node;
-          }
-        }) }];
-      });
+      this.documentsCache = _.mapValues(contents, (json) => [{ children: _.map(json[0].children, (node) => {
+        switch (node.type) {
+          case 'img': return { ...node, image: resources[node.image] };
+          case 'attachment': return { ...node, attachment: resources[node.attachment] };
+          default: return node;
+        }
+      }) }]);
     }
 
     return this.documentsCache;
@@ -214,13 +211,13 @@ export class Content extends BaseObject {
 
     const resources = [];
     this.contentsResources = resources;
-    this.contents = _.mapValues(value, (value) => JSON.stringify([{ children: _.map(value[0].children, (node) => {
+    this.contents = _.mapValues(value, (value) => [{ children: _.map(value[0].children, (node) => {
       switch (node.type) {
         case 'img': return { ...node, image: resources.push(node.image) - 1 };
         case 'attachment': return { ...node, attachment: resources.push(node.attachment) - 1 };
         default: return node;
       }
-    }) }]));
+    }) }]);
   }
 
   static entityType = Object.freeze({ event: 'event', content: 'content' });
