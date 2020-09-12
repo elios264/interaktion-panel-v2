@@ -33,6 +33,9 @@ export class AnalyticsProvider {
       'clone-content': titleLanguageParams,
       'delete-content': titleLanguageParams,
       'delete-contents': lengthParams,
+
+      'restore-collection': _.identity,
+      'import-collection': _.identity,
     };
 
     const definition = definitions[actionName];

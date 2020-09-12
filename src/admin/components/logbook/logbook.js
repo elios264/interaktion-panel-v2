@@ -29,6 +29,8 @@ const actionDefinitions = {
   'delete-content': { desc: ({ name }) => `Has deleted the content "${name}"` },
   'delete-contents': { desc: ({ amount }) => `Has deleted ${amount} content(s)` },
 
+  'restore-collection': { desc: ({ collection }) => `Has performed a restore on collection: "${collection}"` },
+  'import-collection': { desc: ({ collection }) => `Has performed an import on collection: "${collection}"` },
 };
 
 const eventRenderer = ({ rowData }) => {

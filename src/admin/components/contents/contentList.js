@@ -10,7 +10,7 @@ import { LoadingDots, AwaitableDropdownItem } from 'controls';
 import { VirtualTable, Column, dateRenderer, labelRenderer } from 'controls/table';
 import { useUrlParams, useUrlParamsHandler, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
 import { useResourceImageRenderer } from 'admin/hooks';
-import { deleteSelectedContents } from 'admin/actions/contents';
+import { deleteSelectedContents, exportContents, importContents } from 'admin/actions/contents';
 import { deleteContentDefinition } from 'admin/actions/contentsDefinitions';
 
 const defaultParams = { sortBy: 'updatedAt', sortDir: 'desc', search: '' };
@@ -36,6 +36,8 @@ export const ContentList = ({ match, location, history }) => {
 
   const deleteSelectedContentsAndClearSelection = useAsyncSubmit(useDispatchCallback(deleteSelectedContents, selectedContents), () => setSelectedContents([]));
   const deleteContentDefinitionAndGoToCreatePage = useAsyncSubmit(useDispatchCallback(deleteContentDefinition, definition), () => history.replace('/contents/create'));
+  const exportToJSON = useDispatchCallback(exportContents, { definition, contentsIds: selectedContents });
+  const importFromJSON = useDispatchCallback(importContents, { definition });
 
   if (!definition) {
     return (
@@ -68,8 +70,8 @@ export const ContentList = ({ match, location, history }) => {
             <Dropdown.Item as={Link} to={`/contents/${definition.id}/edit`} icon='edit' text='Modify...' />
             <AwaitableDropdownItem onClick={deleteContentDefinitionAndGoToCreatePage} icon='trash' text='Delete...' />
             <Dropdown.Header content='Data' />
-            <AwaitableDropdownItem onClick={_.noop} icon='file archive outline' text='Export (.json)' />
-            <AwaitableDropdownItem onClick={_.noop} icon='file archive outline' text='Import (.json)' />
+            <AwaitableDropdownItem onClick={exportToJSON} icon='file archive outline' text='Export (.json)' />
+            <AwaitableDropdownItem onClick={importFromJSON} icon='file archive outline' text='Import (.json)' />
           </Dropdown.Menu>
         </Dropdown>
         <Menu.Item position='right' className='w-50-m w-33-l'>

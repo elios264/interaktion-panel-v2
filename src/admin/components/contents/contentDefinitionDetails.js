@@ -1,17 +1,16 @@
 import _ from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import Joi from '@hapi/joi';
 import { Link } from 'react-router-dom';
 import { Grid, Menu, Button, Segment, Form, Divider, Modal } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
-import { Popup, getJoiLanguagesValidationSchema, LoadingDots, MultiLanguageInput, MultiLanguageTextArea, Selector } from 'controls';
+import { Popup, LoadingDots, MultiLanguageInput, MultiLanguageTextArea, Selector } from 'controls';
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
 import { ContentDefinition } from 'objects';
 import { ResourceImageSelector } from 'admin/components/common';
 import { saveContentDefinition } from 'admin/actions/contentsDefinitions';
-
+import { contentDefinitionSchema } from './contentDefinitionSchema';
 
 export const enabledOptions = [{ key: 1, text: ContentDefinition.getEnabledName(true), value: true }, { key: 2, text: ContentDefinition.getEnabledName(true), value: false }];
 export const mobileViewOptions = [
@@ -36,13 +35,7 @@ export const mobileViewOptions = [
 ];
 
 const contentDefinitionTemplate = new ContentDefinition({ mobileView: ContentDefinition.mobileView.chess, enabled: true });
-export const contentDefinitionSchema = {
-  enabled: Joi.boolean().required().label('Enabled'),
-  title: getJoiLanguagesValidationSchema('Title', 200),
-  description: getJoiLanguagesValidationSchema('Description', 2000),
-  mobileView: Joi.string().valid(..._.values(ContentDefinition.mobileView)).required().label('Mobile view'),
-  image: Joi.object().required().label('Image'),
-};
+
 
 export const ContentDefinitionDetails = ({ history, match }) => {
   const isEditing = match.params.action === 'edit';

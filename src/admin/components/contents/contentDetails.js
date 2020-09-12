@@ -5,15 +5,14 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Grid, Menu, Modal, Button, Segment, Form, Divider, Message, Input, Dropdown } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
-import Joi from '@hapi/joi';
 
 import { Content } from 'objects';
 import { ResourceImageSelector } from 'admin/components/common';
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
-import { Popup, LoadingDots, Selector, AwaitableButton, getJoiLanguagesValidationSchema, MultiLanguageInput, MultiLanguageTextArea, RichTextEditor, DatePicker, utils, AwaitableDropdownItem } from 'controls';
+import { Popup, LoadingDots, Selector, AwaitableButton, MultiLanguageInput, MultiLanguageTextArea, RichTextEditor, DatePicker, utils, AwaitableDropdownItem } from 'controls';
 
 import { saveContent, deleteContent, cloneContent } from 'admin/actions/contents';
-
+import { contentSchema, entityTypeContentSchema, entityTypeEventSchema } from './contentSchema';
 
 const visibilityOptions = _.map(Content.visibility, (value, key) => ({ key, value, text: Content.getVisibilityName(value) }));
 const entityTypeOptions = _.map(Content.entityType, (value, key) => ({ key, value, text: Content.getEntityTypeName(value) }));
@@ -23,27 +22,6 @@ const contentTemplate = new Content({
   entityType: Content.entityType.content,
 });
 
-const entityTypeContentSchema = {};
-const entityTypeEventSchema = {
-  location: Joi.string().trim().required().max(200).label('Location'),
-  start: Joi.object().instance(Date).required().label('Start date'),
-};
-
-const contentSchema = {
-  image: Joi.object().required().label('Image'),
-  visibility: Joi.string().valid(..._.values(Content.visibility)).label('Visibility'),
-  entityType: Joi.string().valid(..._.values(Content.entityType)).label('Type'),
-  entityInfo: Joi.any().when('entityType', {
-    switch: [
-      { is: Content.entityType.content, then: Joi.object().strip() },
-      { is: Content.entityType.event, then: Joi.object(entityTypeEventSchema).pattern(/.*/, Joi.any().strip()).required() },
-    ],
-    otherwise: Joi.forbidden(),
-  }),
-  title: getJoiLanguagesValidationSchema('Title', 200),
-  description: getJoiLanguagesValidationSchema('Description', 2000),
-  documents: Joi.object({ [window.__ENVIRONMENT__.APP_LOCALE]: Joi.array().required().label('Content') }).pattern(/.*/, Joi.array().label('Content')).required().label('Content'),
-};
 
 const EntityInfoContent = () => null;
 const EntityInfoEvent = ({ location, start, disabled }) => (

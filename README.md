@@ -64,8 +64,8 @@ TODO weekend:
 - delete selection
 - delete section
 - clone
-
 - import-export
+
 - add jobs capabilities
 - endpoint to return all the contents
 - settings section (darkMode, loginType, menuOrder)

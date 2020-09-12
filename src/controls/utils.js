@@ -52,6 +52,11 @@ export const getMD5Base64Hash = (input) => {
   algorithm.update(input);
   return algorithm.digest('base64');
 };
+export const blobFromUrl = async (url) => {
+  const response = await fetch(url);
+  return response.blob();
+};
+
 export const toReadable = (file, readerFn = 'readAsDataURL') => new Promise((res, rej) => {
   const reader = new FileReader();
   reader[readerFn](file);

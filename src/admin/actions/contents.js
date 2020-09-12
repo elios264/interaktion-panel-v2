@@ -1,5 +1,14 @@
 import _ from 'lodash';
-import { handleError, showSuccess, showConfirm } from 'utils/actions';
+import { handleError, showSuccess, showConfirm, showModal } from 'utils/actions';
+
+import { utils } from 'controls';
+import { BaseObject, File, Resource } from 'objects';
+import { ImportObjectsAssistantModal } from 'admin/components/common';
+import { contentImportDefinition } from 'admin/components/contents/contentSchema';
+
+
+const { jsonKeys, actions } = ImportObjectsAssistantModal;
+
 
 export const saveContent = (content, silentAndRethrow = false) => handleError(async (dispatch, getState, { api }) => {
 
@@ -55,3 +64,140 @@ export const cloneContent = (content) => handleError(async (dispatch, getState, 
   }
   return result;
 }, 'An error ocurred when cloning the content');
+
+
+export const exportContents = ({ contentsIds, definition, onlyData = false }) => handleError((dispatch, getState) => {
+
+  let selectedContents = !_.size(contentsIds)
+    ? _.filter(getState().objects.contents, (content) => content.definition.id === definition.id)
+    : _(contentsIds).map((id) => getState().objects.contents[id]).compact().value();
+
+  selectedContents = _.map(selectedContents, (content) => {
+    const { objectId: id, image, contentsResources, ...rest } = content.toFullJSON();
+    const resource = getState().objects.resources[image.objectId];
+    const resources = _(contentsResources).map(({ objectId }) => getState().objects.resources[objectId]).compact().value();
+    return { id, image: resource && resource.toFullJSON(), contentsResources: _.invokeMap(resources, 'toFullJSON'), ...rest };
+  });
+
+  const data = {
+    version: window.__ENVIRONMENT__.BUILD,
+    environment: window.__ENVIRONMENT__.BUILD_ENVIRONMENT,
+    references: {},
+    contents: selectedContents,
+  };
+
+  if (onlyData) {
+    return data;
+  }
+
+  const blob = utils.objectToJSONBlob(data);
+  utils.downloadBlob(blob, `${definition.title[window.__ENVIRONMENT__.APP_LOCALE]} at ${utils.formatDate()}.json`);
+
+}, 'The contents could not be exported');
+
+
+export const importContents = ({ definition, json, dryRun, logProgress = _.noop, rethrow = false }) => handleError((dispatch, getState, { api }) => {
+
+  const importData = ({ json, dryRun, logProgress }) => dispatch(handleError(async () => {
+    // no data to validate
+    if (dryRun) {
+      return;
+    }
+    const saveContentAs = async (mode, contentJSON) => {
+
+      const contentJSONToSave = mode === 'restore'
+        ? ({ ..._.omit(contentJSON, 'id'), objectId: contentJSON.id })
+        : _.pickBy(({
+          ..._.omit(contentJSON, 'id', jsonKeys.operation),
+          definition: definition.toFullJSON(),
+          objectId: mode === 'update' ? _.get(contentJSON, jsonKeys.operationValue) : undefined,
+        }), _.negate(_.isUndefined));
+
+      const contentName = contentJSONToSave.title[window.__ENVIRONMENT__.APP_LOCALE];
+      const thenAction = utils.getValue(mode, { restore: 'restored', update: 'updated', create: 'created' });
+      const catchAction = utils.getValue(mode, { restore: 'restoring', update: 'updating', create: 'creating' });
+
+      let content = BaseObject.fromJSON(contentJSONToSave);
+
+      try {
+        // image and contentResources special handling
+        if (mode !== 'restore') {
+          let imageToSave = _.find(getState().objects.resources, ['metadata.hash', content.image.metadata.hash]);
+          if (!imageToSave) {
+            const base64 = await utils.blobFromUrl(content.image.fileUrl)
+              .catch(() => utils.blobFromUrl(require('img/empty.png')))
+              .then(utils.toReadable);
+            imageToSave = new Resource({ src: new File(content.image.fileName, { base64 }) });
+          }
+          content.image = imageToSave;
+
+          const contentsResourcesToSave = _(content.contentsResources)
+            .map((resource) => ({ existingResource: _.find(getState().objects.resources, ['metadata.hash', resource.metadata.hash]), resource }))
+            .map(async ({ resource, existingResource }) => {
+              if (!existingResource) {
+                const base64 = await utils.blobFromUrl(resource.fileUrl)
+                  .catch(() => utils.blobFromUrl(require('img/empty.png')))
+                  .then(utils.toReadable);
+                existingResource = new Resource({ src: new File(resource.fileName, { base64 }) });
+              }
+              return existingResource;
+            })
+            .value();
+          content.contentResources = await Promise.all(contentsResourcesToSave);
+        }
+
+        if (mode === 'create') {
+          content = content.clone();
+        } else {
+        // eslint-disable-next-line no-return-assign, no-self-assign
+          _.each(['definition', 'image', 'visibility', 'contents', 'title', 'description', 'contentsResources', 'entityType', 'entityInfo'], (prop) => content[prop] = content[prop]);
+        }
+
+        return dispatch(saveContent(content, true)).then(() => logProgress(`Content "${contentName}" ${thenAction} successfully`));
+
+      } catch (err) {
+        logProgress(`ERROR: while ${catchAction} content "${contentName}": ${err.message}.`);
+      }
+    };
+
+    if (json[jsonKeys.isRestore]) {
+      const differentContents = _(json.contents)
+        .map((content) => ({ content, storeContent: _.invoke(getState().objects.contents[content.id], 'toFullJSON') }))
+        .filter(({ content, storeContent }) => storeContent && !utils.equalBy(content, storeContent, 'entityInfo', 'entityType', 'definition.objectId', 'image.objectId', 'visibility', 'title', 'description', 'contents', ..._.map(content.contentsResources, (ignored, index) => `contentsResources[${index}].objectId`)))
+        .map('content')
+        .value();
+
+      logProgress(`Found ${_.size(differentContents)} contents with differences (checked properties: entityInfo, entityType, definition, image, visibility, title, description, contents, contents resources)\n`);
+
+      await Promise.all(_.map(differentContents, _.partial(saveContentAs, 'restore')));
+      api.logEvent('restore-collection', { collection: definition.title[window.__ENVIRONMENT__.APP_LOCALE] });
+
+    } else {
+      const { [actions.create]: toCreate, [actions.update]: toUpdate } = _.groupBy(json.contents, jsonKeys.operationAction);
+
+      logProgress(`Creating ${_.size(toCreate)} contents and updating ${_.size(toUpdate)} contents`);
+
+      await Promise.all([
+        ..._.map(toCreate, _.partial(saveContentAs, 'create')),
+        ..._.map(toUpdate, _.partial(saveContentAs, 'update')),
+      ]);
+
+      api.logEvent('import-collection', { collection: definition.title[window.__ENVIRONMENT__.APP_LOCALE] });
+    }
+
+    return true;
+  }, null, { rethrow: true, silent: true }));
+
+  return json ?
+    importData({ definition, json, dryRun, logProgress })
+    : dispatch(showModal({
+      custom: ImportObjectsAssistantModal,
+      onImport: importData,
+      onExport: () => dispatch(exportContents({ definition })),
+      definitions: [{
+        ...contentImportDefinition,
+        propertyFilterer: (content) => content.definition.id === definition.id,
+      }],
+    }));
+
+}, 'The contents could not be imported', { rethrow, silent: rethrow });
