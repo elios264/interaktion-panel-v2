@@ -3,7 +3,7 @@ import Parse from 'parse';
 
 const emailParams = ({ email }) => ({ email });
 const titleLanguageParams = ({ title }) => ({ name: title[window.__ENVIRONMENT__.APP_LOCALE] });
-
+const lengthParams = ({ length }) => ({ amount: length });
 
 export class AnalyticsProvider {
 
@@ -27,7 +27,12 @@ export class AnalyticsProvider {
       'reset-password-user': emailParams,
 
       'save-content-definition': titleLanguageParams,
+      'delete-content-definition': titleLanguageParams,
+
       'save-content': titleLanguageParams,
+      'clone-content': titleLanguageParams,
+      'delete-content': titleLanguageParams,
+      'delete-contents': lengthParams,
     };
 
     const definition = definitions[actionName];

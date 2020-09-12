@@ -41,7 +41,7 @@ export const handleOperation = async (fn, invoker, message = '', { login = false
     } else {
       err.message = getValue(err.code, {
         [Parse.Error.OPERATION_FORBIDDEN]: login ? 'Incorrect access credentials.' : 'Access denied.',
-        [Parse.Error.OBJECT_NOT_FOUND]: login ? 'Incorrect access credentials.' : 'The record was not found.',
+        [Parse.Error.OBJECT_NOT_FOUND]: login ? 'Incorrect access credentials.' : err.message,
         [Parse.Error.INVALID_SESSION_TOKEN]: 'Invalid session, please log in again',
         [Parse.Error.CONNECTION_FAILED]: 'Could not connect to the server, please check your internet connection.',
         [Parse.Error.DUPLICATE_VALUE]: 'A duplicate value was provided for a field with unique values.',

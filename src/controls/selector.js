@@ -8,9 +8,6 @@ export class Selector extends PureComponent {
   static propTypes = {
     value: PropTypes.any,
     onChange: PropTypes.func,
-    options: PropTypes.array,
-    disabled: PropTypes.bool,
-    inline: PropTypes.bool,
   }
 
   static defaultProps = {
@@ -23,7 +20,7 @@ export class Selector extends PureComponent {
   }
 
   render() {
-    const { value, options, disabled, inline } = this.props;
+    const { value } = this.props;
     const extraProps = _.omit(this.props, _.keys(Selector.propTypes));
 
     return (
@@ -31,13 +28,10 @@ export class Selector extends PureComponent {
         fluid
         placeholder='Select...'
         selection
-        options={options}
         selectOnNavigation={false}
         selectOnBlur={false}
         onChange={this.onOptionSelected}
         value={_.isNil(value) ? null : value}
-        inline={inline}
-        disabled={disabled}
         {...extraProps} />
     );
   }

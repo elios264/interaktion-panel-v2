@@ -8,8 +8,10 @@ import { useSelector } from 'react-redux';
 import { Content } from 'objects';
 import { LoadingDots, AwaitableDropdownItem } from 'controls';
 import { VirtualTable, Column, dateRenderer, labelRenderer } from 'controls/table';
-import { useUrlParams, useUrlParamsHandler } from 'controls/hooks';
+import { useUrlParams, useUrlParamsHandler, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
 import { useResourceImageRenderer } from 'admin/hooks';
+import { deleteSelectedContents } from 'admin/actions/contents';
+import { deleteContentDefinition } from 'admin/actions/contentsDefinitions';
 
 const defaultParams = { sortBy: 'updatedAt', sortDir: 'desc', search: '' };
 const linkRenderer = ({ cellData, rowData }) => <Link to={`/contents/${rowData.definition.id}/details/${rowData.id}`}>{cellData}</Link>; // eslint-disable-line react/prop-types
@@ -31,6 +33,9 @@ export const ContentList = ({ match, location, history }) => {
   const onSearchChange = useUrlParamsHandler({ history, location, key: 'search' });
 
   const getImageUrl = useCallback(({ cellData }) => _.get(resources[_.get(cellData, 'id')], 'fileUrl'), [resources]); // so export the file url works.
+
+  const deleteSelectedContentsAndClearSelection = useAsyncSubmit(useDispatchCallback(deleteSelectedContents, selectedContents), () => setSelectedContents([]));
+  const deleteContentDefinitionAndGoToCreatePage = useAsyncSubmit(useDispatchCallback(deleteContentDefinition, definition), () => history.replace('/contents/create'));
 
   if (!definition) {
     return (
@@ -56,12 +61,12 @@ export const ContentList = ({ match, location, history }) => {
             <Dropdown.Header content='Tasks' />
             <AwaitableDropdownItem
               icon='trash'
-              onClick={_.noop}
+              onClick={deleteSelectedContentsAndClearSelection}
               disabled={selectedContents.length === 0}
               text='Delete selection' />
             <Dropdown.Header content='Section' />
             <Dropdown.Item as={Link} to={`/contents/${definition.id}/edit`} icon='edit' text='Modify...' />
-            <Dropdown.Item onClick={_.noop} icon='trash' text='Delete...' />
+            <AwaitableDropdownItem onClick={deleteContentDefinitionAndGoToCreatePage} icon='trash' text='Delete...' />
             <Dropdown.Header content='Data' />
             <AwaitableDropdownItem onClick={_.noop} icon='file archive outline' text='Export (.json)' />
             <AwaitableDropdownItem onClick={_.noop} icon='file archive outline' text='Import (.json)' />

@@ -70,22 +70,9 @@ const setupJob = (jName, handler) => Parse.Cloud.job(jName, async (req) => {
   }
 });
 const setupFunction = (fnName, handler) => Parse.Cloud.define(fnName, handler);
+const runCloudJob = (jobName, params = {}) => Parse.Cloud.startJob(jobName, params);
+const runCloudFunction = (functionName, params = {}) => Parse.Cloud.run(functionName, params, masterPermissions);
 
-const runCloudJob = (jobName, params = {}) => Parse.Cloud.httpRequest({
-  method: 'POST',
-  url: `http://localhost:${process.env.APP_PORT}${process.env.PARSE_PATH}/jobs/${jobName}`,
-  headers: { 'X-Parse-Master-Key': process.env.PARSE_MASTER_KEY, 'X-Parse-Application-Id': process.env.PARSE_APPID, 'Content-Type': 'application/json' },
-  body: params,
-});
-const runCloudFunction = async (functionName, params = {}) => {
-  const result = await Parse.Cloud.httpRequest({
-    method: 'POST',
-    url: `http://localhost:${process.env.APP_PORT}${process.env.PARSE_PATH}/functions/${functionName}`,
-    headers: { 'X-Parse-Master-Key': process.env.PARSE_MASTER_KEY, 'X-Parse-Application-Id': process.env.PARSE_APPID, 'Content-Type': 'application/json' },
-    body: params,
-  });
-  return _.get(result, 'data.result');
-};
 const httpRequestJson = async ({ method, url, body, headers = {} }) => {
   const response = await Parse.Cloud.httpRequest({ cache: 'no-cache', method, url, body, headers: { 'Content-Type': 'application/json', ...headers } });
   return _.isUndefined(response.data)

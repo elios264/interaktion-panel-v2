@@ -61,12 +61,15 @@ TODO weekend:
 - fix rtf read from resources and display empty img when not found.
 - fix hash and check delete of: files.
 - users section
-
-- get content on demand and by date range and check what original interaktion has.
-- import-export
 - delete selection
-- clone
-- endpoint to return all the contents
 - delete section
+- clone
+
+- import-export
+- add jobs capabilities
+- endpoint to return all the contents
 - settings section (darkMode, loginType, menuOrder)
+- check what original interaktion has.
+
+- paste of editor does not work
 - prevent user registration backend

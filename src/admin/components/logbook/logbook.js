@@ -22,7 +22,12 @@ const actionDefinitions = {
   'reset-password-user': { desc: ({ email }) => `Has sent a password reset email to the user with email ${email}` },
 
   'save-content-definition': { desc: ({ name }) => `Has saved the section "${name}"` },
+  'delete-content-definition': { desc: ({ name }) => `Has deleted the section "${name}"` },
+
   'save-content': { desc: ({ name }) => `Has saved the content "${name}"` },
+  'clone-content': { desc: ({ name }) => `Has cloned the content "${name}"` },
+  'delete-content': { desc: ({ name }) => `Has deleted the content "${name}"` },
+  'delete-contents': { desc: ({ amount }) => `Has deleted ${amount} content(s)` },
 
 };
 

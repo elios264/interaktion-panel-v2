@@ -3,16 +3,16 @@ import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Grid, Menu, Modal, Button, Segment, Form, Divider, Message, Input } from 'semantic-ui-react';
+import { Grid, Menu, Modal, Button, Segment, Form, Divider, Message, Input, Dropdown } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 import Joi from '@hapi/joi';
 
 import { Content } from 'objects';
 import { ResourceImageSelector } from 'admin/components/common';
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
-import { Popup, LoadingDots, Selector, AwaitableButton, getJoiLanguagesValidationSchema, MultiLanguageInput, MultiLanguageTextArea, RichTextEditor, DatePicker, utils } from 'controls';
+import { Popup, LoadingDots, Selector, AwaitableButton, getJoiLanguagesValidationSchema, MultiLanguageInput, MultiLanguageTextArea, RichTextEditor, DatePicker, utils, AwaitableDropdownItem } from 'controls';
 
-import { saveContent } from 'admin/actions/contents';
+import { saveContent, deleteContent, cloneContent } from 'admin/actions/contents';
 
 
 const visibilityOptions = _.map(Content.visibility, (value, key) => ({ key, value, text: Content.getVisibilityName(value) }));
@@ -80,7 +80,9 @@ export const ContentDetails = ({ history, match }) => {
 
   const switchToDetailsMode = (newContent) => history.replace(`/contents/${match.params.definitionId}/details/${(newContent instanceof Content) ? newContent.id : content.id}`);
   const saveContentAndGoToDetails = useAsyncSubmit(useDispatchCallback(saveContent), switchToDetailsMode);
-  const deleteContentAndGoToListing = useAsyncSubmit(useDispatchCallback(_.noop, content), () => history.replace(`/contents/${match.params.definitionId}`));
+  const deleteContentAndGoToListing = useAsyncSubmit(useDispatchCallback(deleteContent, content), () => history.replace(`/contents/${match.params.definitionId}`));
+  const cloneContentAndGoToDetails = useAsyncSubmit(useDispatchCallback(cloneContent, content), switchToDetailsMode);
+
   const cloneSourceContent = useCallback((content) => {
     const clonedContent = content.copy();
     clonedContent.definition = contentDefinition;
@@ -134,6 +136,14 @@ export const ContentDetails = ({ history, match }) => {
           <Menu.Item>
             <AwaitableButton disabled={isEditing} fluid icon='trash' negative content='Delete' onClick={deleteContentAndGoToListing} />
           </Menu.Item>
+        )}
+        {!isEditing && !isCreating && (
+          <Dropdown item icon='tasks' simple>
+            <Dropdown.Menu>
+              <Dropdown.Header content='Tasks' />
+              <AwaitableDropdownItem icon='copy' text='Clone' disabled={isEditing} onClick={cloneContentAndGoToDetails} />
+            </Dropdown.Menu>
+          </Dropdown>
         )}
         <Menu.Item position='right'>
           <Button as={Link} to={`/contents/${contentDefinition.id}`} icon='external' fluid content='Back to listing' />

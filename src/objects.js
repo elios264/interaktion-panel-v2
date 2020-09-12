@@ -74,7 +74,7 @@ export class Config extends BaseObject {
 
   constructor(attributes) { super('Config', attributes); }
   get name() { return this.get('name'); }
-  get stringValue() { return this.get('value'); }
+  get valueString() { return this.get('value'); }
 
   get visibility() { return this.get('visibility'); }
   set visibility(value) { this.setAttr('visibility', value); }
