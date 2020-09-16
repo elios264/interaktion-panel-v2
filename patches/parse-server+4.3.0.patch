@@ -1,27 +1,26 @@
 diff --git a/node_modules/parse-server/lib/middlewares.js b/node_modules/parse-server/lib/middlewares.js
-index 87edab4..7a7e276 100644
+index 19d913f..50686e4 100644
 --- a/node_modules/parse-server/lib/middlewares.js
 +++ b/node_modules/parse-server/lib/middlewares.js
-@@ -333,6 +333,7 @@ function handleParseErrors(err, req, res, next) {
+@@ -364,14 +364,19 @@ function handleParseErrors(err, req, res, next) {
      let httpStatus; // TODO: fill out this mapping
- 
+
      switch (err.code) {
 +      case _node.default.Error.SCRIPT_FAILED:
        case _node.default.Error.INTERNAL_SERVER_ERROR:
          httpStatus = 500;
          break;
-@@ -341,6 +342,14 @@ function handleParseErrors(err, req, res, next) {
+-
+       case _node.default.Error.OBJECT_NOT_FOUND:
          httpStatus = 404;
          break;
- 
+-
 +      case _node.default.Error.INVALID_SESSION_TOKEN:
 +        httpStatus = 401;
 +        break;
-+
 +      case _node.default.Error.OPERATION_FORBIDDEN:
 +        httpStatus = 403;
 +        break;
-+
        default:
          httpStatus = 400;
      }

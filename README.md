@@ -71,9 +71,9 @@ TODO weekend:
 - check what original interaktion has.
 - forbid registration
 - endpoint to return all the contents
+- update libs
 
 - paste of editor does not work
-- update libs
 
 --- TODO LATER -------
 - ask if send notification when creating content
