@@ -98,7 +98,7 @@ const contentSchema = Joi.object({
 });
 
 cloud.setupTrigger('beforeSave', 'Content', validationsHooks.validate(contentSchema));
-cloud.setupTrigger('beforeSave', 'Content', validationsHooks.assignACL({ getPermission: ({ visibility }) => visibility }));
+cloud.setupTrigger('beforeSave', 'Content', validationsHooks.assignACL({ getPermission: (object) => [object.visibility, role.admin] }));
 cloud.setupTrigger('afterDelete', 'Content', validationsHooks.cascadeDelete({ query: 'contents' }));
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.definition', counter: 'ContentDefinition.refs' });
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.image', counter: 'Resource.refs' });

@@ -56,7 +56,7 @@ const cascadeDelete = ({ query }) => async (req) => {
 const assignACL = ({ getPermission }) => (req) => {
   const { object } = req;
 
-  const permission = _.castArray(getPermission(object.attributes, object));
+  const permission = _.uniq(_.castArray(getPermission(object.attributes, object)));
   const acl = new Parse.ACL();
 
   _.each(permission, (perm) => {

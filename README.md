@@ -67,8 +67,16 @@ TODO weekend:
 - import-export
 - add jobs capabilities
 - settings section (darkMode, loginType (prevent user registration backend), menuOrder)
-
+- contents labels
 - check what original interaktion has.
+- forbid registration
 - endpoint to return all the contents
+
 - paste of editor does not work
 - update libs
+
+--- TODO LATER -------
+- ask if send notification when creating content
+- page contents,
+- enabled/disabled users,
+- option to allow/disable registration

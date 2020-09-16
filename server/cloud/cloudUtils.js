@@ -113,7 +113,7 @@ const setAttr = (object, props) => {
 
 
 const masterPermissions = { useMasterKey: true };
-const getUserPermissions = (req) => ({ sessionToken: req.user.getSessionToken() });
+const getUserPermissions = (req) => req.user ? ({ sessionToken: req.user.getSessionToken() }) : {};
 const getValue = (value, mapping = {}, defaultValue) => _.get(mapping, [value], defaultValue);
 const formatCurrency = new Intl.NumberFormat(process.env.APP_LOCALE, { style: 'currency', currency: process.env.APP_CURRENCY, minimumFractionDigits: 2 }).format;
 const formatDate = (date, format = 'DD-MMM-YYYY HH:mm') => moment(date).format(format);
