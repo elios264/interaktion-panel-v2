@@ -12,7 +12,7 @@ import { ResourceImageSelector } from 'admin/components/common';
 import { saveContentDefinition } from 'admin/actions/contentsDefinitions';
 import { contentDefinitionSchema } from './contentDefinitionSchema';
 
-export const enabledOptions = [{ key: 1, text: ContentDefinition.getEnabledName(true), value: true }, { key: 2, text: ContentDefinition.getEnabledName(true), value: false }];
+export const enabledOptions = [{ key: 1, text: ContentDefinition.getEnabledName(true), value: true }, { key: 2, text: ContentDefinition.getEnabledName(false), value: false }];
 export const mobileViewOptions = [
   {
     key: 0,

@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Grid, Menu, Modal, Button, Segment, Form, Divider, Message, Input, Dropdown } from 'semantic-ui-react';
+import { Grid, Menu, Modal, Button, Segment, Form, Divider, Message, Input, Dropdown, Label } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
 import { Content } from 'objects';
@@ -196,6 +196,12 @@ export const ContentDetails = ({ history, match }) => {
                 </Grid.Row>
                 <Divider hidden />
                 <Divider />
+                {(!isCreating && !isEditing) && (
+                  <Grid.Row className='mt3 flex justify-around flex-wrap flex-column flex-row-ns'>
+                    <div className='ma1'><Label color='green' icon='calendar' content={`Created ${utils.formatDate(content.createdAt)}`} /></div>
+                    <div className='ma1'><Label color='orange' icon='calendar' content={`Updated ${utils.formatDate(content.updatedAt)}`} /></div>
+                  </Grid.Row>
+                )}
                 {(isEditing || isCreating) && (
                   <Grid.Row className='tr'>
                     <Button
