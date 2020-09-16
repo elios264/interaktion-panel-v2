@@ -3,6 +3,10 @@ const cloud = require('../cloudUtils');
 const { role, authMode } = require('../types');
 
 const forbidSignupIfAuthPublic = async (req) => {
+  if (req.master) {
+    return;
+  }
+
   const clientFeatures = await new Parse.Query('Config')
     .equalTo('name', 'client-features')
     .first(cloud.masterPermissions)

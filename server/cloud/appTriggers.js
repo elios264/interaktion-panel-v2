@@ -93,13 +93,12 @@ const contentSchema = Joi.object({
   entityInfo: Joi.any().when('entityType', { is: contentType.content, then: Joi.object().strip(), otherwise: Joi.object().required() }),
   title: Joi.object({ [process.env.APP_LOCALE]: Joi.string().trim().max(200).required() }).pattern(/.*/, Joi.string().trim().max(200)).required(),
   description: Joi.object({ [process.env.APP_LOCALE]: Joi.string().trim().max(2000).required() }).pattern(/.*/, Joi.string().trim().max(2000)).required(),
-  contents: Joi.object({ [process.env.APP_LOCALE]: Joi.array().items(Joi.object()).required() }).pattern(/.*/, Joi.array().items(Joi.object())).required(),
-  contentsResources: Joi.array().items(Joi.object().instance(Parse.Object)).max(50),
+  document: Joi.object({ [process.env.APP_LOCALE]: Joi.array().items(Joi.object()).required() }).pattern(/.*/, Joi.array().items(Joi.object())).required(),
+  documentResources: Joi.array().items(Joi.object().instance(Parse.Object)).max(50),
 });
 
 cloud.setupTrigger('beforeSave', 'Content', validationsHooks.validate(contentSchema));
 cloud.setupTrigger('beforeSave', 'Content', validationsHooks.assignACL({ getPermission: (object) => [object.visibility, role.admin] }));
-cloud.setupTrigger('afterDelete', 'Content', validationsHooks.cascadeDelete({ query: 'contents' }));
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.definition', counter: 'ContentDefinition.refs' });
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.image', counter: 'Resource.refs' });
-validationsHooks.setupPointerRefCountWatch({ watch: 'Content.contentsResources', counter: 'Resource.refs' });
+validationsHooks.setupPointerRefCountWatch({ watch: 'Content.documentResources', counter: 'Resource.refs' });

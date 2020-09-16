@@ -11,14 +11,15 @@ const getResourceData = (resource) => ({
   desc: _.get(resource, 'attributes.desc'),
 });
 
-const getContentDocument = ({ content, contentsResources }) => _.map(content[0].children, (node) => {
+const getContentDocument = ({ document, documentResources }) => _.map(document[0].children, (node) => {
+  const resourcesByKey = _.keyBy(documentResources, 'id');
   switch (node.type) {
-    case 'img': return { ...node, image: getResourceData(contentsResources[node.image]) };
-    case 'attachment': return { ...node, attachment: getResourceData(contentsResources[node.attachment]) };
+    case 'img':
+    case 'attachment':
+      return { ...node, resource: getResourceData(resourcesByKey[node.resource]) };
     default: return node;
   }
 });
-
 
 cloud.setupFunction('get-client-data', async (req) => {
   const defaultLanguage = process.env.APP_LOCALE;
@@ -42,7 +43,7 @@ cloud.setupFunction('get-client-data', async (req) => {
     new Parse.Query('Content')
       .matchesQuery('definition', new Parse.Query('ContentDefinition').equalTo('enabled', true))
       .containedIn('visibility', [types.visibility.members, types.visibility.public])
-      .include(['image', 'contentsResources'])
+      .include(['image', 'documentResources'])
       .find(cloud.getUserPermissions(req)),
   ]);
 
@@ -60,7 +61,7 @@ cloud.setupFunction('get-client-data', async (req) => {
 
   const contents = _(contentsData)
     .map(({ id, createdAt, attributes }) => ({ id, createdAt, ...attributes }))
-    .map(({ id, createdAt, definition, image, contents, title, description, contentsResources, entityType, entityInfo }) => ({
+    .map(({ id, createdAt, definition, image, document, title, description, documentResources, entityType, entityInfo }) => ({
       id,
       createdAt,
       definition: definition.id,
@@ -69,7 +70,7 @@ cloud.setupFunction('get-client-data', async (req) => {
       entityType,
       entityInfo,
       image: getResourceData(image),
-      document: getContentDocument({ contentsResources, content: contents[language] || contents[defaultLanguage] }),
+      document: getContentDocument({ documentResources, document: document[language] || document[defaultLanguage] }),
     }))
     .value();
 

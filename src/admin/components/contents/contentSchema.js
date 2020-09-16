@@ -22,13 +22,12 @@ export const contentSchema = {
   }),
   title: getJoiLanguagesValidationSchema('Title', 200),
   description: getJoiLanguagesValidationSchema('Description', 2000),
-  documents: Joi.object({ [window.__ENVIRONMENT__.APP_LOCALE]: Joi.array().required().label('Content') }).pattern(/.*/, Joi.array().label('Content')).required().label('Content'),
+  document: Joi.object({ [window.__ENVIRONMENT__.APP_LOCALE]: Joi.array().required().label('Document') }).pattern(/.*/, Joi.array().label('Document')).required().label('Document'),
 };
 
 const contentImportSchema = {
-  ..._.omit(contentSchema, 'documents'),
-  contents: Joi.object({ [window.__ENVIRONMENT__.APP_LOCALE]: Joi.array().items(Joi.object()).required() }).pattern(/.*/, Joi.array().items(Joi.object())).required(),
-  contentsResources: Joi.array().items(Joi.object()).max(50),
+  ...contentSchema,
+  documentResources: Joi.array().items(Joi.object()).max(50),
 };
 
 export const contentImportDefinition = {

@@ -53,29 +53,8 @@
 - APP_LOCALE
 
 
-TODO weekend:
-- multi languague rich text
-- read only mode
-- events section
-- save contents
-- fix rtf read from resources and display empty img when not found.
-- fix hash and check delete of: files.
-- users section
-- delete selection
-- delete section
-- clone
-- import-export
-- add jobs capabilities
-- settings section (darkMode, loginType (prevent user registration backend), menuOrder)
-- contents labels
-- check what original interaktion has.
-- forbid registration
-- endpoint to return all the contents
-- update libs
-
-- paste of editor does not work
-
 --- TODO LATER -------
+- notifications
 - ask if send notification when creating content
 - page contents,
 - enabled/disabled users,

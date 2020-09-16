@@ -74,7 +74,7 @@ export const ContentDetails = ({ history, match }) => {
     source: content || contentTemplate,
     cloneSource: cloneSourceContent,
   });
-  const { image, documents, visibility, entityType, entityInfo, title, description } = fields;
+  const { image, document, visibility, entityType, entityInfo, title, description } = fields;
 
   const { fields: entityInfoFields } = useFieldset({
     validator,
@@ -103,7 +103,7 @@ export const ContentDetails = ({ history, match }) => {
 
   return (
     <section className='content-details'>
-      <Helmet title={`${_.get(content, `[${window.__ENVIRONMENT__.APP_LOCALE}].title`, 'New')} | Content`} />
+      <Helmet title={`${_.get(content, `title[${window.__ENVIRONMENT__.APP_LOCALE}]`, 'New')} | Content`} />
       <Menu attached stackable className='sticky-ns z-1'>
         {!isCreating && (
           <Menu.Item>
@@ -226,10 +226,10 @@ export const ContentDetails = ({ history, match }) => {
                 )}
               </Grid.Column>
               <Grid.Column computer={16} largeScreen={8} widescreen={8}>
-                {documents.errored && <Message negative content={documents.message} /> }
+                {document.errored && <Message negative content={document.message} /> }
                 <RichTextEditor
-                  value={documents.value}
-                  onChange={documents.onChange}
+                  value={document.value}
+                  onChange={document.onChange}
                   disabled={!isEditing && !isCreating}
                   resources={resources}
                   placeholder='Enter your text here...' />

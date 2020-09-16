@@ -73,10 +73,10 @@ export const exportContents = ({ contentsIds, definition, onlyData = false }) =>
     : _(contentsIds).map((id) => getState().objects.contents[id]).compact().value();
 
   selectedContents = _.map(selectedContents, (content) => {
-    const { objectId: id, image, contentsResources, ...rest } = content.toFullJSON();
+    const { objectId: id, image, documentResources, ...rest } = content.toFullJSON();
     const resource = getState().objects.resources[image.objectId];
-    const resources = _(contentsResources).map(({ objectId }) => getState().objects.resources[objectId]).compact().value();
-    return { id, image: resource && resource.toFullJSON(), contentsResources: _.invokeMap(resources, 'toFullJSON'), ...rest };
+    const resources = _(documentResources).map(({ objectId }) => getState().objects.resources[objectId]).compact().value();
+    return { id, image: resource && resource.toFullJSON(), documentResources: _.invokeMap(resources, 'toFullJSON'), ...rest };
   });
 
   const data = {
@@ -120,7 +120,7 @@ export const importContents = ({ definition, json, dryRun, logProgress = _.noop,
       let content = BaseObject.fromJSON(contentJSONToSave);
 
       try {
-        // image and contentResources special handling
+        // image and documentResources special handling
         if (mode !== 'restore') {
           let imageToSave = _.find(getState().objects.resources, ['metadata.hash', content.image.metadata.hash]);
           if (!imageToSave) {
@@ -131,7 +131,7 @@ export const importContents = ({ definition, json, dryRun, logProgress = _.noop,
           }
           content.image = imageToSave;
 
-          const contentsResourcesToSave = _(content.contentsResources)
+          const documentResourcesToSave = _(content.documentResources)
             .map((resource) => ({ existingResource: _.find(getState().objects.resources, ['metadata.hash', resource.metadata.hash]), resource }))
             .map(async ({ resource, existingResource }) => {
               if (!existingResource) {
@@ -143,14 +143,14 @@ export const importContents = ({ definition, json, dryRun, logProgress = _.noop,
               return existingResource;
             })
             .value();
-          content.contentResources = await Promise.all(contentsResourcesToSave);
+          content.documentResources = await Promise.all(documentResourcesToSave);
         }
 
         if (mode === 'create') {
           content = content.clone();
         } else {
         // eslint-disable-next-line no-return-assign, no-self-assign
-          _.each(['definition', 'image', 'visibility', 'contents', 'title', 'description', 'contentsResources', 'entityType', 'entityInfo'], (prop) => content[prop] = content[prop]);
+          _.each(['definition', 'image', 'visibility', 'document', 'title', 'description', 'documentResources', 'entityType', 'entityInfo'], (prop) => content[prop] = content[prop]);
         }
 
         return dispatch(saveContent(content, true)).then(() => logProgress(`Content "${contentName}" ${thenAction} successfully`));
@@ -163,11 +163,11 @@ export const importContents = ({ definition, json, dryRun, logProgress = _.noop,
     if (json[jsonKeys.isRestore]) {
       const differentContents = _(json.contents)
         .map((content) => ({ content, storeContent: _.invoke(getState().objects.contents[content.id], 'toFullJSON') }))
-        .filter(({ content, storeContent }) => storeContent && !utils.equalBy(content, storeContent, 'entityInfo', 'entityType', 'definition.objectId', 'image.objectId', 'visibility', 'title', 'description', 'contents', ..._.map(content.contentsResources, (ignored, index) => `contentsResources[${index}].objectId`)))
+        .filter(({ content, storeContent }) => storeContent && !utils.equalBy(content, storeContent, 'entityInfo', 'entityType', 'definition.objectId', 'image.objectId', 'visibility', 'title', 'description', 'document'))
         .map('content')
         .value();
 
-      logProgress(`Found ${_.size(differentContents)} contents with differences (checked properties: entityInfo, entityType, definition, image, visibility, title, description, contents, contents resources)\n`);
+      logProgress(`Found ${_.size(differentContents)} contents with differences (checked properties: entityInfo, entityType, definition, image, visibility, title, description, document)\n`);
 
       await Promise.all(_.map(differentContents, _.partial(saveContentAs, 'restore')));
       api.logEvent('restore-collection', { collection: definition.title[window.__ENVIRONMENT__.APP_LOCALE] });

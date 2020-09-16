@@ -6,7 +6,7 @@ import React, { useMemo, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { createEditor, Transforms } from 'slate';
 import { Slate, useSlate, withReact, useSelected, useReadOnly } from 'slate-react';
-import { Menu, Icon, Dropdown } from 'semantic-ui-react';
+import { Menu, Icon, Dropdown, Loader } from 'semantic-ui-react';
 import { withHistory } from 'slate-history';
 import {
   ParagraphPlugin,
@@ -67,7 +67,9 @@ import * as utils from './utils';
 import { File, Resource } from 'objects';
 import { languageOptions } from './multiLanguageInput';
 import { useEffectSkipMount } from './hooks/misc';
+import { makeAwaitable } from './awaitables';
 
+const AwaitableDropdownItem = makeAwaitable({ event: 'onMouseDown', props: { icon: <Loader active inline size='tiny' className='icon' /> } })(Dropdown.Item);
 const ResourcesContext = React.createContext({});
 
 const ImageElement = ({ attributes, className, children, element }) => {
@@ -75,7 +77,7 @@ const ImageElement = ({ attributes, className, children, element }) => {
   const selected = useSelected();
   const readOnly = useReadOnly();
 
-  const image = resources[element.image.id] || element.image;
+  const image = resources[element.resource] || {};
   return (
     <div {...attributes} className={cx(className, 'flex justify-center')}>
       <a contentEditable={false} target='_blank' rel='noreferrer' className='pointer' href={readOnly ? image.fileUrl : undefined}>
@@ -96,7 +98,7 @@ const AttachmentElement = ({ attributes, className, children, element }) => {
   const readOnly = useReadOnly();
 
   const resources = useContext(ResourcesContext);
-  const attachment = resources[element.attachment.id] || element.attachment;
+  const attachment = resources[element.resource] || {};
 
   const getFileIcon = (fileExtension) => {
     switch (fileExtension) {
@@ -125,8 +127,8 @@ const AttachmentElement = ({ attributes, className, children, element }) => {
   };
 
   return (
-    <div {...attributes} className={cx(className, 'flex justify-center')} contentEditable={false}>
-      <a target='_blank' rel='noreferrer' className={`${cx({ 'bg-light-gray bw1': selected })} pointer black flex items-center flex-column flex-row-ns pa3 mv2 m ba b--light-gray w-100 w-50-ns br2`} href={readOnly ? attachment.fileUrl : undefined}>
+    <div {...attributes} className={cx(className, 'flex justify-center')}>
+      <a contentEditable={false} target='_blank' rel='noreferrer' className={`${cx({ 'bg-light-gray bw1': selected })} pointer black flex items-center flex-column flex-row-ns pa3 mv2 m ba b--light-gray w-100 w-50-ns br2`} href={readOnly ? attachment.fileUrl : undefined}>
         <Icon color='black' name={getFileIcon(attachment.fileExtension)} size='huge' />
         <div className='ml3 flex-auto mt3 mt0-ns'>
           <div className='gray' style={{ wordBreak: 'break-all' }}>{attachment.fileName || `Filename with id ${attachment.id} not found`}</div>
@@ -281,15 +283,18 @@ const MenuMedia = () => {
   return (
     <Dropdown item simple icon='attach'>
       <Dropdown.Menu>
-        <Dropdown.Item
+        <AwaitableDropdownItem
           icon='image'
           content='Image'
           onMouseDown={async (e) => {
             e.preventDefault();
-            const [file] = await utils.selectImages({ multiple: false });
-            const src = await File.fromNativeFile(file);
+
+            const src = await utils.selectImages({ multiple: false }).then(([file]) => File.fromNativeFile(file));
             const image = _.find(resources, ['fileHash', src.localHash]) || new Resource({ src });
-            Transforms.insertNodes(editor, { type: 'img', image, children: [{ text: '' }] });
+            if (!image.id) {
+              await image.save();
+            }
+            Transforms.insertNodes(editor, { type: 'img', resource: image.id, children: [{ text: '' }] });
           }} />
         <Dropdown.Item
           icon='video'
@@ -301,15 +306,19 @@ const MenuMedia = () => {
               Transforms.insertNodes(editor, { type: ELEMENT_MEDIA_EMBED, url, children: [{ text: '' }] });
             }
           }} />
-        <Dropdown.Item
+        <AwaitableDropdownItem
           icon='attach'
           content='Attachment'
           onMouseDown={async (e) => {
             e.preventDefault();
-            const [file] = await utils.selectFiles({ multiple: false });
-            const src = await File.fromNativeFile(file);
+
+            const src = await utils.selectFiles({ multiple: false }).then(([file]) => File.fromNativeFile(file));
             const attachment = _.find(resources, ['fileHash', src.localHash]) || new Resource({ src });
-            Transforms.insertNodes(editor, { type: 'attachment', attachment, children: [{ text: '' }] });
+            if (!attachment.id) {
+              await attachment.save();
+            }
+
+            Transforms.insertNodes(editor, { type: 'attachment', resource: attachment.id, children: [{ text: '' }] });
           }} />
       </Dropdown.Menu>
     </Dropdown>

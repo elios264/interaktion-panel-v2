@@ -170,17 +170,11 @@ export class Content extends BaseObject {
   set visibility(value) { this.setAttr('visibility', value); }
   get visibilityName() { return Content.getVisibilityName(this.visibility); }
 
-  get contents() { return this.get('contents'); }
-  set contents(value) { this.setAttr('contents', value); }
-
   get title() { return this.get('title'); }
   set title(value) { this.setAttr('title', value); }
 
   get description() { return this.get('description'); }
   set description(value) { this.setAttr('description', value); }
-
-  get contentsResources() { return this.get('contentsResources'); }
-  set contentsResources(value) { this.setAttr('contentsResources', value); }
 
   get entityType() { return this.get('entityType'); }
   set entityType(value) { this.setAttr('entityType', value); }
@@ -189,42 +183,18 @@ export class Content extends BaseObject {
   get entityInfo() { return this.get('entityInfo'); }
   set entityInfo(value) { this.setAttr('entityInfo', value); }
 
-  get documents() {
+  get documentResources() { return this.get('documentResources'); }
+  set documentResources(value) { this.setAttr('documentResources', value); }
 
-    if (!this.documentsCache) {
-      const contents = this.contents || {};
-      const resources = this.contentsResources || [];
-
-      this.documentsCache = _.mapValues(contents, (json) => [{ children: _.map(json[0].children, (node) => {
-        switch (node.type) {
-          case 'img': return { ...node, image: resources[node.image] };
-          case 'attachment': return { ...node, attachment: resources[node.attachment] };
-          default: return node;
-        }
-      }) }]);
-    }
-
-    return this.documentsCache;
-  }
-
-  set documents(value) {
-    this.documentsCache = value;
-
-    if (!value) {
-      this.contents = undefined;
-      this.contentsResources = undefined;
-      return;
-    }
-
-    const resources = [];
-    this.contentsResources = resources;
-    this.contents = _.mapValues(value, (value) => [{ children: _.map(value[0].children, (node) => {
-      switch (node.type) {
-        case 'img': return { ...node, image: resources.push(node.image) - 1 };
-        case 'attachment': return { ...node, attachment: resources.push(node.attachment) - 1 };
-        default: return node;
-      }
-    }) }]);
+  get document() { return this.get('document'); }
+  set document(value) {
+    this.setAttr('document', value);
+    this.documentResources = !value ? [] : _(value)
+      .flatMap(([{ children }]) => _.map(children, (node) => (node.type === 'img' || node.type === 'attachment') ? node.resource : undefined))
+      .compact()
+      .uniq()
+      .map((id) => new Resource({ id }))
+      .value();
   }
 
   static entityType = Object.freeze({ event: 'event', content: 'content' });
