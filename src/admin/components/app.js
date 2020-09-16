@@ -12,6 +12,7 @@ import { LoginForm, ForgotPasswordForm, ResetPasswordForm } from './authenticati
 import { ManagersList, ManagerDetails } from './managers';
 import { UsersList, UserDetails } from './users';
 import { Logbook } from './logbook';
+import { Settings } from './settings';
 import { ContentDefinitionDetails, ContentList, ContentDetails } from './contents';
 
 export const App = hot(() => {
@@ -54,6 +55,7 @@ export const App = hot(() => {
                 <Route exact path='/contents/:definitionId/:action(create)' component={ContentDetails} />
                 <Route exact path='/contents/:definitionId/details/:contentId/:action(edit)?' component={ContentDetails} />
 
+                <Route exact path='/settings' component={Settings} />
                 <Route exact path='/logbook' component={Logbook} />
 
                 <Redirect to='/' />

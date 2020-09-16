@@ -83,6 +83,8 @@ export class Config extends BaseObject {
   set value(value) { this.setAttr('value', JSON.stringify(value)); }
 
   static create(name, attributes, visibility) { return new Config({ name, visibility, value: JSON.stringify(attributes) }); }
+
+  static authMode = Object.freeze({ private: 'private', mixed: 'mixed', public: 'public' })
 }
 
 export class Resource extends BaseObject {
@@ -142,6 +144,9 @@ export class ContentDefinition extends BaseObject {
 
   get refs() { return this.get('refs'); }
   set refs(value) { this.setAttr('refs', value); }
+
+  get order() { return this.get('order'); }
+  set order(value) { this.setAttr('order', value); }
 
   get enabledName() { return ContentDefinition.getEnabledName(this.enabled); }
   get mobileViewName() { return ContentDefinition.getMobileViewName(this.mobileView); }

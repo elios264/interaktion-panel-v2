@@ -52,6 +52,10 @@ export const Navigation = ({ children }) => {
             </Menu.Item>
           </Menu.Menu>
         </Menu.Item>
+        <Menu.Item as={NavLink} to='/settings' name='settings'>
+          <Icon name='cog' />
+          Settings
+        </Menu.Item>
         <Menu.Item as={NavLink} to='/logbook' name='logbook'>
           <Icon name='book' />
           Logbook

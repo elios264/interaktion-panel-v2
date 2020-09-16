@@ -66,9 +66,9 @@ TODO weekend:
 - clone
 - import-export
 - add jobs capabilities
-
-- endpoint to return all the contents
-- check what original interaktion has.
 - settings section (darkMode, loginType (prevent user registration backend), menuOrder)
+
+- check what original interaktion has.
+- endpoint to return all the contents
 - paste of editor does not work
 - update libs
