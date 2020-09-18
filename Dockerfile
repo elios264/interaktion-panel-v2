@@ -17,12 +17,12 @@ RUN npm run build && \
 FROM mhart/alpine-node:slim-12
 
 ARG env
-ARG build_number
+ARG SOURCE_COMMIT
 
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/ .
 
-ENV BUILD=$build_number
+ENV BUILD=$SOURCE_COMMIT
 ENV BUILD_ENVIRONMENT=$env
 ENV NODE_ENV=production
 
