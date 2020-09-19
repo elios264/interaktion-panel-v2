@@ -54,6 +54,7 @@
 
 
 --- TODO LATER -------
+- disable realtime requirements
 - notifications
 - ask if send notification when creating content
 - page contents,
