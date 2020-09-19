@@ -90,7 +90,7 @@
     "moment": "^2.27.0",
     "nanoid": "^3.1.12",
     "nodemailer": "^6.4.11",
-    "parse": "^2.15.0",
+    "parse": "^2.16.0",
     "parse-dashboard": "^2.1.0",
     "parse-server": "^4.3.0",
     "query-string": "^6.13.1",

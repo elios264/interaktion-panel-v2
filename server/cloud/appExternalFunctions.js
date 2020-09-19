@@ -28,7 +28,7 @@ cloud.setupFunction('get-client-data', async (req) => {
   const clientFeatures = await new Parse.Query('Config')
     .equalTo('name', 'client-features')
     .first(cloud.masterPermissions)
-    .then((setting) => setting ? JSON.parse(setting.get('value')) : setting);
+    .then((setting) => setting ? JSON.parse(setting.get('value')) : {});
   const authMode = clientFeatures.authMode || types.authMode.private;
 
   if (authMode === types.authMode.private) {
