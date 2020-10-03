@@ -34,6 +34,7 @@ const userSchema = Joi.object({
   email: Joi.string().email().max(80).required(),
   name: Joi.string().trim().max(50).required(),
   photo: Joi.object().instance(Parse.Object),
+  language: Joi.string().max(5).empty('').default(process.env.APP_LOCALE),
   role: Joi.string().valid(..._.values(role)).required(),
 });
 

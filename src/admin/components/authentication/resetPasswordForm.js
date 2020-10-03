@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, Redirect } from 'react-router-dom';
 import Joi from '@hapi/joi';
+import queryString from 'query-string';
 import { Image, Segment, Form, Button, Grid, Message, Input } from 'semantic-ui-react';
 
 import { Popup } from 'controls';
@@ -16,6 +17,11 @@ const resetSchema = {
 export const ResetPasswordForm = React.memo(({ location }) => {
   const { id, token, username, error } = useUrlParams(location.search);
   const { fields: { password, confirmPassword }, submit, loading } = useFieldset({ schema: resetSchema, source: resetForm });
+
+  useEffect(() => {
+    window.location = `${window.__ENVIRONMENT__.APP_SCHEME_PREFIX}auth/reset?${queryString.stringify({ token, username })}`;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!id || !token || !username) {
     return (<Redirect to='/' />);
