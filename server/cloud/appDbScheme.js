@@ -16,8 +16,8 @@ const schemas = [{
   clp: { get: noAccess, find: noAccess, create: noAccess, update: noAccess, delete: noAccess, addField: noAccess },
 }, {
   className: '_User',
-  clp: { get: { ...adminAccess, ...clientAccess }, find: adminAccess, create: adminAccess, update: { ...adminAccess, ...clientAccess }, delete: adminAccess, addField: noAccess },
-  columns: { name: 'String', lastActivity: 'Date', photo: { type: 'Pointer', targetClass: 'Resource' }, role: 'String' },
+  clp: { get: { ...adminAccess, ...clientAccess }, find: adminAccess, create: { ...adminAccess, ...publicAccess }, update: { ...adminAccess, ...clientAccess }, delete: adminAccess, addField: noAccess },
+  columns: { name: 'String', lastActivity: 'Date', language: 'String', photo: { type: 'Pointer', targetClass: 'Resource' }, role: 'String' },
 }, {
   className: 'Config',
   clp: { get: publicAccess, find: publicAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },

@@ -4,10 +4,11 @@ const cloud = require('./cloudUtils');
 const { role } = require('./types');
 
 cloud.setupFunction('set-last-activity-now', (req) => {
-  const { user } = req;
+  const { user, params } = req;
 
   if (user) {
     user.set('lastActivity', new Date());
+    user.set('language', params.language);
     user.save(null, cloud.getUserPermissions(req));
     return true;
   }
@@ -33,11 +34,11 @@ cloud.setupFunction('create-user', async (req) => {
     cloud.ensureIsAdmin(req);
   }
 
-  const { name, email } = req.params;
+  const { name, email, language } = req.params;
   const password = `5${cloud.generateUniqueId()}a`;
   const username = cloud.generateUniqueId(20);
 
-  const user = await Parse.User.signUp(username, password, { name, email, role: role.client }, req.user ? cloud.masterPermissions : {});
+  const user = await Parse.User.signUp(username, password, { name, email, role: role.client, language }, req.user ? cloud.masterPermissions : {});
 
   await Parse.User.requestPasswordReset(email);
 

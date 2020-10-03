@@ -37,7 +37,7 @@ class EmailAdapter {
   sendPasswordResetEmail({ link, user }) {
     const to = user.get('email');
     const subject = `${process.env.APP_NAME}, set you new password`;
-    const { html, text } = resetPasswordEmail({ link, name: user.get('name') });
+    const { html, text } = resetPasswordEmail({ link, name: user.get('name'), language: user.get('language') });
 
     return this.sendMail({ html, to, subject, text });
   }

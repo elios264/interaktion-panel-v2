@@ -15,6 +15,7 @@ const infoEnvironment = {
 };
 const adminEnvironment = {
   ...infoEnvironment,
+  APP_SCHEME_PREFIX: process.env.APP_SCHEME_PREFIX,
   APP_URL: process.env.APP_URL,
   APP_ADMIN_PATH: process.env.APP_ADMIN_PATH,
   PARSE_PATH: process.env.PARSE_PATH,

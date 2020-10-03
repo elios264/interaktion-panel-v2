@@ -54,9 +54,9 @@
 
 
 --- TODO LATER -------
-- disable realtime requirements
+- Prepare for back4App
 - notifications
 - ask if send notification when creating content
-- page contents,
+- page contents feature,
 - enabled/disabled users,
 - option to allow/disable registration
