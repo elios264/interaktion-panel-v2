@@ -251,9 +251,7 @@ const MenuLink = () => {
       onMouseDown={(e) => {
         e.preventDefault();
         const url = window.prompt('Enter the URL of the link:'); // eslint-disable-line no-alert
-        if (isUrl(url)) {
-          upsertLinkAtSelection(editor, url);
-        }
+        upsertLinkAtSelection(editor, url);
       }}>
       <Icon name='linkify' />
     </Menu.Item>
