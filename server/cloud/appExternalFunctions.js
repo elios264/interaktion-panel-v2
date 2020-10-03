@@ -31,8 +31,8 @@ cloud.setupFunction('get-client-data', async (req) => {
     .then((setting) => setting ? JSON.parse(setting.get('value')) : {});
   const authMode = clientFeatures.authMode || types.authMode.private;
 
-  if (authMode === types.authMode.private) {
-    cloud.ensureIsUser(req);
+  if (authMode === types.authMode.private && !req.user) {
+    return { features: { authMode } };
   }
 
   const [contentDefinitionsData, contentsData] = await Promise.all([
