@@ -1,12 +1,11 @@
 /* global Parse */
 const sharp = require('sharp');
-const _ = require('lodash');
 const crypto = require('crypto');
 const cloud = require('../cloudUtils');
 
 const isImage = (url) => (url.match(/\.(jpeg|jpg|gif|png)$/) !== null);
 
-const generateResourceDerivedData = async (resourceUrl, newWidth, thumbnail) => {
+const generateResourceDerivedData = async (resourceUrl, thumbnail) => {
 
   const response = await Parse.Cloud.httpRequest({ url: resourceUrl });
   const { 'content-length': size } = response.headers;
@@ -18,13 +17,11 @@ const generateResourceDerivedData = async (resourceUrl, newWidth, thumbnail) => 
   }
 
   const image = sharp(response.buffer);
-  let { height, width, format } = await image.metadata();
+  const { height, width, format } = await image.metadata();
 
   let buffer;
-  if (width > newWidth && thumbnail) {
-    buffer = await image.resize(newWidth).toBuffer();
-    height = (height * newWidth) / width;
-    width = newWidth;
+  if (thumbnail && width > 300) {
+    buffer = await image.resize(300).toBuffer();
   }
 
   return {
@@ -34,7 +31,7 @@ const generateResourceDerivedData = async (resourceUrl, newWidth, thumbnail) => 
 };
 
 
-const extractData = (source, { thumbnail: thumbnailColumn, metadata, resizeTo = 300 }) => async (req) => {
+const extractData = (source, { thumbnail: thumbnailColumn, metadata }) => async (req) => {
   const { object } = req;
 
   if (!object.get(source) || !object.dirty(source)) {
@@ -43,7 +40,7 @@ const extractData = (source, { thumbnail: thumbnailColumn, metadata, resizeTo = 
 
   const resource = object.get(source).url();
 
-  const { format, thumbnail, ...metadataObject } = await generateResourceDerivedData(resource, resizeTo, !!thumbnailColumn);
+  const { format, thumbnail, ...metadataObject } = await generateResourceDerivedData(resource, !!thumbnailColumn);
 
   if (thumbnail) {
     const file = await new Parse.File(`thumb.${format}`, { base64: thumbnail }, `image/${format}`).save(cloud.masterPermissions);
@@ -51,7 +48,7 @@ const extractData = (source, { thumbnail: thumbnailColumn, metadata, resizeTo = 
   }
 
   if (metadata) {
-    object.set('metadata', _.pick(metadataObject, metadata));
+    object.set('metadata', metadataObject);
   }
 };
 

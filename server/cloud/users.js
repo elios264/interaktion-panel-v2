@@ -8,7 +8,9 @@ cloud.setupFunction('set-last-activity-now', (req) => {
 
   if (user) {
     user.set('lastActivity', new Date());
-    user.set('language', params.language);
+    if (params.language) {
+      user.set('language', params.language);
+    }
     user.save(null, cloud.getUserPermissions(req));
     return true;
   }

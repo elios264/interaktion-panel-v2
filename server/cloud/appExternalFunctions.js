@@ -4,11 +4,13 @@ const types = require('./types');
 const cloud = require('./cloudUtils');
 
 const getResourceData = (resource) => ({
-  url: _.result(resource, 'attributes.src.url'),
+  uri: _.result(resource, 'attributes.src.url'),
   thumb: _.result(resource, 'attributes.thumbnail.url'),
   name: _.replace(_.result(resource, 'attributes.src.name'), /^[a-zA-Z0-9]*_/, ''),
   size: _.get(resource, 'attributes.metadata.size'),
   desc: _.get(resource, 'attributes.desc'),
+  width: _.get(resource, 'attributes.metadata.width'),
+  height: _.get(resource, 'attributes.metadata.height'),
 });
 
 const getContentDocument = ({ document, documentResources }) => _.map(document[0].children, (node) => {
