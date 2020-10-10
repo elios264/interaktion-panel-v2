@@ -42,11 +42,11 @@ export const Navigation = ({ children }) => {
           <Icon name='signup' />
           Sections
           <Menu.Menu>
-            {_.map(contentDefinitions, ({ id, title }) => (
+            {_(contentDefinitions).sortBy('order').map(({ id, title }) => (
               <Menu.Item key={id} as={NavLink} to={`/contents/${id}`} name={id}>
                 {title[window.__ENVIRONMENT__.APP_LOCALE]}
               </Menu.Item>
-            ))}
+            )).value()}
             <Menu.Item as={NavLink} to='/contents/create' name='createContent'>
               <Icon name='plus' />New section
             </Menu.Item>

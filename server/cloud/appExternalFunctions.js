@@ -11,17 +11,21 @@ const getResourceData = (resource) => ({
   desc: _.get(resource, 'attributes.desc'),
   width: _.get(resource, 'attributes.metadata.width'),
   height: _.get(resource, 'attributes.metadata.height'),
+  cache: 'force-cache',
 });
 
-const getContentDocument = ({ document, documentResources }) => _.map(document[0].children, (node) => {
-  const resourcesByKey = _.keyBy(documentResources, 'id');
+const getContentDocument = (node, nodeResources) => {
+
   switch (node.type) {
     case 'img':
     case 'attachment':
-      return { ...node, resource: getResourceData(resourcesByKey[node.resource]) };
-    default: return node;
+      return { ...node, resource: getResourceData(nodeResources[node.resource]) };
+    default:
+      return node.children
+        ? { ...node, children: _.map(node.children, (child) => getContentDocument(child, nodeResources)) }
+        : node;
   }
-});
+};
 
 cloud.setupFunction('get-client-data', async (req) => {
   const defaultLanguage = process.env.APP_LOCALE;
@@ -49,8 +53,29 @@ cloud.setupFunction('get-client-data', async (req) => {
       .find(cloud.getUserPermissions(req)),
   ]);
 
+  const contents = _(contentsData)
+    .map(({ id, createdAt, attributes }) => ({ id, createdAt, ...attributes }))
+    .map(({ id, createdAt, definition, image, document, title, description, documentResources, entityType, entityInfo }) => ({
+      id,
+      createdAt,
+      section: definition.id,
+      title: title[language] || title[defaultLanguage],
+      description: description[language] || description[defaultLanguage],
+      entityType,
+      entityInfo,
+      image: getResourceData(image),
+      document: getContentDocument(_.get(document[language] || document[defaultLanguage], '[0]', { children: [] }), _.keyBy(documentResources, 'id')),
+    }))
+    .value();
+
+  const sectionHasContents = _(contents)
+    .groupBy('section')
+    .mapValues('length')
+    .value();
+
   const sections = _(contentDefinitionsData)
     .map(({ id, attributes }) => ({ id, ...attributes }))
+    .filter(({ id }) => sectionHasContents[id])
     .map(({ id, title, mobileView, image, description, order }) => ({
       id,
       mobileView,
@@ -60,22 +85,6 @@ cloud.setupFunction('get-client-data', async (req) => {
       image: getResourceData(image),
     }))
     .value();
-
-  const contents = _(contentsData)
-    .map(({ id, createdAt, attributes }) => ({ id, createdAt, ...attributes }))
-    .map(({ id, createdAt, definition, image, document, title, description, documentResources, entityType, entityInfo }) => ({
-      id,
-      createdAt,
-      definition: definition.id,
-      title: title[language] || title[defaultLanguage],
-      description: description[language] || description[defaultLanguage],
-      entityType,
-      entityInfo,
-      image: getResourceData(image),
-      document: getContentDocument({ documentResources, document: document[language] || document[defaultLanguage] }),
-    }))
-    .value();
-
 
   return {
     features: { authMode },
