@@ -54,7 +54,8 @@
 
 
 --- TODO LATER -------
-- Prepare for back4App
+- add justify center
+- order by setting
 - notifications
 - ask if send notification when creating content
 - page contents feature,

@@ -189,12 +189,26 @@ export class Content extends BaseObject {
   get document() { return this.get('document'); }
   set document(value) {
     this.setAttr('document', value);
-    this.documentResources = !value ? [] : _(value)
-      .flatMap(([{ children }]) => _.map(children, (node) => (node.type === 'img' || node.type === 'attachment') ? node.resource : undefined))
-      .compact()
-      .uniq()
-      .map((id) => new Resource({ id }))
-      .value();
+    if (value) {
+      const resources = [];
+      _.each(value, ([node]) => Content.getDocumentResources(node, resources));
+      this.documentResources = _(resources).uniq().map((id) => new Resource({ id })).value();
+    } else {
+      this.documentResources = [];
+    }
+  }
+
+  static getDocumentResources = (node, resources) => {
+    switch (node.type) {
+      case 'img':
+      case 'attachment':
+        resources.push(node.resource);
+        break;
+      default:
+        if (node.children) {
+          _.each(node.children, (child) => Content.getDocumentResources(child, resources));
+        }
+    }
   }
 
   static entityType = Object.freeze({ event: 'event', content: 'content' });
