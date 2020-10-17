@@ -10,16 +10,16 @@ import Joi from '@hapi/joi';
 import { useEffectSkipMount } from './hooks/misc';
 
 export const languageOptions = [
-  { key: 'us', text: 'English (en)', value: 'en' },
+  { key: 'en', text: 'English (en)', value: 'en' },
   { key: 'es', text: 'Spanish (es)', value: 'es' },
 ];
 
-export const getJoiLanguagesValidationSchema = (label, length, requiredCode = window.__ENVIRONMENT__.APP_LOCALE) => Joi.object(_.transform(languageOptions, (acc, { value }) => {
-  let rule = Joi.string().trim().max(length).label(`${label} (${value})`);
-  if (value === requiredCode) {
+export const getJoiLanguagesValidationSchema = (label, customizer = _.identity) => Joi.object(_.transform(languageOptions, (acc, { value }) => {
+  let rule = Joi.string().trim().label(`${label} (${value})`);
+  if (value === window.__ENVIRONMENT__.APP_LOCALE) {
     rule = rule.required();
   }
-  acc[value] = rule;
+  acc[value] = customizer(rule, value === window.__ENVIRONMENT__.APP_LOCALE);
 }, {})).label(label).required();
 
 

@@ -31,14 +31,25 @@ cloud.setupFunction('get-client-data', async (req) => {
   const defaultLanguage = process.env.APP_LOCALE;
   const { language = defaultLanguage } = req.params;
 
-  const clientFeatures = await new Parse.Query('Config')
-    .equalTo('name', 'client-features')
-    .first(cloud.masterPermissions)
-    .then((setting) => setting ? JSON.parse(setting.get('value')) : {});
-  const authMode = clientFeatures.authMode || types.authMode.private;
+  const { clientFeatures, privacyPolicyUrl } = await new Parse.Query('Config')
+    .containedIn('name', ['client-features', 'privacy-policy-url'])
+    .find(cloud.masterPermissions)
+    .then((config) => _(config)
+      .keyBy((setting) => _.camelCase(setting.get('name')))
+      .mapValues((setting) => setting ? JSON.parse(setting.get('value')) : {})
+      .value()
+    );
 
-  if (authMode === types.authMode.private && !req.user) {
-    return { features: { authMode } };
+  const config = {
+    features: {
+      ...clientFeatures,
+      authMode: clientFeatures.authMode || types.authMode.private,
+    },
+    privacyPolicyUrl: privacyPolicyUrl[language] || privacyPolicyUrl[defaultLanguage],
+  };
+
+  if (config.features.authMode === types.authMode.private && !req.user) {
+    return { config };
   }
 
   const [contentDefinitionsData, contentsData] = await Promise.all([
@@ -87,7 +98,7 @@ cloud.setupFunction('get-client-data', async (req) => {
     .value();
 
   return {
-    features: { authMode },
+    config,
     sections,
     contents,
   };

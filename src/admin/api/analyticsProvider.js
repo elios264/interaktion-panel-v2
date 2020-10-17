@@ -37,6 +37,7 @@ export class AnalyticsProvider {
       'restore-collection': _.identity,
       'import-collection': _.identity,
 
+      'update-privacy-policy': _.stubObject,
       'update-client-features': _.stubObject,
       'update-content-definitions-order': _.stubObject,
     };

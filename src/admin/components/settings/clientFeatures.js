@@ -24,8 +24,8 @@ export const ClientFeatures = () => {
   });
 
   return (
-    <Form onSubmit={submit}>
-      <Segment raised>
+    <Segment raised>
+      <Form onSubmit={submit}>
         <div className='mb4'>
           <Header
             content='Client features'
@@ -63,7 +63,7 @@ export const ClientFeatures = () => {
             icon='edit'
             content='Save' />
         </div>
-      </Segment>
-    </Form>
+      </Form>
+    </Segment>
   );
 };

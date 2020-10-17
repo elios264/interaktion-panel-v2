@@ -20,3 +20,10 @@ export const saveClientFeatures = (value) => handleError(async (dispatch, getSta
   api.logEvent('update-client-features');
   return result;
 }, 'Could not update the client features');
+
+export const savePrivacyPolicyUrl = ({ privacyPolicyUrl }) => handleError(async (dispatch, getState, { api }) => {
+  const result = await api.saveObject(getState().siteInfo.config['privacy-policy-url'].copy(), { value: privacyPolicyUrl });
+  dispatch(showSuccess({ content: 'The privacy police url has been updated.' }));
+  api.logEvent('update-privacy-policy');
+  return result;
+}, 'Could not update the privacy police');
