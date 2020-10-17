@@ -41,6 +41,15 @@ const schemas = [{
   className: 'Content',
   clp: { get: publicAccess, find: publicAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },
   columns: { definition: { type: 'Pointer', targetClass: 'ContentDefinition' }, image: { type: 'Pointer', targetClass: 'Resource' }, visibility: 'String', entityType: 'String', entityInfo: 'Object', title: 'Object', description: 'Object', document: 'Object', documentResources: 'Array' },
+}, {
+  className: 'DeviceInstallation',
+  clp: { get: noAccess, find: adminAccess, create: noAccess, update: noAccess, delete: noAccess, addField: noAccess },
+  columns: { installationId: 'String', deviceName: 'String', deviceYear: 'Number', devicePlatform: 'String', deviceVersion: 'String', appVersion: 'String', buildVersion: 'String', language: 'String', enabled: 'Boolean', user: { type: 'Pointer', targetClass: '_User' }, pushToken: 'String' },
+  indices: [
+    { name: 'installationId_idx', unique: true, key: { 'installationId': 1 } },
+    { name: 'updatedAt_idx', unique: false, key: { '_updated_at': 1 }, expireAfterSeconds: 60 * 60 * 24 * 90 },
+    { name: 'enabled_user_idx', unique: false, key: { 'enabled': 1, '_p_user': 1 }, partialFilterExpression: { enabled: true } },
+  ],
 }];
 
 cloud.setupJob('setup-app-db-schemes', async () => {

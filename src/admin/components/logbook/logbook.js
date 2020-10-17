@@ -24,6 +24,7 @@ const actionDefinitions = {
   'save-content-definition': { desc: ({ name }) => `Has saved the section "${name}"` },
   'delete-content-definition': { desc: ({ name }) => `Has deleted the section "${name}"` },
 
+  'sent-content-notification': { desc: ({ name }) => `Has sent a push notification for content "${name}"` },
   'save-content': { desc: ({ name }) => `Has saved the content "${name}"` },
   'clone-content': { desc: ({ name }) => `Has cloned the content "${name}"` },
   'delete-content': { desc: ({ name }) => `Has deleted the content "${name}"` },
