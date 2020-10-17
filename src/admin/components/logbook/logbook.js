@@ -32,6 +32,7 @@ const actionDefinitions = {
   'restore-collection': { desc: ({ collection }) => `Has performed a restore on collection: "${collection}"` },
   'import-collection': { desc: ({ collection }) => `Has performed an import on collection: "${collection}"` },
 
+  'update-privacy-policy': { desc: () => 'Has updated the privacy policy url' },
   'update-client-features': { desc: () => 'Has updated the client features' },
   'update-content-definitions-order': { desc: () => 'Has updated the customers offers order' },
 };

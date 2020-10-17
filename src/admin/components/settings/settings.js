@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 
 import { ContentDefinitionsOrder } from './contentDefinitionsOrder';
 import { ClientFeatures } from './clientFeatures';
+import { PrivacyPolicy } from './privacyPolicy';
 
 export const Settings = () => (
   <section className='settings'>
@@ -13,10 +14,11 @@ export const Settings = () => (
       <Grid stackable>
         <Grid.Row>
           <Grid.Column computer={16} largeScreen={8} widescreen={8}>
-            <ContentDefinitionsOrder />
+            <ClientFeatures />
+            <PrivacyPolicy />
           </Grid.Column>
           <Grid.Column computer={16} largeScreen={8} widescreen={8} className='pt4-m pt0-l'>
-            <ClientFeatures />
+            <ContentDefinitionsOrder />
           </Grid.Column>
         </Grid.Row>
       </Grid>

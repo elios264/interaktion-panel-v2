@@ -33,47 +33,45 @@ export const ContentDefinitionsOrder = () => {
   const onSortEnd = ({ oldIndex, newIndex }) => contentDefinitions.onChange(arrayMove(contentDefinitions.value, oldIndex, newIndex));
 
   return (
-    <section className='content-definitions-order'>
-      <Segment raised>
-        <div className='pa2'>
-          <div className='mb4'>
-            <Header
-              content='Sections order'
-              size='large'
-              subheader='Configure the order in which the section tiles appear in the mobile app'
-              icon='ordered list' />
-          </div>
-          <Grid>
-            <Grid.Column>
-              {_.size(contentDefinitions.value) ?
-                <SortableList axis='y' lockAxis='y' items={contentDefinitions.value} onSortEnd={onSortEnd} useDragHandle /> :
-                <Message warning content='Created sections will appear here so you can determine the order on which they will be displayed.' />
-              }
-            </Grid.Column>
-          </Grid>
-          <div className='tr mt3'>
-            <Button
-              type='button'
-              className='w-100 w-auto-ns'
-              secondary
-              disabled={loading || !_.size(contentDefinitions.value)}
-              loading={loading}
-              onClick={reset}
-              icon='cancel'
-              content='Cancel' />
-            <div className='db mt1 di-ns mt0-ns' />
-            <Button
-              onClick={submit}
-              disabled={loading || !_.size(contentDefinitions.value)}
-              loading={loading}
-              className='w-100 w-auto-ns'
-              primary
-              icon='edit'
-              content='Save' />
-          </div>
+    <Segment raised>
+      <div className='pa2'>
+        <div className='mb4'>
+          <Header
+            content='Sections order'
+            size='large'
+            subheader='Configure the order in which the section tiles appear in the mobile app'
+            icon='ordered list' />
         </div>
-      </Segment>
-    </section>
+        <Grid>
+          <Grid.Column>
+            {_.size(contentDefinitions.value) ?
+              <SortableList axis='y' lockAxis='y' items={contentDefinitions.value} onSortEnd={onSortEnd} useDragHandle /> :
+              <Message warning content='Created sections will appear here so you can determine the order on which they will be displayed.' />
+            }
+          </Grid.Column>
+        </Grid>
+        <div className='tr mt3'>
+          <Button
+            type='button'
+            className='w-100 w-auto-ns'
+            secondary
+            disabled={loading || !_.size(contentDefinitions.value)}
+            loading={loading}
+            onClick={reset}
+            icon='cancel'
+            content='Cancel' />
+          <div className='db mt1 di-ns mt0-ns' />
+          <Button
+            onClick={submit}
+            disabled={loading || !_.size(contentDefinitions.value)}
+            loading={loading}
+            className='w-100 w-auto-ns'
+            primary
+            icon='edit'
+            content='Save' />
+        </div>
+      </div>
+    </Segment>
   );
 };
 

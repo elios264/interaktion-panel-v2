@@ -20,9 +20,9 @@ export const contentSchema = {
     ],
     otherwise: Joi.forbidden(),
   }),
-  title: getJoiLanguagesValidationSchema('Title', 200),
-  description: getJoiLanguagesValidationSchema('Description', 2000),
-  document: Joi.object({ [window.__ENVIRONMENT__.APP_LOCALE]: Joi.array().required().label('Document') }).pattern(/.*/, Joi.array().label('Document')).required().label('Document'),
+  title: getJoiLanguagesValidationSchema('Title', (r) => r.max(200)),
+  description: getJoiLanguagesValidationSchema('Description', (r) => r.max(2000)),
+  document: Joi.object({ [window.__ENVIRONMENT__.APP_LOCALE]: Joi.array().required().label(`Document ${window.__ENVIRONMENT__.APP_LOCALE}`) }).pattern(/.*/, Joi.array().label('Document')).required().label('Document'),
 };
 
 const contentImportSchema = {
