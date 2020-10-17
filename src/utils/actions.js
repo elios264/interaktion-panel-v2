@@ -17,9 +17,7 @@ export const handleError = (fn, errorMessage = '', { rethrow = false, silent = f
       exceptionMessage = JSON.stringify(exceptionMessage);
     }
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.error(err);
-    }
+    console.error(err);
 
     if (!silent) {
       await dispatch(showError({ header: errorMessage || undefined, content: exceptionMessage }));

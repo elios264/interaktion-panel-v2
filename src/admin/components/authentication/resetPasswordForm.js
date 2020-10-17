@@ -19,7 +19,7 @@ export const ResetPasswordForm = React.memo(({ location }) => {
   const { fields: { password, confirmPassword }, submit, loading } = useFieldset({ schema: resetSchema, source: resetForm });
 
   useEffect(() => {
-    window.location = `${window.__ENVIRONMENT__.APP_SCHEME_PREFIX}auth/reset?${queryString.stringify({ token, username })}`;
+    window.location = `${window.__ENVIRONMENT__.APP_SCHEME_PREFIX}/auth/reset?${queryString.stringify({ token, username })}`;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
