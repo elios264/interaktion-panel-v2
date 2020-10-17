@@ -6,17 +6,45 @@ import { BaseObject, File, Resource } from 'objects';
 import { ImportObjectsAssistantModal } from 'admin/components/common';
 import { contentImportDefinition } from 'admin/components/contents/contentSchema';
 
-
 const { jsonKeys, actions } = ImportObjectsAssistantModal;
 
+export const sendContentNotification = (content) => handleError(async (dispatch, getState, { api }) => {
+  await api.runCloudCode('send-content-notification', { contentId: content.id });
+  api.logEvent('sent-content-notification', content);
+  return true;
+}, 'The notification for the content could not be sent');
 
 export const saveContent = (content, silentAndRethrow = false) => handleError(async (dispatch, getState, { api }) => {
+  let result;
 
-  const result = await api.saveObject(content);
   if (!silentAndRethrow) {
-    dispatch(showSuccess({ content: 'The content has been successfully saved!' }));
+    ({ result } = await dispatch(showConfirm({
+      header: 'Do you wish to send a push notification?',
+      options: [
+        'Save content only',
+        'Save content and send a push notification',
+      ],
+      onAccept: async (selectedOption) => {
+        const result = await api.saveObject(content);
+        if (selectedOption === 1) {
+          await dispatch(sendContentNotification(content));
+        }
+        return result;
+      },
+    })));
+
+  } else {
+    result = await api.saveObject(content);
   }
-  api.logEvent('save-content', result);
+
+  if (result) {
+    if (!silentAndRethrow) {
+      dispatch(showSuccess({ content: 'The content has been successfully saved!' }));
+    }
+
+    api.logEvent('save-content', result);
+  }
+
   return result;
 }, silentAndRethrow ? null : 'The content could not be saved', { silent: silentAndRethrow, rethrow: silentAndRethrow });
 

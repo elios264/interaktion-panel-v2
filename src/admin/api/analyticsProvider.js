@@ -29,6 +29,7 @@ export class AnalyticsProvider {
       'save-content-definition': titleLanguageParams,
       'delete-content-definition': titleLanguageParams,
 
+      'sent-content-notification': titleLanguageParams,
       'save-content': titleLanguageParams,
       'clone-content': titleLanguageParams,
       'delete-content': titleLanguageParams,

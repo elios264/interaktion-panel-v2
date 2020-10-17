@@ -103,3 +103,18 @@ cloud.setupTrigger('beforeSave', 'Content', validationsHooks.assignACL({ getPerm
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.definition', counter: 'ContentDefinition.refs' });
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.image', counter: 'Resource.refs' });
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.documentResources', counter: 'Resource.refs' });
+
+const deviceInstallationSchema = Joi.object({
+  installationId: Joi.string().required().max(100),
+  deviceName: Joi.string().required().max(100),
+  deviceYear: Joi.number().integer().required(),
+  devicePlatform: Joi.string().valid('android', 'ios').required(),
+  deviceVersion: Joi.string().required().max(100),
+  appVersion: Joi.string().required().max(100),
+  buildVersion: Joi.string().required().max(100),
+  language: Joi.string().required().max(10),
+  enabled: Joi.boolean().default(true),
+  user: Joi.object().instance(Parse.Object),
+  pushToken: Joi.string().required().max(200),
+});
+cloud.setupTrigger('beforeSave', 'DeviceInstallation', validationsHooks.validate(deviceInstallationSchema));
