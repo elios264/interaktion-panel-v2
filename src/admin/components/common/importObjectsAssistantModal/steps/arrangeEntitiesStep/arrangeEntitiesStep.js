@@ -86,7 +86,7 @@ export const ArrangeEntitiesStep = ({ definitions, onBack, onNext, header, json,
       const childrenIgnored = _(json[property])
         .filter((entity) => _.some([actions.create, actions.update], (action) => action === _.get(entity, jsonKeys.operationAction)))
         .flatMap((entity) => {
-          const childValue = _.get(entity, child.accessor);
+          const childValue = _.result(entity, child.accessor);
           return _.isArray(childValue) ? [] : childValue; // only single children are required, as the array children just represent an empty array.
         })
         .uniq()

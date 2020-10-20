@@ -23,7 +23,7 @@ export const saveClientFeatures = (value) => handleError(async (dispatch, getSta
 
 export const savePrivacyPolicyUrl = ({ privacyPolicyUrl }) => handleError(async (dispatch, getState, { api }) => {
   const result = await api.saveObject(getState().siteInfo.config['privacy-policy-url'].copy(), { value: privacyPolicyUrl });
-  dispatch(showSuccess({ content: 'The privacy police url has been updated.' }));
+  dispatch(showSuccess({ content: 'The privacy policy url has been updated.' }));
   api.logEvent('update-privacy-policy');
   return result;
-}, 'Could not update the privacy police');
+}, 'Could not update the privacy policy');

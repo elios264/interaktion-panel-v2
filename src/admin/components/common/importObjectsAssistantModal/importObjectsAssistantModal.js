@@ -75,7 +75,7 @@ ImportObjectsAssistantModal.propTypes = {
     detailsUrl: PropTypes.func,
     children: PropTypes.arrayOf(PropTypes.shape({
       collection: PropTypes.string.isRequired,
-      accessor: PropTypes.string.isRequired,
+      accessor: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
     }).isRequired),
   }).isRequired).isRequired,
 };

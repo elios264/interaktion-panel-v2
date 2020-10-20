@@ -20,17 +20,10 @@ export const saveContent = (content, silentAndRethrow = false) => handleError(as
   if (!silentAndRethrow) {
     ({ result } = await dispatch(showConfirm({
       header: 'Do you wish to send a push notification?',
-      options: [
-        'Save content only',
-        'Save content and send a push notification',
-      ],
-      onAccept: async (selectedOption) => {
-        const result = await api.saveObject(content);
-        if (selectedOption === 1) {
-          await dispatch(sendContentNotification(content));
-        }
-        return result;
-      },
+      options: ['Save content only', 'Save content and send a push notification'],
+      onAccept: (selectedOption) => api
+        .saveObject(content)
+        .then(() => selectedOption === 1 ? dispatch(sendContentNotification(content)).then(() => content) : content),
     })));
 
   } else {
