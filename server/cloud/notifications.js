@@ -103,7 +103,7 @@ cloud.setupFunction('send-content-notification', async (req) => {
 
       return ticket.details.error === 'DeviceNotRegistered'
         ? installations[i].installation
-        : req.log.error(ticket);
+        : (req.log.error(ticket), undefined);
     })
     .compact()
     .value();

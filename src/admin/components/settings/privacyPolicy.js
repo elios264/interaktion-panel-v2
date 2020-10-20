@@ -25,7 +25,7 @@ export const PrivacyPolicy = () => {
       <Form onSubmit={submit}>
         <div className='mb4'>
           <Header
-            content='Privacy police url'
+            content='Privacy policy url'
             size='large'
             subheader='Configure privacy policy url.'
             icon='info' />

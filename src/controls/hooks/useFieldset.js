@@ -49,18 +49,18 @@ export const useFieldset = ({
     setSource({ type: 'SET_ALL', value: validator ? templateSource || {} : cloneSource(templateSource || {}) });
   }, [cloneSource, enabled, schema, templateSource, validator]);
 
-  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
-    if (validator) {
-      validator.current.add(validatorRef);
+    const currentValidator = _.get(validator, 'current');
+    if (currentValidator) {
+      currentValidator.add(validatorRef);
     }
     return () => {
-      if (validator) {
-        validator.current.delete(validatorRef);
+      if (currentValidator) {
+        currentValidator.delete(validatorRef);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  /* eslint-enable react-hooks/exhaustive-deps */
 
 
   useEffect(() => {
