@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { handleError, showSuccess, showConfirm, showModal } from 'utils/actions';
 
 import { utils } from 'controls';
-import { BaseObject, File, Resource } from 'objects';
+import { BaseObject, File, Resource, Content } from 'objects';
 import { ImportObjectsAssistantModal } from 'admin/components/common';
 import { contentImportDefinition } from 'admin/components/contents/contentSchema';
 
@@ -17,7 +17,7 @@ export const sendContentNotification = (content) => handleError(async (dispatch,
 export const saveContent = (content, silentAndRethrow = false) => handleError(async (dispatch, getState, { api }) => {
   let result;
 
-  if (!silentAndRethrow) {
+  if (!silentAndRethrow && content.visibility !== Content.visibility.none) {
     ({ result } = await dispatch(showConfirm({
       header: 'Do you wish to send a push notification?',
       options: ['Save content only', 'Save content and send a push notification'],

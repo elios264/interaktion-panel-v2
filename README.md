@@ -59,3 +59,4 @@
 - page contents feature -> directly view content in app,
 - enabled/disabled users,
 - option to allow/disable registration
+- title optional on content details
