@@ -36,7 +36,7 @@ export const ContentList = ({ match, location, history }) => {
 
   const deleteSelectedContentsAndClearSelection = useAsyncSubmit(useDispatchCallback(deleteSelectedContents, selectedContents), () => setSelectedContents([]));
   const deleteContentDefinitionAndGoToCreatePage = useAsyncSubmit(useDispatchCallback(deleteContentDefinition, definition), () => history.replace('/contents/create'));
-  const exportToJSON = useDispatchCallback(exportContents, { definition, contentsIds: selectedContents });
+  const exportToJSON = useDispatchCallback(exportContents, { definition, contentsIds: _.isEmpty(selectedContents) ? undefined : selectedContents });
   const importFromJSON = useDispatchCallback(importContents, { definition });
 
   if (!definition) {

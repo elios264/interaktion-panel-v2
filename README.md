@@ -53,11 +53,9 @@
 - APP_LOCALE
 
 
---- TODO LATER -------
-- update libs
+--- TODO FOR MONEY -------
 - add justify center
-- order by setting
-- notifications, ask if send notification when creating content
+- update libs
 - page contents feature -> directly view content in app,
 - enabled/disabled users,
 - option to allow/disable registration

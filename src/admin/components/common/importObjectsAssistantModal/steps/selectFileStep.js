@@ -37,7 +37,7 @@ export const SelectFileStep = ({ definitions, onNext, header }) => {
 
     // - validate contains definitions
     _.each(requiredDefinitions, ({ property, title }) => {
-      if (!_.isArray(json[property]) || _.size(json[property]) < 1) {
+      if (!_.isArray(json[property])) {
         throw new Error(`The file does not contain a valid required collection: "${title}"`);
       }
     });
@@ -50,7 +50,7 @@ export const SelectFileStep = ({ definitions, onNext, header }) => {
       }
 
       if (json.references[property] && !allowReferences) {
-        throw new Error(`Collection "${title}": is a marked as a references collection with no actual data for importing, you are probably importing this file into the wrong section`);
+        throw new Error(`Collection "${title}": is a marked as a reference collection with no actual data for importing, you are probably importing this file into the wrong section`);
       }
 
       return Joi.object(json.references[property] ? referenceSchema : schema).validateAsync(entity, { allowUnknown: true }).catch((err) => {

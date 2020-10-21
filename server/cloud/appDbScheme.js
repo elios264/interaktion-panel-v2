@@ -40,7 +40,7 @@ const schemas = [{
 }, {
   className: 'Content',
   clp: { get: publicAccess, find: publicAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess },
-  columns: { definition: { type: 'Pointer', targetClass: 'ContentDefinition' }, image: { type: 'Pointer', targetClass: 'Resource' }, visibility: 'String', entityType: 'String', entityInfo: 'Object', title: 'Object', description: 'Object', document: 'Object', documentResources: 'Array' },
+  columns: { definition: { type: 'Pointer', targetClass: 'ContentDefinition' }, image: { type: 'Pointer', targetClass: 'Resource' }, visibility: 'String', entityType: 'String', entityInfo: 'Object', title: 'Object', description: 'Object', document: 'Object', documentResources: 'Array', order: 'Number' },
 }, {
   className: 'DeviceInstallation',
   clp: { get: noAccess, find: adminAccess, create: noAccess, update: noAccess, delete: noAccess, addField: noAccess },
@@ -52,7 +52,7 @@ const schemas = [{
   ],
 }];
 
-cloud.setupJob('setup-app-db-schemes', async () => {
+cloud.setupJob('setup-app-db-schemes', async (req) => {
   const db = await mongoAdapter.client.db(mongoAdapter.client.s.options.dbName);
   const existingSchemas = await Parse.Schema.all().then((schemas) => _.keyBy(schemas, 'className'));
 
@@ -93,5 +93,5 @@ cloud.setupJob('setup-app-db-schemes', async () => {
     await Parse.Object.saveAll([adminRole, clientRole], cloud.masterPermissions);
   }
 
-  return `${_.size(schemas)} schemas where successfully created/updated`;
+  req.write(`${_.size(schemas)} schemas where successfully created/updated`);
 });

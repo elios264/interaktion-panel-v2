@@ -63,10 +63,22 @@ const setupTrigger = (triggerName, className, handler) => {
   }
 };
 const setupJob = (jName, handler) => Parse.Cloud.job(jName, async (req) => {
+  const prefix = _.toUpper(_(jName).words().map(0).join(''));
+  req.write = (string, skipMessage = false) => {
+    if (!skipMessage) {
+      req.message(string);
+    }
+    req.log.info(`${prefix}: ${string}`);
+  };
   try {
-    return await handler(req);
+    await handler(req);
   } catch (err) {
-    throw _.isString(err) ? err : _.get(err, 'message', _.get(err, 'responseText', 'An unknown error has ocurred'));
+    const message = _.isString(err)
+      ? err
+      : (_.get(err, 'message') || _.get(err, 'text') || _.get(err, 'responseText') || `An unknown error has ocurred: ${JSON.stringify(err)}`);
+    req.message(message);
+    req.log.error(`${prefix}: ${message}`);
+    throw err;
   }
 });
 const setupFunction = (fnName, handler) => Parse.Cloud.define(fnName, handler);

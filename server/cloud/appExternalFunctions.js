@@ -65,15 +65,17 @@ cloud.setupFunction('get-client-data', async (req) => {
   ]);
 
   const contents = _(contentsData)
-    .map(({ id, createdAt, attributes }) => ({ id, createdAt, ...attributes }))
-    .map(({ id, createdAt, definition, image, document, title, description, documentResources, entityType, entityInfo }) => ({
+    .map(({ id, createdAt, updatedAt, attributes }) => ({ id, createdAt, updatedAt, ...attributes }))
+    .map(({ id, createdAt, updatedAt, definition, image, document, title, description, documentResources, entityType, entityInfo, order }) => ({
       id,
       createdAt,
+      updatedAt,
       section: definition.id,
       title: title[language] || title[defaultLanguage],
       description: description[language] || description[defaultLanguage],
       entityType,
       entityInfo,
+      order,
       image: getResourceData(image),
       document: getContentDocument(_.get(document[language] || document[defaultLanguage], '[0]', { children: [] }), _.keyBy(documentResources, 'id')),
     }))
