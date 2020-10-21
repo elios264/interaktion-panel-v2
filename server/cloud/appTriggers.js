@@ -79,6 +79,7 @@ const contentDefinitionSchema = Joi.object({
   image: Joi.object().instance(Parse.Object).required(),
   mobileView: Joi.string().valid(..._.values(mobileView)).required(),
   refs: Joi.number().default(0),
+  order: Joi.number().default(0),
 });
 cloud.setupTrigger('beforeSave', 'ContentDefinition', validationsHooks.validate(contentDefinitionSchema));
 cloud.setupTrigger('beforeSave', 'ContentDefinition', validationsHooks.readOnly({ allowMaster: true }, 'refs'));
@@ -96,6 +97,7 @@ const contentSchema = Joi.object({
   description: Joi.object({ [process.env.APP_LOCALE]: Joi.string().trim().max(2000).required() }).pattern(/.*/, Joi.string().trim().max(2000)).required(),
   document: Joi.object({ [process.env.APP_LOCALE]: Joi.array().items(Joi.object()).required() }).pattern(/.*/, Joi.array().items(Joi.object())).required(),
   documentResources: Joi.array().items(Joi.object().instance(Parse.Object)).max(50),
+  order: Joi.number().default(0),
 });
 
 cloud.setupTrigger('beforeSave', 'Content', validationsHooks.validate(contentSchema));

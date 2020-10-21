@@ -170,6 +170,9 @@ export class Content extends BaseObject {
   set visibility(value) { this.setAttr('visibility', value); }
   get visibilityName() { return Content.getVisibilityName(this.visibility); }
 
+  get order() { return this.get('order'); }
+  set order(value) { this.setAttr('order', value); }
+
   get title() { return this.get('title'); }
   set title(value) { this.setAttr('title', value); }
 

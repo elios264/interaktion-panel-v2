@@ -89,7 +89,7 @@ export const cloneContent = (content) => handleError(async (dispatch, getState, 
 
 export const exportContents = ({ contentsIds, definition, onlyData = false }) => handleError((dispatch, getState) => {
 
-  let selectedContents = !_.size(contentsIds)
+  let selectedContents = _.isUndefined(contentsIds)
     ? _.filter(getState().objects.contents, (content) => content.definition.id === definition.id)
     : _(contentsIds).map((id) => getState().objects.contents[id]).compact().value();
 
@@ -103,7 +103,7 @@ export const exportContents = ({ contentsIds, definition, onlyData = false }) =>
   const data = {
     version: window.__ENVIRONMENT__.BUILD,
     environment: window.__ENVIRONMENT__.BUILD_ENVIRONMENT,
-    references: {},
+    references: { contents: false },
     contents: selectedContents,
   };
 
@@ -171,7 +171,7 @@ export const importContents = ({ definition, json, dryRun, logProgress = _.noop,
           content = content.clone();
         } else {
         // eslint-disable-next-line no-return-assign, no-self-assign
-          _.each(['definition', 'image', 'visibility', 'document', 'title', 'description', 'documentResources', 'entityType', 'entityInfo'], (prop) => content[prop] = content[prop]);
+          _.each(['definition', 'image', 'visibility', 'document', 'title', 'description', 'documentResources', 'entityType', 'entityInfo', 'order'], (prop) => content[prop] = content[prop]);
         }
 
         return dispatch(saveContent(content, true)).then(() => logProgress(`Content "${contentName}" ${thenAction} successfully`));
@@ -184,11 +184,11 @@ export const importContents = ({ definition, json, dryRun, logProgress = _.noop,
     if (json[jsonKeys.isRestore]) {
       const differentContents = _(json.contents)
         .map((content) => ({ content, storeContent: _.invoke(getState().objects.contents[content.id], 'toFullJSON') }))
-        .filter(({ content, storeContent }) => storeContent && !utils.equalBy(content, storeContent, 'entityInfo', 'entityType', 'definition.objectId', 'image.objectId', 'visibility', 'title', 'description', 'document'))
+        .filter(({ content, storeContent }) => storeContent && !utils.equalBy(content, storeContent, 'entityInfo', 'entityType', 'definition.objectId', 'image.objectId', 'visibility', 'title', 'description', 'document', 'order'))
         .map('content')
         .value();
 
-      logProgress(`Found ${_.size(differentContents)} contents with differences (checked properties: entityInfo, entityType, definition, image, visibility, title, description, document)\n`);
+      logProgress(`Found ${_.size(differentContents)} contents with differences (checked properties: entityInfo, entityType, definition, image, visibility, title, description, document, order)\n`);
 
       await Promise.all(_.map(differentContents, _.partial(saveContentAs, 'restore')));
       api.logEvent('restore-collection', { collection: definition.title[window.__ENVIRONMENT__.APP_LOCALE] });
