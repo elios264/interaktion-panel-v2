@@ -1,4 +1,5 @@
 /* global Parse */
+const moment = require('moment');
 const _ = require('lodash');
 const { Expo } = require('expo-server-sdk');
 
@@ -52,7 +53,11 @@ cloud.setupFunction('send-content-notification', async (req) => {
       .equalTo('objectId', contentId)
       .select('visibility', 'title', 'description')
       .first(cloud.masterPermissions)
-      .then((content) => !content ? undefined : ({ id: content.id, ...content.attributes })),
+      .then((content) => !content ? undefined : ({
+        id: content.id,
+        updatedAt: content.updatedAt,
+        ...content.attributes,
+      })),
   ]);
 
   if (!content) {
@@ -79,7 +84,11 @@ cloud.setupFunction('send-content-notification', async (req) => {
     })));
 
   const defaultLanguage = process.env.APP_LOCALE;
-  const notificationData = { action: 'view_content', contentId };
+  const notificationData = {
+    action: 'view_content',
+    contentId,
+    contentUpdatedAt: moment(content.updatedAt).toISOString(),
+  };
   const messages = _.map(installations, ({ language, token }) => ({
     to: token,
     data: notificationData,
