@@ -33,7 +33,7 @@ const EntityInfoEvent = ({ location, start, disabled }) => (
       </Popup>
     </Form.Field>
     <Form.Field error={start.errored} required>
-      <label>Start</label>
+      <label>Start date</label>
       <Popup message={start.message} enabled={start.errored}>
         <DatePicker value={start.value} onChange={start.onChange} disabled={disabled} time />
       </Popup>
