@@ -73,7 +73,7 @@ module.exports = {
     }, {
       test: /\.(css|less)$/,
       use: [
-        { loader: MiniCssExtractPlugin.loader, options: { hmr: isDev } },
+        { loader: MiniCssExtractPlugin.loader },
         { loader: 'css-loader', options: { importLoaders: 1, sourceMap: isDev } },
         { loader: 'less-loader', options: { sourceMap: isDev } },
       ],

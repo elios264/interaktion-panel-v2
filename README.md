@@ -53,10 +53,8 @@
 - APP_LOCALE
 
 TODO:
-- update libs (update tools, eslint new rules, new react and runtime, babel new setup, docker commit hash)
+- update libs (docker commit hash)
 - check on tachyons
-- check if node supports imports
-
 - page contents feature -> directly view content in app,
 
 --- TODO FOR MONEY -------
