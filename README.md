@@ -53,7 +53,6 @@
 - APP_LOCALE
 
 TODO:
-- update libs (docker commit hash)
 - check on tachyons
 - page contents feature -> directly view content in app,
 
