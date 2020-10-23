@@ -4,12 +4,13 @@ import queryString from 'query-string';
 
 export const useUrlParams = (query, defaultParams) => useMemo(() => {
   const params = queryString.parse(query, { arrayFormat: 'index' });
-  const defaultsKeysValues = _.mapValues(defaultParams, (value, key) => _.isFunction(value) ? value(params[key]) : _.has(params, key) ? params[key] : value);
+  const defaultsKeysValues = _.mapValues(defaultParams, (value, key) => (_.isFunction(value) ? value(params[key]) : _.has(params, key) ? params[key] : value));
   return { ...params, ...defaultsKeysValues };
 }, [query, defaultParams]);
 
-
-export const useUrlParamsHandler = ({ history, location, key, serializer = _.identity }) => useCallback((source, ...rest) => {
+export const useUrlParamsHandler = ({
+  history, location, key, serializer = _.identity,
+}) => useCallback((source, ...rest) => {
 
   let result = {};
   if (_.isUndefined(key)) {

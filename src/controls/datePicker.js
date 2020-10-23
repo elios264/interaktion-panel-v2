@@ -1,3 +1,9 @@
+/* eslint-disable react/forbid-foreign-prop-types */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/jsx-no-bind */
+/* eslint-disable react/state-in-constructor */
+/* eslint-disable react/static-property-placement */
+
 import 'react-day-picker/lib/style.css';
 
 import _ from 'lodash';
@@ -7,7 +13,9 @@ import { Helmet } from 'react-helmet';
 import { PureComponent } from 'react';
 import DayPicker from 'react-day-picker';
 import MomentLocaleUtils from 'react-day-picker/moment';
-import { Input, Popup, Label, Button, Icon, Select } from 'semantic-ui-react';
+import {
+  Input, Popup, Label, Button, Icon, Select,
+} from 'semantic-ui-react';
 import { createSelector } from 'reselect';
 import cx from 'classnames';
 
@@ -15,18 +23,29 @@ import { BoundAnchor } from './bindables';
 import { Range } from './range';
 import { formatDate } from './utils';
 
-const dateRanges = _.keyBy([
-  { key: 'today', label: 'Today', start: moment().startOf('day').toDate(), end: moment().endOf('day').toDate() },
-  { key: 'yesterday', label: 'Yesterday', start: moment().subtract(1, 'days').startOf('day').toDate(), end: moment().subtract(1, 'days').endOf('day').toDate() },
-  { key: 'last7Days', label: 'Last 7 days', start: moment().subtract(6, 'days').startOf('day').toDate(), end: moment().endOf('day').toDate() },
-  { key: 'last30Days', label: 'Last 30 days', start: moment().subtract(29, 'days').startOf('day').toDate(), end: moment().endOf('day').toDate() },
-  { key: 'thisMonth', label: 'This month', start: moment().startOf('month').toDate(), end: moment().endOf('day').toDate() },
-  { key: 'last6Months', label: 'Last 6 months', start: moment().subtract(6, 'month').startOf('day').toDate(), end: moment().endOf('day').toDate() },
-  { key: 'thisYear', label: 'This Year', start: moment().startOf('year').toDate(), end: moment().endOf('day').toDate() },
-  { key: 'lastYear', label: 'Last Year', start: moment().subtract(1, 'year').startOf('day').toDate(), end: moment().endOf('day').toDate() },
-  { key: 'last2Years', label: 'Last 2 years', start: moment().subtract(2, 'years').startOf('day').toDate(), end: moment().endOf('day').toDate() },
-  { key: 'last5Years', label: 'Last 5 years', start: moment().subtract(5, 'years').startOf('day').toDate(), end: moment().endOf('day').toDate() },
-  { key: 'last10Years', label: 'Last 10 years', start: moment().subtract(10, 'years').startOf('day').toDate(), end: moment().endOf('day').toDate() },
+const dateRanges = _.keyBy([{
+  key: 'today', label: 'Today', start: moment().startOf('day').toDate(), end: moment().endOf('day').toDate(),
+}, {
+  key: 'yesterday', label: 'Yesterday', start: moment().subtract(1, 'days').startOf('day').toDate(), end: moment().subtract(1, 'days').endOf('day').toDate(),
+}, {
+  key: 'last7Days', label: 'Last 7 days', start: moment().subtract(6, 'days').startOf('day').toDate(), end: moment().endOf('day').toDate(),
+}, {
+  key: 'last30Days', label: 'Last 30 days', start: moment().subtract(29, 'days').startOf('day').toDate(), end: moment().endOf('day').toDate(),
+}, {
+  key: 'thisMonth', label: 'This month', start: moment().startOf('month').toDate(), end: moment().endOf('day').toDate(),
+}, {
+  key: 'last6Months', label: 'Last 6 months', start: moment().subtract(6, 'month').startOf('day').toDate(), end: moment().endOf('day').toDate(),
+}, {
+  key: 'thisYear', label: 'This Year', start: moment().startOf('year').toDate(), end: moment().endOf('day').toDate(),
+}, {
+  key: 'lastYear', label: 'Last Year', start: moment().subtract(1, 'year').startOf('day').toDate(), end: moment().endOf('day').toDate(),
+}, {
+  key: 'last2Years', label: 'Last 2 years', start: moment().subtract(2, 'years').startOf('day').toDate(), end: moment().endOf('day').toDate(),
+}, {
+  key: 'last5Years', label: 'Last 5 years', start: moment().subtract(5, 'years').startOf('day').toDate(), end: moment().endOf('day').toDate(),
+}, {
+  key: 'last10Years', label: 'Last 10 years', start: moment().subtract(10, 'years').startOf('day').toDate(), end: moment().endOf('day').toDate(),
+},
 ], 'key');
 
 const rangePickerStyles = `
@@ -64,7 +83,9 @@ class YearMonthSelect extends PureComponent {
   };
 
   render() {
-    const { date, localeUtils, fromYear, toYear } = this.props;
+    const {
+      date, localeUtils, fromYear, toYear,
+    } = this.props;
     const months = localeUtils.getMonths('en');
     const selectedYear = new Date(date).getFullYear();
     const selectedMonth = date.getMonth();
@@ -79,7 +100,6 @@ class YearMonthSelect extends PureComponent {
     );
   }
 }
-
 
 class TimePicker extends PureComponent {
   static propTypes = {
@@ -156,7 +176,9 @@ class DatePicker extends PureComponent {
   }
 
   openPicker = () => !this.props.disabled && this.setState({ open: true });
+
   closePicker = () => this.setState({ open: false, mode: 'date', currentYearMonth: undefined });
+
   setMode = (mode) => this.setState({ mode });
 
   onDaySelected = (day, { disabled } = {}) => {
@@ -189,7 +211,9 @@ class DatePicker extends PureComponent {
   render() {
     const { open, mode, currentYearMonth } = this.state;
 
-    const { value, format, onChange, time, disabled, initialDate, allowClear, selectYearMonth, fromYear, toYear, minDate } = this.props;
+    const {
+      value, format, onChange, time, disabled, initialDate, allowClear, selectYearMonth, fromYear, toYear, minDate,
+    } = this.props;
     const toDate = new Date(toYear, 11);
     const fromDate = new Date(fromYear, 0);
     const yearMonthSelectOptions = selectYearMonth ? {
@@ -200,7 +224,8 @@ class DatePicker extends PureComponent {
           fromYear={fromDate}
           toYear={toDate}
           localeUtils={localeUtils}
-          onChange={this.handleYearMonthChange} />
+          onChange={this.handleYearMonthChange}
+        />
       ),
     } : {};
     const extraProps = _.pickBy(_.omit(this.props, _.keys(DatePicker.propTypes)), _.identity);
@@ -219,7 +244,8 @@ class DatePicker extends PureComponent {
         onClose={this.closePicker}
         open={open}
         on='click'
-        basic>
+        basic
+      >
         <div className='flex flex-column'>
           {time && (
             <Button.Group>
@@ -241,7 +267,8 @@ class DatePicker extends PureComponent {
                 fromMonth={fromDate}
                 disabledDays={minDate ? [{ before: minDate }] : undefined}
                 {...yearMonthSelectOptions}
-                {...extraProps} />
+                {...extraProps}
+              />
             </>
           )}
           {mode === 'time' && (
@@ -249,7 +276,8 @@ class DatePicker extends PureComponent {
               className='mt3'
               value={value || initialDate}
               onChange={onChange}
-              minTime={minDate} />
+              minTime={minDate}
+            />
           )}
         </div>
       </Popup>
@@ -274,11 +302,13 @@ class RangePicker extends PureComponent {
   componentDidUpdate(newProps) {
     const { value } = this.props;
     if (value !== newProps.value) {
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ ...value });
     }
   }
 
   openPicker = () => !this.props.disabled && this.setState({ open: true });
+
   closePicker = () => {
     const { start, end } = this.props.value;
     this.setState({ open: false, start, end });
@@ -322,13 +352,14 @@ class RangePicker extends PureComponent {
 
   render() {
     const { value, disabled } = this.props;
-    const { open, start, end, endPreview, key } = this.state;
+    const {
+      open, start, end, endPreview, key,
+    } = this.state;
 
     const modifiers = { start, end: (end || endPreview) };
     const selectedDays = [start, { from: start, to: (end || endPreview) }];
     const rangeText = `${formatDate(value.start, rangeDateFormat)} ~ ${formatDate(value.end, rangeDateFormat)}`;
     const extraProps = _.pickBy(_.omit(this.props, _.keys(RangePicker.propTypes)), _.identity);
-
 
     return (
       <Popup
@@ -341,7 +372,8 @@ class RangePicker extends PureComponent {
         open={open}
         on='click'
         basic
-        offset='-10, 10'>
+        offset='-10, 10'
+      >
         <Helmet><style>{rangePickerStyles}</style></Helmet>
         <div>
           <DayPicker
@@ -354,7 +386,8 @@ class RangePicker extends PureComponent {
             modifiers={modifiers}
             onDayClick={this.onDaySelected}
             onDayMouseEnter={this.onDayHovered}
-            {...extraProps} />
+            {...extraProps}
+          />
           {_.map(_.chunk(_.values(dateRanges), 6), (elements, i) => (
             <div key={i} className='mb2'>
               {_.map(elements, (item) => (
@@ -365,7 +398,8 @@ class RangePicker extends PureComponent {
                   onMouseDown={preventBlur}
                   onClick={this.setPreset}
                   active={item.key === key}
-                  content={item.label} />
+                  content={item.label}
+                />
               ))}
             </div>
           ))}
@@ -375,7 +409,6 @@ class RangePicker extends PureComponent {
   }
 }
 
-
 DatePicker.Time = TimePicker;
 DatePicker.Range = RangePicker;
 DatePicker.ranges = dateRanges;
@@ -384,7 +417,7 @@ DatePicker.rangeSerializer = ({ start, end }) => ([formatDate(start, rangeDateFo
 DatePicker.rangeDeserializer = createSelector(
   ([start]) => start,
   ([, end]) => end,
-  (start, end) => ({ start: moment(start, rangeDateFormat).toDate(), end: moment(end, rangeDateFormat).endOf('day').toDate() })
+  (start, end) => ({ start: moment(start, rangeDateFormat).toDate(), end: moment(end, rangeDateFormat).endOf('day').toDate() }),
 );
 
 export { DatePicker };

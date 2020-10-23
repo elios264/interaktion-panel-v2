@@ -1,11 +1,15 @@
 import _ from 'lodash';
 import { useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { Menu, Input, Dropdown, Segment, Header, Icon, Divider } from 'semantic-ui-react';
+import {
+  Menu, Input, Dropdown, Segment, Header, Icon, Divider,
+} from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
 import { utils } from 'controls';
-import { VirtualTable, Column, dateRenderer, labelRenderer } from 'controls/table';
+import {
+  VirtualTable, Column, dateRenderer, labelRenderer,
+} from 'controls/table';
 import { useUrlParams, useUrlParamsHandler } from 'controls/hooks';
 
 const actionDefinitions = {
@@ -45,7 +49,6 @@ const eventRenderer = ({ rowData }) => {
 };
 
 const defaultParams = { sortBy: 'timestamp', sortDir: 'desc', search: '' };
-
 
 export const Logbook = ({ location, history }) => {
 
@@ -94,7 +97,8 @@ export const Logbook = ({ location, history }) => {
             source={eventLogs}
             minWidth={700}
             sortSearchParams={urlParams}
-            onSortChange={onSortChange}>
+            onSortChange={onSortChange}
+          >
             <Column
               dataKey='manager'
               label='Manager'
@@ -103,18 +107,21 @@ export const Logbook = ({ location, history }) => {
               maxWidth={200}
               columnData={{ color: 'blue' }}
               searchKey={userSearch}
-              cellRenderer={userRenderer} />
+              cellRenderer={userRenderer}
+            />
             <Column
               dataKey='event'
               label='Event'
               width={200}
               flexGrow={3}
-              cellRenderer={eventRenderer} />
+              cellRenderer={eventRenderer}
+            />
             <Column
               dataKey='timestamp'
               label='Date'
               width={200}
-              cellRenderer={dateRenderer} />
+              cellRenderer={dateRenderer}
+            />
           </VirtualTable>
         </Segment>
       </div>

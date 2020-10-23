@@ -24,7 +24,6 @@ export const createManager = (user) => handleError(async (dispatch, getState, { 
   return true;
 }, 'The manager could not be created');
 
-
 export const deleteManager = (user) => handleError(async (dispatch, getState, { api }) => {
 
   const { result } = await dispatch(showConfirm({
@@ -40,4 +39,3 @@ export const deleteManager = (user) => handleError(async (dispatch, getState, { 
   return result;
 
 }, 'The manager could not be deleted');
-

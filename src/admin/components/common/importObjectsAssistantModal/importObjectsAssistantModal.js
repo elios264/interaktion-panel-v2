@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { useState, useMemo } from 'react';
 import { Modal, Step } from 'semantic-ui-react';
 
-import { SelectFileStep, ArrangeEntitiesStep, ConfirmArrangementStep, ImportStep } from './steps';
+import {
+  SelectFileStep, ArrangeEntitiesStep, ConfirmArrangementStep, ImportStep,
+} from './steps';
 import { jsonKeys, actions } from './types';
 import { getRequiredDefinitions } from './utils';
-
 
 const importSteps = [
   { icon: 'file archive outline', title: 'Select a file' },
@@ -21,16 +22,17 @@ const restoreSteps = [
   { icon: 'undo', title: 'Restore' },
 ];
 
-
-export const ImportObjectsAssistantModal = ({ onClose, definitions, onImport, onExport }) => {
-
-  const [{ step, json, importSuccess }, setState] = useState({ step: 0, json: {} });
-  const requiredDefinitions = useMemo(() => _.isEmpty(json) ? undefined : getRequiredDefinitions(definitions, json), [definitions, json]);
-
+export const ImportObjectsAssistantModal = ({
+  onClose, definitions, onImport, onExport,
+}) => {
+  const [state, setState] = useState({ step: 0, json: {} });
   const goToPrevStep = () => setState(({ step, json }) => ({ step: step - (step === 2 && json[jsonKeys.isRestore] ? 2 : 1), json }));
   const goToNextStep = (json) => setState(({ step }) => ({ step: step + (step === 0 && json[jsonKeys.isRestore] ? 2 : 1), json }));
   const goToFinalState = (importSuccess) => setState(({ json }) => ({ step: importSuccess ? 4 : 3, json, importSuccess }));
 
+  const { step, json, importSuccess } = state;
+
+  const requiredDefinitions = useMemo(() => (_.isEmpty(json) ? undefined : getRequiredDefinitions(definitions, json)), [definitions, json]);
 
   const header = (
     <Step.Group fluid>
@@ -41,7 +43,8 @@ export const ImportObjectsAssistantModal = ({ onClose, definitions, onImport, on
           icon={step === 3 && index === step && _.isUndefined(importSuccess) ? { name: 'cog', loading: true } : icon}
           completed={step > index}
           active={step === index}
-          disabled={index > step} />
+          disabled={index > step}
+        />
       ))}
     </Step.Group>
   );

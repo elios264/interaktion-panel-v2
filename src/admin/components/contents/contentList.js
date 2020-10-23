@@ -1,14 +1,20 @@
 import _ from 'lodash';
 import { useMemo, useCallback, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Menu, Input, Segment, Button, Modal, Dropdown } from 'semantic-ui-react';
+import {
+  Menu, Input, Segment, Button, Modal, Dropdown,
+} from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import { Content } from 'objects';
 import { LoadingDots, AwaitableDropdownItem } from 'controls';
-import { VirtualTable, Column, dateRenderer, labelRenderer } from 'controls/table';
-import { useUrlParams, useUrlParamsHandler, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
+import {
+  VirtualTable, Column, dateRenderer, labelRenderer,
+} from 'controls/table';
+import {
+  useUrlParams, useUrlParamsHandler, useAsyncSubmit, useDispatchCallback,
+} from 'controls/hooks';
 import { useResourceImageRenderer } from 'admin/hooks';
 import { deleteSelectedContents, exportContents, importContents } from 'admin/actions/contents';
 import { deleteContentDefinition } from 'admin/actions/contentsDefinitions';
@@ -16,7 +22,6 @@ import { deleteContentDefinition } from 'admin/actions/contentsDefinitions';
 const defaultParams = { sortBy: 'updatedAt', sortDir: 'desc', search: '' };
 const linkRenderer = ({ cellData, rowData }) => <Link to={`/contents/${rowData.definition.id}/details/${rowData.id}`}>{cellData}</Link>; // eslint-disable-line react/prop-types
 const visibilityRenderer = ({ cellData }) => labelRenderer({ cellData: Content.getVisibilityName(cellData), columnData: { color: Content.getVisibilityColor(cellData) } });
-
 
 export const ContentList = ({ match, location, history }) => {
   const isWorking = useSelector((state) => state.siteInfo.isWorking);
@@ -65,7 +70,8 @@ export const ContentList = ({ match, location, history }) => {
               icon='trash'
               onClick={deleteSelectedContentsAndClearSelection}
               disabled={selectedContents.length === 0}
-              text='Delete selection' />
+              text='Delete selection'
+            />
             <Dropdown.Header content='Section' />
             <Dropdown.Item as={Link} to={`/contents/${definition.id}/edit`} icon='edit' text='Modify...' />
             <AwaitableDropdownItem onClick={deleteContentDefinitionAndGoToCreatePage} icon='trash' text='Delete...' />
@@ -87,7 +93,8 @@ export const ContentList = ({ match, location, history }) => {
             onSelectionChange={setSelectedContents}
             selectedRows={selectedContents}
             sortSearchParams={urlParams}
-            onSortChange={onSortChange}>
+            onSortChange={onSortChange}
+          >
             <Column
               dataKey='image'
               label='Image'
@@ -98,7 +105,8 @@ export const ContentList = ({ match, location, history }) => {
               disableSearch
               columnData={{ rounded: true, size: 'mini' }}
               cellRenderer={resourceImageRenderer}
-              searchKey={getImageUrl} />
+              searchKey={getImageUrl}
+            />
             <Column
               dataKey={`title[${window.__ENVIRONMENT__.APP_LOCALE}]`}
               label='Title'
@@ -106,14 +114,16 @@ export const ContentList = ({ match, location, history }) => {
               flexGrow={1}
               maxWidth={350}
               searchKey={`title[${window.__ENVIRONMENT__.APP_LOCALE}]`}
-              cellRenderer={linkRenderer} />
+              cellRenderer={linkRenderer}
+            />
             <Column
               label='Visibility'
               dataKey='visibility'
               width={140}
               flexGrow={1}
               maxWidth={250}
-              cellRenderer={visibilityRenderer} />
+              cellRenderer={visibilityRenderer}
+            />
             <Column
               label='Type'
               dataKey='entityTypeName'
@@ -121,21 +131,24 @@ export const ContentList = ({ match, location, history }) => {
               flexGrow={1}
               maxWidth={250}
               columnData={{ color: 'orange' }}
-              cellRenderer={labelRenderer} />
+              cellRenderer={labelRenderer}
+            />
             <Column
               label='Updated'
               dataKey='updatedAt'
               width={140}
               flexGrow={1}
               maxWidth={250}
-              cellRenderer={dateRenderer} />
+              cellRenderer={dateRenderer}
+            />
             <Column
               label='Created'
               dataKey='createdAt'
               width={140}
               flexGrow={1}
               maxWidth={250}
-              cellRenderer={dateRenderer} />
+              cellRenderer={dateRenderer}
+            />
           </VirtualTable>
         </Segment>
       </div>

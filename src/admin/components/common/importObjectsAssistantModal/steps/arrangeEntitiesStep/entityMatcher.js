@@ -8,7 +8,9 @@ import { useSelector } from 'react-redux';
 import { utils, Popup, Selector } from 'controls';
 import { actions } from '../../types';
 
-export const EntityMatcher = memo(({ entity, definition, actionField, actionOptions, valueField, valueOptions, onFieldChange, json }) => {
+export const EntityMatcher = memo(({
+  entity, definition, actionField, actionOptions, valueField, valueOptions, onFieldChange, json,
+}) => {
 
   const storeEntities = useSelector((state) => state.objects[definition.property]);
 
@@ -16,12 +18,16 @@ export const EntityMatcher = memo(({ entity, definition, actionField, actionOpti
   const onActionChange = (value) => actionField.onChange(value);
 
   useEffect(() => {
-    onFieldChange({ definition, field: 'action', entity, value: actionField.value });
+    onFieldChange({
+      definition, field: 'action', entity, value: actionField.value,
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionField.value]);
 
   useEffect(() => {
-    onFieldChange({ definition, field: 'value', entity, value: valueField.value });
+    onFieldChange({
+      definition, field: 'value', entity, value: valueField.value,
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valueField.value]);
 
@@ -32,9 +38,19 @@ export const EntityMatcher = memo(({ entity, definition, actionField, actionOpti
   return (
     <List.Item>
       <span>
-        <Label size='mini' empty circular color={utils.getValue(actionField.value, { [actions.create]: 'green', [actions.update]: 'yellow', [actions.reference]: 'orange', [actions.ignore]: 'grey' })} />{' '}
-        {definition.displayName(entity, json)}{' '}
-        in file{' '}
+        <Label
+          size='mini'
+          empty
+          circular
+          color={utils.getValue(actionField.value, {
+            [actions.create]: 'green', [actions.update]: 'yellow', [actions.reference]: 'orange', [actions.ignore]: 'grey',
+          })}
+        />
+        {' '}
+        {definition.displayName(entity, json)}
+        {' '}
+        in file
+        {' '}
         <Popup message={actionField.message} enabled={actionField.errored}>
           <Selector
             inline
@@ -44,7 +60,8 @@ export const EntityMatcher = memo(({ entity, definition, actionField, actionOpti
             error={actionField.errored}
             options={actionOptions}
             value={actionField.value}
-            onChange={onActionChange} />
+            onChange={onActionChange}
+          />
         </Popup>
         {(actionField.value === actions.update || actionField.value === actions.reference) && (
           <Popup
@@ -56,7 +73,8 @@ export const EntityMatcher = memo(({ entity, definition, actionField, actionOpti
                 <Icon name='external alternate' />
                 {_.replace(detailsUrl, '/', '')}
               </Link>
-            )}>
+            )}
+          >
             <Selector
               inline
               fluid={false}
@@ -68,7 +86,8 @@ export const EntityMatcher = memo(({ entity, definition, actionField, actionOpti
               onChange={onValueChange}
               search
               lazyLoad
-              floating />
+              floating
+            />
           </Popup>
 
         )}
@@ -83,7 +102,7 @@ EntityMatcher.propTypes = {
   definition: PropTypes.object.isRequired,
   actionField: PropTypes.object.isRequired,
   valueField: PropTypes.object.isRequired,
-  actionOptions: PropTypes.array.isRequired,
-  valueOptions: PropTypes.array.isRequired,
+  actionOptions: PropTypes.arrayOf(PropTypes.object).isRequired,
+  valueOptions: PropTypes.arrayOf(PropTypes.object).isRequired,
   onFieldChange: PropTypes.func.isRequired,
 };

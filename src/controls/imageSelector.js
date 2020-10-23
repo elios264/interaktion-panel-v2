@@ -1,11 +1,15 @@
 import _ from 'lodash';
 import { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { Image, Header, Reveal, Dimmer } from 'semantic-ui-react';
+import {
+  Image, Header, Reveal, Dimmer,
+} from 'semantic-ui-react';
 
 import * as utils from './utils';
 
-export const ImageSelector = ({ disabled, imageUrl, onDelete, onImageSelected, ...props }) => {
+export const ImageSelector = ({
+  disabled, imageUrl, onDelete, onImageSelected, ...props
+}) => {
 
   const selectImage = useCallback(async () => {
     const [image] = await utils.selectImages({ multiple: false });

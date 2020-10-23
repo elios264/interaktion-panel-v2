@@ -20,7 +20,8 @@ export const ResourceImageSelector = memo(({ disabled, value, onChange }) => {
       disabled={disabled}
       imageUrl={_.get(resources[_.get(value, 'id')] || value, 'fileUrl')}
       onImageSelected={onImageSelected}
-      onDelete={onChange} />
+      onDelete={onChange}
+    />
   );
 
 });

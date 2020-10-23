@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import Joi from 'joi';
-import { Form, Button, Modal, Input } from 'semantic-ui-react';
+import {
+  Form, Button, Modal, Input,
+} from 'semantic-ui-react';
 
 import { User } from 'objects';
 import { Popup } from 'controls';

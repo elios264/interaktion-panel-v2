@@ -3,7 +3,9 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { NavLink, Link } from 'react-router-dom';
-import { Icon, Menu, Image, Loader, Label, List } from 'semantic-ui-react';
+import {
+  Icon, Menu, Image, Loader, Label, List,
+} from 'semantic-ui-react';
 
 import { Popup } from 'controls';
 
@@ -47,7 +49,8 @@ export const Navigation = ({ children }) => {
               </Menu.Item>
             )).value()}
             <Menu.Item as={NavLink} to='/contents/create' name='createContent'>
-              <Icon name='plus' />New section
+              <Icon name='plus' />
+              New section
             </Menu.Item>
           </Menu.Menu>
         </Menu.Item>
@@ -62,12 +65,25 @@ export const Navigation = ({ children }) => {
         <Menu.Item className='f6 mt-auto'>
           <div>
             <div className='bb mb2 pb2 b--light-silver'>
-              Build: <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
-              <br />Environment: <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span>
+              Build:
+              {' '}
+              <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
+              <br />
+              Environment:
+              <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span>
             </div>
-            Developed with <Icon name='like' color='red' /> by
-            <br /><a className='pointer' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264.</a><br />
-            ©{moment().format('YYYY')} all rights reserved.
+            Developed with
+            {' '}
+            <Icon name='like' color='red' />
+            {' '}
+            by
+            <br />
+            <a className='pointer' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264.</a>
+            <br />
+            ©
+            {moment().format('YYYY')}
+            {' '}
+            all rights reserved.
           </div>
         </Menu.Item>
       </Menu>
@@ -79,7 +95,8 @@ export const Navigation = ({ children }) => {
           flowing
           position='bottom right'
           popperDependencies={[workingMessages]}
-          message={<List bulleted>{_.map(workingMessages, (message, key) => (<List.Item key={key}>{message}</List.Item>))}</List>}>
+          message={<List bulleted>{_.map(workingMessages, (message, key) => (<List.Item key={key}>{message}</List.Item>))}</List>}
+        >
           <Label size='large' color='blue' corner='right' style={{ position: 'fixed' }}>
             <Loader active inline='centered' size='tiny' inverted className='icon pointer' />
           </Label>

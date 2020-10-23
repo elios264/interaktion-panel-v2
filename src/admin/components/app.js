@@ -60,7 +60,8 @@ export const App = hot(() => {
                 <Redirect to='/' />
               </Switch>
             </Navigation>
-          )} />
+          )}
+          />
         </Switch>
         <ModalController modals={modals} />
       </ErrorBoundary>

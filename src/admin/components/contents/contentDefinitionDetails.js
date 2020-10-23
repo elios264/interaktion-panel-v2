@@ -1,10 +1,14 @@
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Grid, Menu, Button, Segment, Form, Divider, Modal } from 'semantic-ui-react';
+import {
+  Grid, Menu, Button, Segment, Form, Divider, Modal,
+} from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
-import { Popup, LoadingDots, MultiLanguageInput, MultiLanguageTextArea, Selector } from 'controls';
+import {
+  Popup, LoadingDots, MultiLanguageInput, MultiLanguageTextArea, Selector,
+} from 'controls';
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
 import { ContentDefinition } from 'objects';
 import { ResourceImageSelector } from 'admin/components/common';
@@ -35,7 +39,6 @@ export const mobileViewOptions = [
 
 const contentDefinitionTemplate = new ContentDefinition({ mobileView: ContentDefinition.mobileView.chess, enabled: true });
 
-
 export const ContentDefinitionDetails = ({ history, match }) => {
   const isEditing = match.params.action === 'edit';
   const isCreating = match.params.action === 'create';
@@ -46,14 +49,16 @@ export const ContentDefinitionDetails = ({ history, match }) => {
   const switchToListMode = (newContentDefinition) => history.replace(`/contents/${(newContentDefinition instanceof ContentDefinition) ? newContentDefinition.id : contentDefinition.id}`);
   const saveContentDefinitionAndGoToListing = useAsyncSubmit(useDispatchCallback(saveContentDefinition), switchToListMode);
 
-
-  const { fields, submit, loading, reset } = useFieldset({
+  const {
+    fields, submit, loading, reset,
+  } = useFieldset({
     schema: contentDefinitionSchema,
     onSubmit: saveContentDefinitionAndGoToListing,
     source: contentDefinition || contentDefinitionTemplate,
   });
-  const { enabled, title, description, mobileView, image } = fields;
-
+  const {
+    enabled, title, description, mobileView, image,
+  } = fields;
 
   if (!isCreating && !contentDefinition) {
     return (
@@ -104,7 +109,8 @@ export const ContentDefinitionDetails = ({ history, match }) => {
                         <Selector
                           options={mobileViewOptions}
                           value={mobileView.value}
-                          onChange={mobileView.onChange} />
+                          onChange={mobileView.onChange}
+                        />
                       </Popup>
                     </Form.Field>
                   </Form.Group>
@@ -112,11 +118,15 @@ export const ContentDefinitionDetails = ({ history, match }) => {
                     <Grid.Row stretched>
                       <Grid.Column>
                         <Form.Field error={image.errored} required>
-                          <label>Image<span className='i silver ml2'>Recommended aspect ratio: 4:1</span></label>
+                          <label>
+                            Image
+                            <span className='i silver ml2'>Recommended aspect ratio: 4:1</span>
+                          </label>
                           <Popup message={image.message} enabled={image.errored}>
                             <ResourceImageSelector
                               value={image.value}
-                              onChange={image.onChange} />
+                              onChange={image.onChange}
+                            />
                           </Popup>
                         </Form.Field>
                       </Grid.Column>
@@ -131,7 +141,8 @@ export const ContentDefinitionDetails = ({ history, match }) => {
                               value={description.value}
                               onChange={description.onChange}
                               rows={5}
-                              placeholder='Short description.' />
+                              placeholder='Short description.'
+                            />
                           </Popup>
                         </Form.Field>
                       </Grid.Column>
@@ -149,7 +160,8 @@ export const ContentDefinitionDetails = ({ history, match }) => {
                     loading={loading}
                     onClick={isCreating ? reset : switchToListMode}
                     icon={isCreating ? 'repeat' : 'cancel'}
-                    content={isCreating ? 'Start over' : 'Cancel'} />
+                    content={isCreating ? 'Start over' : 'Cancel'}
+                  />
                   <div className='db mt1 di-ns mt0-ns' />
                   <Button
                     type='submit'
@@ -158,7 +170,8 @@ export const ContentDefinitionDetails = ({ history, match }) => {
                     className='w-100 w-auto-ns'
                     primary
                     icon='edit'
-                    content={isCreating ? 'Create section!' : 'Save'} />
+                    content={isCreating ? 'Create section!' : 'Save'}
+                  />
                 </Grid.Row>
               </Grid.Column>
               <Grid.Column computer={16} largeScreen={8} widescreen={8} className='flex-important flex-column' />

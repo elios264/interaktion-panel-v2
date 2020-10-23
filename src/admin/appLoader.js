@@ -31,7 +31,7 @@ ReactDOM.render(
       <Route component={App} />
     </BrowserRouter>
   </Provider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 
 if (module.hot) {

@@ -1,17 +1,16 @@
 import { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { DisplayMessage } from './displayMessage';
 import { TextArea } from 'semantic-ui-react';
+import { DisplayMessage } from './displayMessage';
 
 const b64EncodeUnicode = (str) => btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode(`0x${p1}`)));
 
 export class ErrorBoundary extends PureComponent {
 
-  static propTypes = {
-    children: PropTypes.node.isRequired,
+  constructor() {
+    super();
+    this.state = { hasError: false };
   }
-
-  state = { hasError: false };
 
   componentDidCatch(error, info) {
     this.setState({ hasError: true, error, info });
@@ -38,7 +37,11 @@ export class ErrorBoundary extends PureComponent {
             An internal error in the application has occurred,
             <br />
             <br />
-            Click <a href='/'>here</a> to return to the main page.
+            Click
+            {' '}
+            <a href='/'>here</a>
+            {' '}
+            to return to the main page.
             <br />
             <br />
             If you want to help us, send us this message by email to (elios264@outlook.com):
@@ -48,10 +51,16 @@ export class ErrorBoundary extends PureComponent {
               className='w-100'
               value={errorInfo}
               rows={10}
-              readOnly />
+              readOnly
+            />
           </>
-        )} />
+        )}
+      />
     );
 
   }
 }
+
+ErrorBoundary.propTypes = {
+  children: PropTypes.node.isRequired,
+};

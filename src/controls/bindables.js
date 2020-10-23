@@ -2,18 +2,11 @@ import { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Checkbox, Input } from 'semantic-ui-react';
 
-
 export const withBind = (propEvent) => (WrappedComponent) => {
   class WithBind extends PureComponent {
 
-    static displayName = `WithBind(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`
-    static propTypes = {
-      bind: PropTypes.any,
-      [propEvent]: PropTypes.func.isRequired,
-    }
-
-    constructor(props) {
-      super(props);
+    constructor() {
+      super();
       this.handleEvent = this.handleEvent.bind(this);
     }
 
@@ -28,6 +21,14 @@ export const withBind = (propEvent) => (WrappedComponent) => {
       return (<WrappedComponent {...eventBinder} {...extraProps} />);
     }
   }
+
+  WithBind.displayName = `WithBind(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
+
+  WithBind.propTypes = {
+    bind: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+    [propEvent]: PropTypes.func.isRequired,
+  };
+
   return WithBind;
 };
 

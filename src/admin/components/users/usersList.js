@@ -2,7 +2,9 @@ import _ from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Menu, Input, Segment, Button } from 'semantic-ui-react';
+import {
+  Menu, Input, Segment, Button,
+} from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
 import { User } from 'objects';
@@ -10,7 +12,6 @@ import { useUrlParams, useUrlParamsHandler } from 'controls/hooks';
 import { VirtualTable, Column, dateRenderer } from 'controls/table';
 import { useResourceImageRenderer } from 'admin/hooks';
 import { CreateUserModal } from './createUserModal';
-
 
 const linkRenderer = ({ cellData, rowData }) => <Link to={`/users/details/${rowData.id}`}>{cellData}</Link>; // eslint-disable-line react/prop-types
 const defaultParams = { sortBy: 'lastActivity', sortDir: 'desc', search: '' };
@@ -30,7 +31,6 @@ export const UsersList = ({ match, location, history }) => {
   const switchToListingMode = useCallback(() => history.replace(`/users${location.search}`), [history, location]);
   const getImageUrl = useCallback(({ cellData }) => _.get(resources[_.get(cellData, 'id')], 'fileUrl'), [resources]); // so export the file url works.
 
-
   return (
     <section className='users-list'>
       <Helmet title='Users listing' />
@@ -49,7 +49,8 @@ export const UsersList = ({ match, location, history }) => {
             source={clients}
             minWidth={900}
             sortSearchParams={urlParams}
-            onSortChange={onSortChange}>
+            onSortChange={onSortChange}
+          >
             <Column
               dataKey='photo'
               label='Avatar'
@@ -60,7 +61,8 @@ export const UsersList = ({ match, location, history }) => {
               disableSearch
               columnData={{ rounded: true, size: 'mini' }}
               cellRenderer={resourceImageRenderer}
-              searchKey={getImageUrl} />
+              searchKey={getImageUrl}
+            />
             <Column
               dataKey='name'
               label='Name'
@@ -68,27 +70,31 @@ export const UsersList = ({ match, location, history }) => {
               flexGrow={1}
               maxWidth={350}
               searchKey='name'
-              cellRenderer={linkRenderer} />
+              cellRenderer={linkRenderer}
+            />
             <Column
               dataKey='email'
               label='Email'
               width={200}
               flexGrow={1}
-              maxWidth={350} />
+              maxWidth={350}
+            />
             <Column
               label='Last activity'
               dataKey='lastActivity'
               width={140}
               flexGrow={1}
               maxWidth={250}
-              cellRenderer={dateRenderer} />
+              cellRenderer={dateRenderer}
+            />
             <Column
               label='Created'
               dataKey='createdAt'
               width={140}
               flexGrow={1}
               maxWidth={250}
-              cellRenderer={dateRenderer} />
+              cellRenderer={dateRenderer}
+            />
           </VirtualTable>
         </Segment>
       </div>

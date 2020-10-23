@@ -2,7 +2,9 @@ import { memo } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import Joi from 'joi';
-import { Header, Image, Segment, Form, Button, Grid, Message, Input } from 'semantic-ui-react';
+import {
+  Header, Image, Segment, Form, Button, Grid, Message, Input,
+} from 'semantic-ui-react';
 
 import { Popup } from 'controls';
 import { useFieldset, useDispatchCallback } from 'controls/hooks';
@@ -34,13 +36,24 @@ export const ForgotPasswordForm = memo(() => {
             </Form>
           </Segment>
           <Message>
-            Remembered it? <Link to='/login'>Click here</Link>
+            Remembered it?
+            {' '}
+            <Link to='/login'>Click here</Link>
           </Message>
         </Grid.Column>
       </Grid>
       <div className='mt3 justify-between flex-wrap flex'>
-        <div className='mr3'>Build: <span className='b'>{window.__ENVIRONMENT__.BUILD}</span> Environment: <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span></div>
-        <div>Developed by <a className='contrast dim' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264</a></div>
+        <div className='mr3'>
+          Build:
+          <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
+          {' '}
+          Environment:
+          <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span>
+        </div>
+        <div>
+          Developed by
+          <a className='contrast dim' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264</a>
+        </div>
       </div>
     </div>
   );

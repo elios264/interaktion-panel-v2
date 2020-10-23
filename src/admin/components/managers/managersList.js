@@ -2,7 +2,9 @@ import _ from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Menu, Input, Segment, Button } from 'semantic-ui-react';
+import {
+  Menu, Input, Segment, Button,
+} from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
 import { User } from 'objects';
@@ -10,7 +12,6 @@ import { useUrlParams, useUrlParamsHandler } from 'controls/hooks';
 import { VirtualTable, Column, dateRenderer } from 'controls/table';
 import { useResourceImageRenderer } from 'admin/hooks';
 import { CreateManagerModal } from './createManagerModal';
-
 
 const linkRenderer = ({ cellData, rowData, columnData: { id } }) => <Link to={`/managers/details/${rowData.id}`}>{rowData.id === id ? `${cellData} (you)` : cellData}</Link>; // eslint-disable-line react/prop-types
 const defaultParams = { sortBy: 'lastActivity', sortDir: 'desc', search: '' };
@@ -30,7 +31,6 @@ export const ManagersList = ({ match, location, history }) => {
   const switchToListingMode = useCallback(() => history.replace(`/managers${location.search}`), [history, location]);
   const getImageUrl = useCallback(({ cellData }) => _.get(resources[_.get(cellData, 'id')], 'fileUrl'), [resources]); // so export the file url works.
 
-
   return (
     <section className='manager-list'>
       <Helmet title='Managers listing' />
@@ -49,7 +49,8 @@ export const ManagersList = ({ match, location, history }) => {
             source={managers}
             minWidth={900}
             sortSearchParams={urlParams}
-            onSortChange={onSortChange}>
+            onSortChange={onSortChange}
+          >
             <Column
               dataKey='photo'
               label='Avatar'
@@ -60,7 +61,8 @@ export const ManagersList = ({ match, location, history }) => {
               disableSearch
               columnData={{ rounded: true, size: 'mini' }}
               cellRenderer={resourceImageRenderer}
-              searchKey={getImageUrl} />
+              searchKey={getImageUrl}
+            />
             <Column
               dataKey='name'
               label='Name'
@@ -69,21 +71,24 @@ export const ManagersList = ({ match, location, history }) => {
               maxWidth={350}
               columnData={me}
               searchKey='name'
-              cellRenderer={linkRenderer} />
+              cellRenderer={linkRenderer}
+            />
             <Column
               label='Last activity'
               dataKey='lastActivity'
               width={140}
               flexGrow={1}
               maxWidth={250}
-              cellRenderer={dateRenderer} />
+              cellRenderer={dateRenderer}
+            />
             <Column
               label='Created'
               dataKey='createdAt'
               width={140}
               flexGrow={1}
               maxWidth={250}
-              cellRenderer={dateRenderer} />
+              cellRenderer={dateRenderer}
+            />
           </VirtualTable>
         </Segment>
       </div>

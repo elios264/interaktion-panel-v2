@@ -40,7 +40,9 @@ cloud.setupFunction('create-user', async (req) => {
   const password = `5${cloud.generateUniqueId()}a`;
   const username = cloud.generateUniqueId(20);
 
-  const user = await Parse.User.signUp(username, password, { name, email, role: role.client, language }, req.user ? cloud.masterPermissions : {});
+  const user = await Parse.User.signUp(username, password, {
+    name, email, role: role.client, language,
+  }, req.user ? cloud.masterPermissions : {});
 
   await Parse.User.requestPasswordReset(email);
 

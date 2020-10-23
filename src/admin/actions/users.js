@@ -24,7 +24,6 @@ export const createUser = (user) => handleError(async (dispatch, getState, { api
   return true;
 }, 'The user could not be created');
 
-
 export const deleteUser = (user) => handleError(async (dispatch, getState, { api }) => {
 
   const { result } = await dispatch(showConfirm({
@@ -40,4 +39,3 @@ export const deleteUser = (user) => handleError(async (dispatch, getState, { api
   return result;
 
 }, 'The user could not be deleted');
-

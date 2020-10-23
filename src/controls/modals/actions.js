@@ -2,7 +2,6 @@ import _ from 'lodash';
 import { Header, Modal, Button } from 'semantic-ui-react';
 import { ConfirmModal } from './confirmModal';
 
-
 /* options: {
   size : string,
   className: string,
@@ -25,7 +24,9 @@ export const showModal = (options) => (dispatch) => new Promise((res, rej) => {
     dispatch({ type: 'DESTROY_MODAL', id: modalId });
   };
 
-  dispatch({ type: 'SHOW_MODAL', id: modalId, onClose, options });
+  dispatch({
+    type: 'SHOW_MODAL', id: modalId, onClose, options,
+  });
 });
 
 export const showSuccess = ({ content, header = 'Operation performed', size = 'tiny' }) => showModal({
@@ -67,8 +68,9 @@ export const showWarning = ({ content, header = 'Operation performed with some w
   actions: { accept: <Button color='yellow' content='Okay' /> },
 });
 
-
-export const showConfirm = ({ onAccept, onCancel, cancelText, acceptText, content, options, header = 'Confirm operation', size = 'tiny' }) => showModal({
+export const showConfirm = ({
+  onAccept, onCancel, cancelText, acceptText, content, options, header = 'Confirm operation', size = 'tiny',
+}) => showModal({
   custom: ConfirmModal,
   onAccept,
   onCancel,

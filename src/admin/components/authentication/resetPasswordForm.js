@@ -3,7 +3,9 @@ import { Helmet } from 'react-helmet';
 import { Link, Redirect } from 'react-router-dom';
 import Joi from 'joi';
 import queryString from 'query-string';
-import { Image, Segment, Form, Button, Grid, Message, Input } from 'semantic-ui-react';
+import {
+  Image, Segment, Form, Button, Grid, Message, Input,
+} from 'semantic-ui-react';
 
 import { Popup } from 'controls';
 import { useFieldset, useUrlParams } from 'controls/hooks';
@@ -15,7 +17,9 @@ const resetSchema = {
 };
 
 export const ResetPasswordForm = memo(({ location }) => {
-  const { id, token, username, error } = useUrlParams(location.search);
+  const {
+    id, token, username, error,
+  } = useUrlParams(location.search);
   const { fields: { password, confirmPassword }, submit, loading } = useFieldset({ schema: resetSchema, source: resetForm });
 
   useEffect(() => {
@@ -52,13 +56,24 @@ export const ResetPasswordForm = memo(({ location }) => {
             </Segment>
           </Form>
           <Message>
-            Here by accident? <Link to='/'>Click here</Link>
+            Here by accident?
+            {' '}
+            <Link to='/'>Click here</Link>
           </Message>
         </Grid.Column>
       </Grid>
       <div className='mt3 justify-between flex-wrap flex'>
-        <div className='mr3'>Build: <span className='b'>{window.__ENVIRONMENT__.BUILD}</span> Environment: <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span></div>
-        <div>Developed by <a className='contrast dim' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264</a></div>
+        <div className='mr3'>
+          Build:
+          <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
+          {' '}
+          Environment:
+          <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span>
+        </div>
+        <div>
+          Developed by
+          <a className='contrast dim' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264</a>
+        </div>
       </div>
     </div>
   );

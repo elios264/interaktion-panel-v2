@@ -15,23 +15,29 @@ const sendMail = (transporter, emailData) => new Promise((resolve, reject) => {
   });
 });
 
-
 class EmailAdapter {
 
-  constructor({ user, sender, pass, host, port }) {
+  constructor({
+    user, sender, pass, host, port,
+  }) {
     if (!port || !host || !user || !pass || !sender) {
       throw new Error('nodemailer requires sender, port, host, user, pass');
     }
     this.transporter = nodemailer.createTransport({
       debug: process.env.NODE_ENV !== 'production',
-      host, port,
+      host,
+      port,
       auth: { pass, user },
     });
     this.fromAddress = sender;
   }
 
-  sendMail({ text, to, subject, html }) {
-    return sendMail(this.transporter, { from: this.fromAddress, to, text, html, subject });
+  sendMail({
+    text, to, subject, html,
+  }) {
+    return sendMail(this.transporter, {
+      from: this.fromAddress, to, text, html, subject,
+    });
   }
 
   sendPasswordResetEmail({ link, user }) {
@@ -39,7 +45,9 @@ class EmailAdapter {
     const subject = `${process.env.APP_NAME}, set you new password`;
     const { html, text } = resetPasswordEmail({ link, name: user.get('name'), language: user.get('language') });
 
-    return this.sendMail({ html, to, subject, text });
+    return this.sendMail({
+      html, to, subject, text,
+    });
   }
 
 }

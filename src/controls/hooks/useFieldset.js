@@ -2,14 +2,16 @@ import _ from 'lodash';
 import Joi from 'joi';
 import PropTypes from 'prop-types';
 import { createSelector } from 'reselect';
-import { useCallback, useMemo, useState, useReducer, useRef, useEffect } from 'react';
+import {
+  useCallback, useMemo, useState, useReducer, useRef, useEffect,
+} from 'react';
 
-import { useEffectSkipMount, useIsMounted } from './misc';
 import { delay } from 'controls/utils';
+import { useEffectSkipMount, useIsMounted } from './misc';
 
-const defaultClone = (source) => _.isFunction(source.copy)
+const defaultClone = (source) => (_.isFunction(source.copy)
   ? source.copy()
-  : _.cloneDeepWith(source, (value) => value && _.isFunction(value.copy) ? value.copy() : undefined);
+  : _.cloneDeepWith(source, (value) => (value && _.isFunction(value.copy) ? value.copy() : undefined)));
 
 const errorsReducer = (state, { type, field, value }) => {
   switch (type) {
@@ -21,7 +23,10 @@ const errorsReducer = (state, { type, field, value }) => {
 const sourceReducer = (state, { type, field, value }) => {
   switch (type) {
     case 'SET_ALL': return value;
-    case 'SET_VALUE': return ((state[field] = value), state);
+    case 'SET_VALUE': {
+      state[field] = value;
+      return state;
+    }
     default: throw new Error('Invalid action');
   }
 };
@@ -62,13 +67,11 @@ export const useFieldset = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   useEffect(() => {
     if (submitValueToParentCount > 0) {
       onSubmit(source);
     }
   }, [submitValueToParentCount]); // eslint-disable-line react-hooks/exhaustive-deps
-
 
   const reset = useCallback(validator ? _.noop : () => { // eslint-disable-line react-hooks/exhaustive-deps
     setLoading(false);
@@ -91,16 +94,22 @@ export const useFieldset = ({
 
     const { error, value: validatedSource } = Joi.object(schema).validate(
       source.attributes ? _.pick(source, _.keys(schema)) : source,
-      { abortEarly: false, allowUnknown: true, errors: { wrap: { label: false } } }
+      { abortEarly: false, allowUnknown: true, errors: { wrap: { label: false } } },
     );
 
     if (error) {
       _.invoke(!onSubmit && e, 'preventDefault'); // cancel form submit in case of traditional form validation
       console.warn('validation failed', error.details);
       setLoading(false);
-      setErrors({ type: 'SET_ALL', value: _.transform(error.details, (errors, { path: [key], message }) => (errors[key] = message), {}) });
+      setErrors({
+        type: 'SET_ALL',
+        value: _.transform(error.details, (acc, { path: [key], message }) => {
+          acc[key] = message;
+          return message;
+        }, {}),
+      });
       return false;
-    } else if (!onSubmit) { // no need to do more work in case of a traditional form validation
+    } if (!onSubmit) { // no need to do more work in case of a traditional form validation
       return true;
     }
 
@@ -113,8 +122,8 @@ export const useFieldset = ({
     if (source.attributes) { // parse objects need to have their fields set manually
       const setProps = _.pickBy(validatedSource, (value, key) => (_.isUndefined(value) ? false : newSource[key] !== value || newSource.dirty(key)));
       const unsetProps = _.difference(_.keys(schema), _.keys(validatedSource));
-      _.each(setProps, (prop, key) => (newSource[key] = prop));
-      _.each(unsetProps, (key) => (newSource[key] = undefined));
+      _.each(setProps, (prop, key) => { newSource[key] = prop; });
+      _.each(unsetProps, (key) => { newSource[key] = undefined; });
     } else {
       newSource = _.pickBy(validatedSource, _.negate(_.isUndefined));
     }
@@ -132,11 +141,11 @@ export const useFieldset = ({
   const fields = _.mapValues(
     useMemo(() => _.mapValues(schema, (ignored, field) => createSelector(
       _.iteratee('value'), _.iteratee('error'), _.iteratee('enabled'),
-      (currentValue, error, enabled) => ({
+      (currentValue, error, isEnabled) => ({
         value: currentValue,
         message: error,
         errored: !!error,
-        onChange: !enabled ? _.noop : (value, { value: maybeValue, checked: maybeValue2 } = {}) => {
+        onChange: !isEnabled ? _.noop : (value, { value: maybeValue, checked: maybeValue2 } = {}) => {
           const newVal = _.has(value, 'target.value') ? value.target.value : _.has(value, 'target.checked') ? value.target.checked : !_.isUndefined(maybeValue) ? maybeValue : (!_.isUndefined(maybeValue2) ? maybeValue2 : value);
           setSource({ type: 'SET_VALUE', field, value: newVal });
           setErrors({ type: 'SET_VALUE', field, value: undefined });
@@ -145,8 +154,9 @@ export const useFieldset = ({
           }
           return true;
         },
-      }))), [schema, validator]),
-    (creator, field) => creator({ enabled, value: source[field], error: errors[field] })
+      }),
+    )), [schema, validator]),
+    (creator, field) => creator({ enabled, value: source[field], error: errors[field] }),
   );
 
   validatorRef.current = useMemo(() => ({

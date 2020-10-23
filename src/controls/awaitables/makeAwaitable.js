@@ -1,14 +1,15 @@
 import _ from 'lodash';
-import { createElement, useState, useEffect, useRef } from 'react';
+import {
+  createElement, useState, useEffect, useRef,
+} from 'react';
 import PropTypes from 'prop-types';
-
 
 export const makeAwaitable = ({ event, props }) => (wrappedComponent) => {
   const Awaitable = ({ [event]: onEvent, ...extraProps }) => {
     const [awaiting, setAwaiting] = useState(false);
     const mounted = useRef(true);
 
-    useEffect(() => () => (mounted.current = false), []);
+    useEffect(() => () => { mounted.current = false; }, []);
 
     const awaitingProps = awaiting ? props : {};
     const handleEvent = async (...args) => {

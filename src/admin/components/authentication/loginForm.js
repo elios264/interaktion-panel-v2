@@ -1,5 +1,7 @@
 import { memo } from 'react';
-import { Image, Segment, Grid, Icon, Message, Form, Input, Button } from 'semantic-ui-react';
+import {
+  Image, Segment, Grid, Icon, Message, Form, Input, Button,
+} from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import Joi from 'joi';
 
@@ -33,17 +35,31 @@ export const LoginForm = memo(() => {
                   <Input fluid icon='lock' iconPosition='left' type='password' placeholder='Password' autoComplete='current-password' value={password.value} onChange={password.onChange} />
                 </Popup>
               </Form.Field>
-              <Button type='submit' disabled={loading} loading={loading} primary fluid size='large'><Icon name='key' />Login</Button>
+              <Button type='submit' disabled={loading} loading={loading} primary fluid size='large'>
+                <Icon name='key' />
+                Login
+              </Button>
             </Form>
           </Segment>
           <Message>
-            Forgot your password? <Link to='/forgot-password'>Click here</Link>
+            Forgot your password?
+            {' '}
+            <Link to='/forgot-password'>Click here</Link>
           </Message>
         </Grid.Column>
       </Grid>
       <div className='mt3 justify-between flex-wrap flex'>
-        <div className='mr3'>Build: <span className='b'>{window.__ENVIRONMENT__.BUILD}</span> Environment: <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span></div>
-        <div>Developed by <a className='contrast dim' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264</a></div>
+        <div className='mr3'>
+          Build:
+          <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
+          {' '}
+          Environment:
+          <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span>
+        </div>
+        <div>
+          Developed by
+          <a className='contrast dim' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264</a>
+        </div>
       </div>
     </div>
   );

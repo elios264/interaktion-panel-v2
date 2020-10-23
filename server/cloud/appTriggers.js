@@ -26,8 +26,9 @@ const cloud = require('./cloudUtils');
 const validationsHooks = require('./hooks/validations');
 const resourceHooks = require('./hooks/resources');
 const usersHooks = require('./hooks/users');
-const { role, mobileView, contentType, visibility } = require('./types');
-
+const {
+  role, mobileView, contentType, visibility,
+} = require('./types');
 
 const userSchema = Joi.object({
   username: Joi.string().required().max(50),
@@ -50,7 +51,7 @@ const configSchema = Joi.object({
 });
 cloud.setupTrigger('beforeSave', 'Config', validationsHooks.readOnly('name'));
 cloud.setupTrigger('beforeSave', 'Config', validationsHooks.validate(configSchema));
-cloud.setupTrigger('beforeSave', 'Config', validationsHooks.assignACL({ getPermission: ({ visibility }) => visibility }));
+cloud.setupTrigger('beforeSave', 'Config', validationsHooks.assignACL({ getPermission: ({ visibility: v }) => v }));
 
 const resourceSchema = Joi.object({
   src: Joi.any().required(),
@@ -83,7 +84,7 @@ const contentDefinitionSchema = Joi.object({
 });
 cloud.setupTrigger('beforeSave', 'ContentDefinition', validationsHooks.validate(contentDefinitionSchema));
 cloud.setupTrigger('beforeSave', 'ContentDefinition', validationsHooks.readOnly({ allowMaster: true }, 'refs'));
-cloud.setupTrigger('beforeSave', 'ContentDefinition', validationsHooks.assignACL({ getPermission: ({ enabled }) => enabled ? '*' : 'Admin' }));
+cloud.setupTrigger('beforeSave', 'ContentDefinition', validationsHooks.assignACL({ getPermission: ({ enabled }) => (enabled ? '*' : 'Admin') }));
 cloud.setupTrigger('afterDelete', 'ContentDefinition', validationsHooks.cascadeDelete({ query: 'Content.definition' }));
 validationsHooks.setupPointerRefCountWatch({ watch: 'ContentDefinition.image', counter: 'Resource.refs' });
 

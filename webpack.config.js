@@ -39,9 +39,9 @@ module.exports = {
   },
   resolve: {
     fallback: {
-      'crypto': require.resolve('crypto-browserify'),
-      'path': require.resolve('path-browserify'),
-      'stream': require.resolve('stream-browserify'),
+      crypto: require.resolve('crypto-browserify'),
+      path: require.resolve('path-browserify'),
+      stream: require.resolve('stream-browserify'),
     },
     modules: [path.resolve(__dirname, './src'), path.resolve(__dirname, './assets'), 'node_modules'],
     alias: {
