@@ -2,7 +2,7 @@ import './virtualTable.less';
 
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Table, Column, AutoSizer, SortDirection } from 'react-virtualized';
 import { createSelector } from 'reselect';
 import { Checkbox } from 'semantic-ui-react';

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useMemo, useCallback, useRef } from 'react';
+import { memo, useMemo, useCallback, useRef } from 'react';
 import { List, Checkbox } from 'semantic-ui-react';
 import { useSelector, batch, useStore } from 'react-redux';
 import cx from 'classnames';
@@ -111,7 +111,7 @@ EntityDetails.propTypes = {
   initialFields: PropTypes.object.isRequired,
 };
 
-EntityDetails.Header = React.memo(({ definition, json, fields, initialFields }) => {
+EntityDetails.Header = memo(({ definition, json, fields, initialFields }) => {
   const { property, title } = definition;
 
   const allSelected = _(json[property])

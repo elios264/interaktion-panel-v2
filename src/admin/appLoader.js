@@ -4,7 +4,6 @@ import 'semantic-ui-less/semantic.less';
 import 'theme/theme.less';
 import 'tachyons';
 
-import React from 'react';
 import moment from 'moment';
 
 moment.locale(window.__ENVIRONMENT__.APP_LOCALE);

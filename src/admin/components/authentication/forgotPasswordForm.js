@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import Joi from 'joi';
@@ -13,7 +13,7 @@ const forgotSchema = {
   email: Joi.string().email({ tlds: { allow: false } }).required().max(50).label('Email'),
 };
 
-export const ForgotPasswordForm = React.memo(() => {
+export const ForgotPasswordForm = memo(() => {
   const { fields: { email }, submit, loading } = useFieldset({ schema: forgotSchema, source: forgotForm, onSubmit: useDispatchCallback(resetPassword) });
 
   return (

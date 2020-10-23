@@ -4,7 +4,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Helmet } from 'react-helmet';
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 import DayPicker from 'react-day-picker';
 import MomentLocaleUtils from 'react-day-picker/moment';
 import { Input, Popup, Label, Button, Icon, Select } from 'semantic-ui-react';

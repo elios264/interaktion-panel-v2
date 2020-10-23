@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Header, Image, Segment } from 'semantic-ui-react';
 import cx from 'classnames';
 

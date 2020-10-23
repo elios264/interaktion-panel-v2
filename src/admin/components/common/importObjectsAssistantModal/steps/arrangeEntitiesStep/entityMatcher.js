@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { Icon, List, Label } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { utils, Popup, Selector } from 'controls';
 import { actions } from '../../types';
 
-export const EntityMatcher = React.memo(({ entity, definition, actionField, actionOptions, valueField, valueOptions, onFieldChange, json }) => {
+export const EntityMatcher = memo(({ entity, definition, actionField, actionOptions, valueField, valueOptions, onFieldChange, json }) => {
 
   const storeEntities = useSelector((state) => state.objects[definition.property]);
 

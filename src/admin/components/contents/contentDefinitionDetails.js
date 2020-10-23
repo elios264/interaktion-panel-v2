@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Grid, Menu, Button, Segment, Form, Divider, Modal } from 'semantic-ui-react';

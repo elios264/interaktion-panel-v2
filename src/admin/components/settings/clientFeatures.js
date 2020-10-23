@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Segment, Button, Header, Radio, Grid, Form } from 'semantic-ui-react';
 import Joi from 'joi';

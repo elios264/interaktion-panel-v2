@@ -2,7 +2,7 @@
 
 import _ from 'lodash';
 import cx from 'classnames';
-import React, { useMemo, useState, useContext } from 'react';
+import { createContext, useMemo, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { createEditor, Transforms } from 'slate';
 import { Slate, useSlate, withReact, useSelected, useReadOnly } from 'slate-react';
@@ -70,7 +70,7 @@ import { useEffectSkipMount } from './hooks/misc';
 import { makeAwaitable } from './awaitables';
 
 const AwaitableDropdownItem = makeAwaitable({ event: 'onMouseDown', props: { icon: <Loader active inline size='tiny' className='icon' /> } })(Dropdown.Item);
-const ResourcesContext = React.createContext({});
+const ResourcesContext = createContext({});
 
 const ImageElement = ({ attributes, className, children, element }) => {
   const resources = useContext(ResourcesContext);

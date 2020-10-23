@@ -1,6 +1,5 @@
 import './app.less';
 
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Route, Switch, Redirect } from 'react-router-dom';

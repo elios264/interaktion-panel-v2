@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Modal, Step } from 'semantic-ui-react';
 
 import { SelectFileStep, ArrangeEntitiesStep, ConfirmArrangementStep, ImportStep } from './steps';

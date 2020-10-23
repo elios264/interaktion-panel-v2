@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Segment, Header, Icon, Button, Grid, Image, Message } from 'semantic-ui-react';

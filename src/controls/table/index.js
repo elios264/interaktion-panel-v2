@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React from 'react';
+import { cloneElement } from 'react';
 import { AutoSizer, Column } from 'react-virtualized';
 
 Column.defaultProps.disableSearch = false;
@@ -13,7 +13,7 @@ AutoSizer.prototype.render = function render() {
   const renderedElement = originalRender.call(this);
 
   return allowHorizontalScroll
-    ? React.cloneElement(renderedElement, { style: autoOverflow })
+    ? cloneElement(renderedElement, { style: autoOverflow })
     : renderedElement;
 };
 

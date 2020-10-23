@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Popup, AwaitableDropdownItem } from 'controls';
 
 export const DropdownItemWithPopup = ({ disabled, onClick, popupMessage, ...rest }) => {

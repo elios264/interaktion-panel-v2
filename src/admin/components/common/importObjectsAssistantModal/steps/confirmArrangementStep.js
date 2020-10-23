@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Table, Modal, Button, Message, Header } from 'semantic-ui-react';
 
 import { utils, AwaitableAnchor } from 'controls';

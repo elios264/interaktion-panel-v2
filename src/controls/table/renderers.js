@@ -1,4 +1,3 @@
-import React from 'react';
 import { Image, Label } from 'semantic-ui-react';
 import _ from 'lodash';
 import { Popup } from '../popup';

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import { useState, useRef, useLayoutEffect } from 'react';
 import { Modal, Button, TextArea, Form, Ref } from 'semantic-ui-react';
 import { useEffectAsync } from 'controls/hooks';
 import moment from 'moment';

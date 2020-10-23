@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import moment from 'moment';
-import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { NavLink, Link } from 'react-router-dom';

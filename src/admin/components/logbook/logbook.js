@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useRef, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Menu, Input, Dropdown, Segment, Header, Icon, Divider } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';

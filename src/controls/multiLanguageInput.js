@@ -1,7 +1,7 @@
 import './multiLanguageInput.less';
 
 import _ from 'lodash';
-import React, { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Input, Dropdown, TextArea } from 'semantic-ui-react';
 import cx from 'classnames';

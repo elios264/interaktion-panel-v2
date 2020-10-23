@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import { Image, Segment, Grid, Icon, Message, Form, Input, Button } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import Joi from 'joi';
@@ -13,7 +13,7 @@ const loginSchema = {
   password: Joi.string().required().label('Password').max(30),
 };
 
-export const LoginForm = React.memo(() => {
+export const LoginForm = memo(() => {
   const { fields: { email, password }, submit, loading } = useFieldset({ schema: loginSchema, source: loginForm, onSubmit: useDispatchCallback(login) });
 
   return (

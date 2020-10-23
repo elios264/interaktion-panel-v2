@@ -1,4 +1,3 @@
-import React from 'react';
 import _ from 'lodash';
 import { Header, Modal, Button } from 'semantic-ui-react';
 import { ConfirmModal } from './confirmModal';

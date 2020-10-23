@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { PureComponent } from 'react';
+import { isValidElement, cloneElement, createElement, PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Button } from 'semantic-ui-react';
 
@@ -56,7 +56,7 @@ class ModalImplementation extends PureComponent {
 
     let result; let error;
     try {
-      if (React.isValidElement(action)) {
+      if (isValidElement(action)) {
         result = await _.invoke(action, 'props.onClick');
       } else if (_.isFunction(action)) {
         result = await action();
@@ -76,14 +76,14 @@ class ModalImplementation extends PureComponent {
     const { loading } = this.state;
     const { [actionName]: action } = this.props.modal.options.actions;
 
-    if (React.isValidElement(action)) {
-      return React.cloneElement(action, { loading, disabled: loading, onClick: this[actionName] });
+    if (isValidElement(action)) {
+      return cloneElement(action, { loading, disabled: loading, onClick: this[actionName] });
     } else if (_.isFunction(action) || action === true) {
-      return React.createElement(Button, { ...extraProps, loading, disabled: loading, onClick: this[actionName] });
+      return createElement(Button, { ...extraProps, loading, disabled: loading, onClick: this[actionName] });
     } else if (_.isString(action)) {
-      return React.createElement(Button, { ...extraProps, content: action, loading, disabled: loading, onClick: this[actionName] });
+      return createElement(Button, { ...extraProps, content: action, loading, disabled: loading, onClick: this[actionName] });
     } else if (_.isObject(action)) {
-      return React.createElement(Button, { ...action, loading, disabled: loading, onClick: this[actionName] });
+      return createElement(Button, { ...action, loading, disabled: loading, onClick: this[actionName] });
     }
 
     return null;

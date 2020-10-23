@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { Fragment } from 'react';
+import { Children, Fragment } from 'react';
 import { parseToPredicate } from 'search-parser';
 import XLSX from 'xlsx';
 import moment from 'moment';
@@ -27,7 +27,7 @@ const currencyFormatter = new Intl.NumberFormat(window.__ENVIRONMENT__.APP_LOCAL
 
 export const generateUniqueId = (length = 10) => nanoid(length);
 export const normalizeStr = _.flow(_.trim, _.toLower, _.deburr);
-export const flattenReactChildren = (children) => _.flatten(React.Children.map(children, (child) => _.get(child, 'type') === Fragment ? flattenReactChildren(child.props.children) : child));
+export const flattenReactChildren = (children) => _.flatten(Children.map(children, (child) => _.get(child, 'type') === Fragment ? flattenReactChildren(child.props.children) : child));
 export const formatCurrency = currencyFormatter.format;
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 export const formatDate = (date, format = 'DD-MMM-YYYY HH:mm') => moment(date).format(format);

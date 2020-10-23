@@ -1,4 +1,3 @@
-import React from 'react';
 import { Popup as SemanticPopup } from 'semantic-ui-react';
 
 const triggers = ['hover', 'focus'];

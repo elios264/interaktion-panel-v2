@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown } from 'semantic-ui-react';
 

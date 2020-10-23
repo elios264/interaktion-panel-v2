@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, Redirect } from 'react-router-dom';
 import Joi from 'joi';
@@ -14,7 +14,7 @@ const resetSchema = {
   confirmPassword: Joi.string().label('Confirmation password').required().valid(Joi.ref('password')).messages({ 'any.only': 'Confirmation password must be the same as the password' }),
 };
 
-export const ResetPasswordForm = React.memo(({ location }) => {
+export const ResetPasswordForm = memo(({ location }) => {
   const { id, token, username, error } = useUrlParams(location.search);
   const { fields: { password, confirmPassword }, submit, loading } = useFieldset({ schema: resetSchema, source: resetForm });
 

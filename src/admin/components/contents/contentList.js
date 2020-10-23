@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Menu, Input, Segment, Button, Modal, Dropdown } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
