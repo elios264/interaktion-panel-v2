@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Segment, Button, Header, Radio, Grid, Form } from 'semantic-ui-react';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 import { Config } from 'objects';
 import { Popup } from 'controls';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { Grid, Menu, Modal, Button, Segment, Form, Header, Input } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
@@ -14,7 +14,7 @@ import { ResourceImageSelector } from 'admin/components/common';
 
 const editUserSchema = {
   name: Joi.string().trim().required().max(50).label('Name'),
-  email: Joi.string().email().required().max(50).label('Email'),
+  email: Joi.string().email({ tlds: { allow: false } }).required().max(50).label('Email'),
   photo: Joi.object().label('Profile pic'),
 };
 

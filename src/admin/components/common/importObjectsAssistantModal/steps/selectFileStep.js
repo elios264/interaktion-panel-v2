@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Segment, Header, Button, Modal, Icon, Dropdown } from 'semantic-ui-react';
 import { useDispatch } from 'react-redux';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 import { utils } from 'controls';
 import { handleError } from 'utils/actions';

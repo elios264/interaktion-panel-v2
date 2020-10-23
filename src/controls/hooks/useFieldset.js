@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import PropTypes from 'prop-types';
 import { createSelector } from 'reselect';
 import { useCallback, useMemo, useState, useReducer, useRef, useEffect } from 'react';
@@ -91,7 +91,7 @@ export const useFieldset = ({
 
     const { error, value: validatedSource } = Joi.object(schema).validate(
       source.attributes ? _.pick(source, _.keys(schema)) : source,
-      { abortEarly: false, allowUnknown: true, errors: { label: false } }
+      { abortEarly: false, allowUnknown: true, errors: { wrap: { label: false } } }
     );
 
     if (error) {

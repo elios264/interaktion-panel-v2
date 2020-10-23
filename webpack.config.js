@@ -44,12 +44,7 @@ module.exports = {
       '@': path.resolve(__dirname, './src'), // include your file like this in less files: ~@/yourFile.less
       '../../theme.config$': path.join(__dirname, './src/theme/semantic/theme.config.less'), // semantic requirement
       'react-dom': isDev ? '@hot-loader/react-dom' : 'react-dom',
-      '@hapi/joi$': '@hapi/joi/lib/index.js',
     },
-  },
-  node: { // allow Joi package to be bundled on browser since it is originally made for node.js
-    net: 'empty',
-    dns: 'empty',
   },
   plugins: [
     ifDev(new webpack.SourceMapDevToolPlugin({ filename: '[file].map', exclude: /node_modules/ })),

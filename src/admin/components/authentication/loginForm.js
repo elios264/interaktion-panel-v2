@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, Segment, Grid, Icon, Message, Form, Input, Button } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 import { Popup } from 'controls';
 import { login } from 'admin/actions/authentication';
@@ -9,7 +9,7 @@ import { useFieldset, useDispatchCallback } from 'controls/hooks';
 
 const loginForm = { email: '', password: '' };
 const loginSchema = {
-  email: Joi.string().email().max(50).required().label('Email'),
+  email: Joi.string().email({ tlds: { allow: false } }).max(50).required().label('Email'),
   password: Joi.string().required().label('Password').max(30),
 };
 

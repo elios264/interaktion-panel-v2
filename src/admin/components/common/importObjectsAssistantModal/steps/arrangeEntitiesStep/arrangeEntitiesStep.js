@@ -2,7 +2,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useMemo, useCallback } from 'react';
 import { Form, Header, Button, Modal, Accordion } from 'semantic-ui-react';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { useStore } from 'react-redux';
 
 import { utils } from 'controls';

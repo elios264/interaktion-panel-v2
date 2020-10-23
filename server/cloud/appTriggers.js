@@ -1,5 +1,5 @@
 /* global Parse */
-const Joi = require('@hapi/joi').extend((joi) => ({
+const Joi = require('joi').extend((joi) => ({
   type: 'string',
   base: joi.string(),
   messages: { 'json.base': 'needs to be a valid json string' },

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, Redirect } from 'react-router-dom';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import queryString from 'query-string';
 import { Image, Segment, Form, Button, Grid, Message, Input } from 'semantic-ui-react';
 

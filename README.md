@@ -52,11 +52,16 @@
 - APP_CURRENCY
 - APP_LOCALE
 
+TODO:
+- update libs (update tools, eslint new rules, new react and runtime, babel new setup, docker commit hash)
+- check on tachyons
+- check if node supports imports
+
+- page contents feature -> directly view content in app,
 
 --- TODO FOR MONEY -------
+
 - add justify center
-- update libs
-- page contents feature -> directly view content in app,
 - enabled/disabled users,
 - option to allow/disable registration
 - title optional on content details

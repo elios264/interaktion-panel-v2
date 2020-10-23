@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Segment, Header, Icon, Button, Grid, Image, Message } from 'semantic-ui-react';
 import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 import { useFieldset, useDispatchCallback } from 'controls/hooks';
 import { saveContentDefinitionsOrders } from 'admin/actions/settings';

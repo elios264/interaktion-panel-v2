@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { Header, Image, Segment, Form, Button, Grid, Message, Input } from 'semantic-ui-react';
 
 import { Popup } from 'controls';
@@ -10,7 +10,7 @@ import { resetPassword } from 'admin/actions/authentication';
 
 const forgotForm = { email: '' };
 const forgotSchema = {
-  email: Joi.string().email().required().max(50).label('Email'),
+  email: Joi.string().email({ tlds: { allow: false } }).required().max(50).label('Email'),
 };
 
 export const ForgotPasswordForm = React.memo(() => {

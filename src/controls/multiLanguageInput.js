@@ -5,7 +5,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Input, Dropdown, TextArea } from 'semantic-ui-react';
 import cx from 'classnames';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 import { useEffectSkipMount } from './hooks/misc';
 
