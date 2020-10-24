@@ -48,6 +48,7 @@ export const ForgotPasswordForm = memo(() => {
           <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
           {' '}
           Environment:
+          {' '}
           <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span>
         </div>
         <div>

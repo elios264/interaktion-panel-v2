@@ -68,6 +68,7 @@ export const ResetPasswordForm = memo(({ location }) => {
           <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
           {' '}
           Environment:
+          {' '}
           <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span>
         </div>
         <div>

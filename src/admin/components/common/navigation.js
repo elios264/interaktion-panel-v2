@@ -70,6 +70,7 @@ export const Navigation = ({ children }) => {
               <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
               <br />
               Environment:
+              {' '}
               <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span>
             </div>
             Developed with

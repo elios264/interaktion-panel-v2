@@ -1,9 +1,3 @@
-
-@custom-media --breakpoint-not-small screen and (min-width: 768px);
-@custom-media --breakpoint-medium screen and (min-width: 768px) and (max-width: 1200px);
-@custom-media --breakpoint-large screen and (min-width: 1200px);
-
-
 .responsive-block(@suffix: ~'') {
   .ma0@{suffix} { margin: 0 };
   .mt-auto@{suffix} { margin-top: auto; }
@@ -22,15 +16,15 @@
 .responsive-block();
 .responsive-block(-important) !important;
 
-@media (--breakpoint-not-small) {
+@media screen and (min-width: 768px) {
   .responsive-block(-ns);
   .responsive-block(-ns-important) !important;
 }
-@media (--breakpoint-medium) {
+@media screen and (min-width: 768px) and (max-width: 1200px) {
   .responsive-block(-m);
   .responsive-block(-m-important) !important;
 }
-@media (--breakpoint-large) {
+@media screen and (min-width: 1200px) {
   .responsive-block(-l);
   .responsive-block(-l-important) !important;
 }

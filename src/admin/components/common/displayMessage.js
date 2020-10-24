@@ -43,6 +43,7 @@ export const DisplayMessage = ({
           <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
           {' '}
           Environment:
+          {' '}
           <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span>
         </div>
         <div>
