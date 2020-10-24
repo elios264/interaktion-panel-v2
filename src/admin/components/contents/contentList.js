@@ -19,7 +19,7 @@ import { useResourceImageRenderer } from 'admin/hooks';
 import { deleteSelectedContents, exportContents, importContents } from 'admin/actions/contents';
 import { deleteContentDefinition } from 'admin/actions/contentsDefinitions';
 
-const defaultParams = { sortBy: 'order', sortDir: 'desc', search: '' };
+const defaultParams = { sortBy: 'order', sortDir: 'asc', search: '' };
 const linkRenderer = ({ cellData, rowData }) => <Link to={`/contents/${rowData.definition.id}/details/${rowData.id}`}>{cellData}</Link>; // eslint-disable-line react/prop-types
 const visibilityRenderer = ({ cellData }) => labelRenderer({ cellData: Content.getVisibilityName(cellData), columnData: { color: Content.getVisibilityColor(cellData) } });
 
