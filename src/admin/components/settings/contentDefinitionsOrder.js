@@ -1,10 +1,12 @@
 import _ from 'lodash';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Segment, Header, Icon, Button, Grid, Image, Message } from 'semantic-ui-react';
+import {
+  Segment, Header, Icon, Button, Grid, Image, Message,
+} from 'semantic-ui-react';
 import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 import { useFieldset, useDispatchCallback } from 'controls/hooks';
 import { saveContentDefinitionsOrders } from 'admin/actions/settings';
@@ -18,14 +20,15 @@ const arrayMove = (array, from, to) => {
   return array;
 };
 
-
 const contentDefinitionsOrderSchema = { contentDefinitions: Joi.array().required() };
 export const ContentDefinitionsOrder = () => {
 
   const contentDefinitionsStore = useSelector((state) => state.objects.contentDefinitions);
   const contentDefinitionsWrapper = useMemo(() => ({ contentDefinitions: _.sortBy(contentDefinitionsStore, 'order') }), [contentDefinitionsStore]);
 
-  const { fields: { contentDefinitions }, submit, loading, reset } = useFieldset({
+  const {
+    fields: { contentDefinitions }, submit, loading, reset,
+  } = useFieldset({
     schema: contentDefinitionsOrderSchema,
     onSubmit: useDispatchCallback(saveContentDefinitionsOrders),
     source: contentDefinitionsWrapper,
@@ -40,14 +43,14 @@ export const ContentDefinitionsOrder = () => {
             content='Sections order'
             size='large'
             subheader='Configure the order in which the section tiles appear in the mobile app'
-            icon='ordered list' />
+            icon='ordered list'
+          />
         </div>
         <Grid>
           <Grid.Column>
-            {_.size(contentDefinitions.value) ?
-              <SortableList axis='y' lockAxis='y' items={contentDefinitions.value} onSortEnd={onSortEnd} useDragHandle /> :
-              <Message warning content='Created sections will appear here so you can determine the order on which they will be displayed.' />
-            }
+            {_.size(contentDefinitions.value)
+              ? <SortableList axis='y' lockAxis='y' items={contentDefinitions.value} onSortEnd={onSortEnd} useDragHandle />
+              : <Message warning content='Created sections will appear here so you can determine the order on which they will be displayed.' />}
           </Grid.Column>
         </Grid>
         <div className='tr mt3'>
@@ -59,7 +62,8 @@ export const ContentDefinitionsOrder = () => {
             loading={loading}
             onClick={reset}
             icon='cancel'
-            content='Cancel' />
+            content='Cancel'
+          />
           <div className='db mt1 di-ns mt0-ns' />
           <Button
             onClick={submit}
@@ -68,7 +72,8 @@ export const ContentDefinitionsOrder = () => {
             className='w-100 w-auto-ns'
             primary
             icon='edit'
-            content='Save' />
+            content='Save'
+          />
         </div>
       </div>
     </Segment>
@@ -76,7 +81,11 @@ export const ContentDefinitionsOrder = () => {
 };
 
 const DragHandle = sortableHandle(() => <span className='pl2' style={{ cursor: 'row-resize' }}><Icon name='bars' /></span>);
-const SortableItem = sortableElement(({ item: { id, title, image, enabled } }) => {
+const SortableItem = sortableElement(({
+  item: {
+    id, title, image, enabled,
+  },
+}) => {
   const thumbUrl = useSelector((state) => _.get(state.objects.resources[image.id], 'thumb'));
   return (
     <Segment className='flex-row' secondary={!enabled}>

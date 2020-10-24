@@ -3,14 +3,13 @@ require('env2')('./.env');
 const _ = require('lodash');
 const path = require('path');
 const webpack = require('webpack');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const CircularDependencyPlugin = require('circular-dependency-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const ChunksAssetsPlugin = require('./server/tools/chunksAssetsPlugin');
+const AssetsPlugin = require('assets-webpack-plugin');
 
 const isDev = process.env.NODE_ENV !== 'production';
 const ifDev = (then) => (isDev ? then : null);
@@ -27,38 +26,42 @@ module.exports = {
     runtimeChunk: isDev,
     minimizer: [
       new TerserPlugin({ extractComments: false, terserOptions: { toplevel: true, output: { comments: false } } }),
-      new OptimizeCSSAssetsPlugin({ cssProcessorPluginOptions: { preset: ['default', { discardComments: { removeAll: true } }] } }),
+      new CssMinimizerPlugin(),
     ],
-    splitChunks: {
-      minSize: 0,
-      chunks: 'all',
-    },
   },
   performance: { hints: false },
   context: path.resolve(__dirname, './src'),
   devtool: false,
-  output: { publicPath: '/', path: path.resolve(__dirname, './dist'), filename: isDev ? '[name].bundle.js' : '[name].bundle.[contenthash].js' },
+  output: {
+    publicPath: '/',
+    path: path.resolve(__dirname, './dist'),
+    filename: isDev ? '[name].bundle.js' : '[name].bundle.[contenthash].js',
+  },
   resolve: {
+    fallback: {
+      crypto: require.resolve('crypto-browserify'),
+      path: require.resolve('path-browserify'),
+      stream: require.resolve('stream-browserify'),
+    },
     modules: [path.resolve(__dirname, './src'), path.resolve(__dirname, './assets'), 'node_modules'],
     alias: {
       '@': path.resolve(__dirname, './src'), // include your file like this in less files: ~@/yourFile.less
       '../../theme.config$': path.join(__dirname, './src/theme/semantic/theme.config.less'), // semantic requirement
       'react-dom': isDev ? '@hot-loader/react-dom' : 'react-dom',
-      '@hapi/joi$': '@hapi/joi/lib/index.js',
     },
   },
-  node: { // allow Joi package to be bundled on browser since it is originally made for node.js
-    net: 'empty',
-    dns: 'empty',
-  },
   plugins: [
+    new webpack.ProvidePlugin({ process: 'process/browser' }),
     ifDev(new webpack.SourceMapDevToolPlugin({ filename: '[file].map', exclude: /node_modules/ })),
     ifProd(new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ['**/*', path.join(process.cwd(), 'logs/**/*')], verbose: true })),
     ifProd(new webpack.LoaderOptionsPlugin({ minimize: true, debug: false })),
     new MomentLocalesPlugin(),
-    new CircularDependencyPlugin({ exclude: /node_modules/, failOnError: true, cwd: path.resolve(__dirname, './src') }),
     ifDev(new webpack.HotModuleReplacementPlugin()),
-    new ChunksAssetsPlugin({ fileName: 'rendering-manifest.json' }),
+    new AssetsPlugin({
+      filename: 'rendering-manifest.json',
+      entrypoints: true,
+      processOutput: (assets) => JSON.stringify(_.mapValues(assets, (assetsByType) => _.mapValues(assetsByType, _.castArray)), null, 2),
+    }),
     new MiniCssExtractPlugin({ filename: isDev ? '[name].css' : '[name].bundle.[contenthash].css' }),
     ifProd(new CopyWebpackPlugin({ patterns: [{ from: path.resolve(__dirname, './assets/static') }] })),
   ].filter(_.identity),
@@ -70,13 +73,13 @@ module.exports = {
     }, {
       test: /\.(css|less)$/,
       use: [
-        { loader: MiniCssExtractPlugin.loader, options: { hmr: isDev } },
+        { loader: MiniCssExtractPlugin.loader },
         { loader: 'css-loader', options: { importLoaders: 1, sourceMap: isDev } },
         { loader: 'less-loader', options: { sourceMap: isDev } },
       ],
     }, {
       test: /\.jpe?g$|\.gif$|\.png$|\.ico$|\.ttf$|\.eot$|\.svg$|\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-      use: [{ loader: 'file-loader', options: { esModule: false, name: isDev ? '[name].[ext]' : '[name].[hash].[ext]' } }],
+      use: [{ loader: 'file-loader', options: { esModule: false, name: isDev ? '[name].[ext]' : '[name].[contentHash].[ext]' } }],
     }],
   },
 };

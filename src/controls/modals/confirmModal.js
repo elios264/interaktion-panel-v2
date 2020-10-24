@@ -1,25 +1,19 @@
+/* eslint-disable react/jsx-no-bind */
 import _ from 'lodash';
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Button, Form, Radio } from 'semantic-ui-react';
-
+import {
+  Modal, Button, Form, Radio,
+} from 'semantic-ui-react';
 
 export class ConfirmModal extends PureComponent {
 
-  static propTypes = {
-    header: PropTypes.string.isRequired,
-    onCancel: PropTypes.func,
-    onAccept: PropTypes.func,
-    options: PropTypes.arrayOf(PropTypes.string),
-    content: PropTypes.node,
-    onClose: PropTypes.func,
-    cancelText: PropTypes.string,
-    acceptText: PropTypes.string,
-  }
-
-  state = {
-    loading: false,
-    selectedOption: 0,
+  constructor() {
+    super();
+    this.state = {
+      loading: false,
+      selectedOption: 0,
+    };
   }
 
   onCloseRequest = () => {
@@ -28,12 +22,15 @@ export class ConfirmModal extends PureComponent {
   }
 
   handleActionClick = async (action) => {
-    const { onAccept, onCancel, onClose, options } = this.props;
+    const {
+      onAccept, onCancel, onClose, options,
+    } = this.props;
     let error; let result;
     try {
+      const { selectedOption } = this.state;
       this.setState({ loading: true });
       const actionToExecute = action === 'accept' ? onAccept : onCancel;
-      result = actionToExecute ? await actionToExecute(options && this.state.selectedOption) : undefined;
+      result = actionToExecute ? await actionToExecute(options && selectedOption) : undefined;
     } catch (err) {
       error = err;
     }
@@ -47,7 +44,9 @@ export class ConfirmModal extends PureComponent {
   }
 
   render() {
-    const { content, header, options, cancelText, acceptText, onAccept: ignored, ...rest } = this.props;
+    const {
+      content, header, options, cancelText, acceptText, onAccept: ignored, ...rest
+    } = this.props;
     const { loading, selectedOption } = this.state;
 
     return (
@@ -64,7 +63,8 @@ export class ConfirmModal extends PureComponent {
                     name={optionName}
                     value={index}
                     checked={selectedOption === index}
-                    onChange={this.handleOptionChange} />
+                    onChange={this.handleOptionChange}
+                  />
                 </Form.Field>
               ))}
             </Form>
@@ -80,3 +80,14 @@ export class ConfirmModal extends PureComponent {
   }
 
 }
+
+ConfirmModal.propTypes = {
+  header: PropTypes.string.isRequired,
+  onCancel: PropTypes.func,
+  onAccept: PropTypes.func,
+  options: PropTypes.arrayOf(PropTypes.string),
+  content: PropTypes.node,
+  onClose: PropTypes.func,
+  cancelText: PropTypes.string,
+  acceptText: PropTypes.string,
+};

@@ -1,8 +1,10 @@
-import React from 'react';
+import { memo } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import Joi from '@hapi/joi';
-import { Header, Image, Segment, Form, Button, Grid, Message, Input } from 'semantic-ui-react';
+import Joi from 'joi';
+import {
+  Header, Image, Segment, Form, Button, Grid, Message, Input,
+} from 'semantic-ui-react';
 
 import { Popup } from 'controls';
 import { useFieldset, useDispatchCallback } from 'controls/hooks';
@@ -10,10 +12,10 @@ import { resetPassword } from 'admin/actions/authentication';
 
 const forgotForm = { email: '' };
 const forgotSchema = {
-  email: Joi.string().email().required().max(50).label('Email'),
+  email: Joi.string().email({ tlds: { allow: false } }).required().max(50).label('Email'),
 };
 
-export const ForgotPasswordForm = React.memo(() => {
+export const ForgotPasswordForm = memo(() => {
   const { fields: { email }, submit, loading } = useFieldset({ schema: forgotSchema, source: forgotForm, onSubmit: useDispatchCallback(resetPassword) });
 
   return (
@@ -34,13 +36,25 @@ export const ForgotPasswordForm = React.memo(() => {
             </Form>
           </Segment>
           <Message>
-            Remembered it? <Link to='/login'>Click here</Link>
+            Remembered it?
+            {' '}
+            <Link to='/login'>Click here</Link>
           </Message>
         </Grid.Column>
       </Grid>
       <div className='mt3 justify-between flex-wrap flex'>
-        <div className='mr3'>Build: <span className='b'>{window.__ENVIRONMENT__.BUILD}</span> Environment: <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span></div>
-        <div>Developed by <a className='contrast dim' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264</a></div>
+        <div className='mr3'>
+          Build:
+          <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
+          {' '}
+          Environment:
+          {' '}
+          <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span>
+        </div>
+        <div>
+          Developed by
+          <a className='contrast dim' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264</a>
+        </div>
       </div>
     </div>
   );

@@ -2,7 +2,6 @@
 const moment = require('moment');
 const cloud = require('./cloudUtils');
 
-
 cloud.setupJob('remove-unreferenced-resources', async (req) => {
   const aWeekAgo = moment().subtract(1, 'week').toDate();
 

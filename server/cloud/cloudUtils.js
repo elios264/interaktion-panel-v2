@@ -85,8 +85,12 @@ const setupFunction = (fnName, handler) => Parse.Cloud.define(fnName, handler);
 const runCloudJob = (jobName, params = {}) => Parse.Cloud.startJob(jobName, params);
 const runCloudFunction = (functionName, params = {}) => Parse.Cloud.run(functionName, params, masterPermissions);
 
-const httpRequestJson = async ({ method, url, body, headers = {} }) => {
-  const response = await Parse.Cloud.httpRequest({ cache: 'no-cache', method, url, body, headers: { 'Content-Type': 'application/json', ...headers } });
+const httpRequestJson = async ({
+  method, url, body, headers = {},
+}) => {
+  const response = await Parse.Cloud.httpRequest({
+    cache: 'no-cache', method, url, body, headers: { 'Content-Type': 'application/json', ...headers },
+  });
   return _.isUndefined(response.data)
     ? { status: response.status }
     : response.data;
@@ -123,9 +127,8 @@ const setAttr = (object, props) => {
   }
 };
 
-
 const masterPermissions = { useMasterKey: true };
-const getUserPermissions = (req) => req.user ? ({ sessionToken: req.user.getSessionToken() }) : {};
+const getUserPermissions = (req) => (req.user ? ({ sessionToken: req.user.getSessionToken() }) : {});
 const getValue = (value, mapping = {}, defaultValue) => _.get(mapping, [value], defaultValue);
 const formatCurrency = new Intl.NumberFormat(process.env.APP_LOCALE, { style: 'currency', currency: process.env.APP_CURRENCY, minimumFractionDigits: 2 }).format;
 const formatDate = (date, format = 'DD-MMM-YYYY HH:mm') => moment(date).format(format);

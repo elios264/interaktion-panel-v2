@@ -4,7 +4,6 @@ import { combineReducers } from 'redux';
 import { defaultConfig } from 'defaultConfig';
 import { createCRUDObjectReducer, cleanWhenNoUser } from 'utils/reducers';
 
-
 const configReducer = createCRUDObjectReducer('Config', { key: 'name' });
 const config = cleanWhenNoUser((state, action) => {
   const newConfig = configReducer(state, action);
@@ -30,5 +29,5 @@ export const siteInfoInfoReducer = combineReducers({
   config,
   isWorking,
   workingMessages,
-  initializing: (state = false, action) => action.type === 'INITIALIZING' ? action.running : state,
+  initializing: (state = false, action) => (action.type === 'INITIALIZING' ? action.running : state),
 });

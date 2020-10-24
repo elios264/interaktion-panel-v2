@@ -52,11 +52,10 @@
 - APP_CURRENCY
 - APP_LOCALE
 
-
---- TODO FOR MONEY -------
-- add justify center
-- update libs
+--- TODO -------
 - page contents feature -> directly view content in app,
+- react fast refresh
+- add justify center
 - enabled/disabled users,
 - option to allow/disable registration
 - title optional on content details

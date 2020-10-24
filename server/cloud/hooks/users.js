@@ -1,6 +1,6 @@
 /* global Parse */
 const cloud = require('../cloudUtils');
-const { role, authMode } = require('../types');
+const types = require('../types');
 
 const forbidSignupIfAuthPublic = async (req) => {
   if (req.master) {
@@ -10,11 +10,11 @@ const forbidSignupIfAuthPublic = async (req) => {
   const clientFeatures = await new Parse.Query('Config')
     .equalTo('name', 'client-features')
     .first(cloud.masterPermissions)
-    .then((setting) => setting ? JSON.parse(setting.get('value')) : {});
+    .then((setting) => (setting ? JSON.parse(setting.get('value')) : {}));
 
-  const mode = clientFeatures.authMode || authMode.private;
+  const mode = clientFeatures.authMode || types.authMode.private;
 
-  if (!req.original && mode === authMode.public) {
+  if (!req.original && mode === types.authMode.public) {
     throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, 'Signup deactivated');
   }
 };
@@ -23,20 +23,19 @@ const forbidLoginIfAuthPublic = async (req) => {
   const clientFeatures = await new Parse.Query('Config')
     .equalTo('name', 'client-features')
     .first(cloud.masterPermissions)
-    .then((setting) => setting ? JSON.parse(setting.get('value')) : {});
+    .then((setting) => (setting ? JSON.parse(setting.get('value')) : {}));
 
-  const mode = clientFeatures.authMode || authMode.private;
+  const mode = clientFeatures.authMode || types.authMode.private;
 
-  if (req.object.get('role') === role.client && mode === authMode.public) {
+  if (req.object.get('role') === types.role.client && mode === types.authMode.public) {
     throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, 'Login deactivated');
   }
 };
 
-
 const ensureAppropriateRole = (req) => {
   switch (req.object.get('role')) {
-    case role.admin: cloud.ensureIsAdmin(req); break;
-    case role.client: break; // allow signup
+    case types.role.admin: cloud.ensureIsAdmin(req); break;
+    case types.role.client: break; // allow signup
     default: throw new Error('Invalid role');
   }
 };

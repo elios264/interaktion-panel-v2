@@ -1,8 +1,10 @@
 import _ from 'lodash';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { Segment, Button, Header, Radio, Grid, Form } from 'semantic-ui-react';
-import Joi from '@hapi/joi';
+import {
+  Segment, Button, Header, Radio, Grid, Form,
+} from 'semantic-ui-react';
+import Joi from 'joi';
 
 import { Config } from 'objects';
 import { Popup } from 'controls';
@@ -17,7 +19,9 @@ export const ClientFeatures = () => {
   const clientFeatures = useSelector((state) => state.siteInfo.config['client-features']);
   const clientFeaturesInstance = useMemo(() => clientFeatures.value, [clientFeatures.valueString]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { fields: { authMode }, submit, loading, reset } = useFieldset({
+  const {
+    fields: { authMode }, submit, loading, reset,
+  } = useFieldset({
     schema: clientFeaturesSchema,
     onSubmit: useDispatchCallback(saveClientFeatures),
     source: clientFeaturesInstance,
@@ -31,7 +35,8 @@ export const ClientFeatures = () => {
             content='Client features'
             size='large'
             subheader='Configure the features you want for the client app.'
-            icon='info' />
+            icon='info'
+          />
         </div>
         <Grid>
           <Grid.Column>
@@ -52,7 +57,8 @@ export const ClientFeatures = () => {
             loading={loading}
             onClick={reset}
             icon='cancel'
-            content='Cancel' />
+            content='Cancel'
+          />
           <div className='db mt1 di-ns mt0-ns' />
           <Button
             type='submit'
@@ -61,7 +67,8 @@ export const ClientFeatures = () => {
             className='w-100 w-auto-ns'
             primary
             icon='edit'
-            content='Save' />
+            content='Save'
+          />
         </div>
       </Form>
     </Segment>

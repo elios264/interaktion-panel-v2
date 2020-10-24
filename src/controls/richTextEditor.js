@@ -2,11 +2,17 @@
 
 import _ from 'lodash';
 import cx from 'classnames';
-import React, { useMemo, useState, useContext } from 'react';
+import {
+  createContext, useMemo, useState, useContext,
+} from 'react';
 import PropTypes from 'prop-types';
 import { createEditor, Transforms } from 'slate';
-import { Slate, useSlate, withReact, useSelected, useReadOnly } from 'slate-react';
-import { Menu, Icon, Dropdown, Loader } from 'semantic-ui-react';
+import {
+  Slate, useSlate, withReact, useSelected, useReadOnly,
+} from 'slate-react';
+import {
+  Menu, Icon, Dropdown, Loader,
+} from 'semantic-ui-react';
 import { withHistory } from 'slate-history';
 import {
   ParagraphPlugin,
@@ -63,16 +69,18 @@ import {
   MARK_UNDERLINE,
 } from '@udecode/slate-plugins';
 
-import * as utils from './utils';
 import { File, Resource } from 'objects';
+import * as utils from './utils';
 import { languageOptions } from './multiLanguageInput';
 import { useEffectSkipMount } from './hooks/misc';
 import { makeAwaitable } from './awaitables';
 
 const AwaitableDropdownItem = makeAwaitable({ event: 'onMouseDown', props: { icon: <Loader active inline size='tiny' className='icon' /> } })(Dropdown.Item);
-const ResourcesContext = React.createContext({});
+const ResourcesContext = createContext({});
 
-const ImageElement = ({ attributes, className, children, element }) => {
+const ImageElement = ({
+  attributes, className, children, element,
+}) => {
   const resources = useContext(ResourcesContext);
   const selected = useSelected();
   const readOnly = useReadOnly();
@@ -93,7 +101,9 @@ const ImagePlugin = () => ({
   voidTypes: ['img'],
 });
 
-const AttachmentElement = ({ attributes, className, children, element }) => {
+const AttachmentElement = ({
+  attributes, className, children, element,
+}) => {
   const selected = useSelected();
   const readOnly = useReadOnly();
 
@@ -109,8 +119,8 @@ const AttachmentElement = ({ attributes, className, children, element }) => {
       case '.pptx': case '.ppt': return 'file powerpoint outline';
       case '.zip': return 'file archive outline';
       case '.mp3': case '.m4a': return 'file audio outline';
-      case '.js': case '.java': case '.php': case '.less' : case '.css' : return 'file code outline';
-      case '.txt' : return 'file alternate outline';
+      case '.js': case '.java': case '.php': case '.less': case '.css': return 'file code outline';
+      case '.txt': return 'file alternate outline';
       default: return 'file outline';
     }
   };
@@ -134,7 +144,10 @@ const AttachmentElement = ({ attributes, className, children, element }) => {
           <div className='gray' style={{ wordBreak: 'break-all' }}>{attachment.fileName || `Filename with id ${attachment.id} not found`}</div>
           <div className='flex justify-between mt2'>
             <div className='gray b'>{formatFileSize(attachment.fileSize)}</div>
-            <div> <Icon name='cloud download' color='black' size='small' /></div>
+            <div>
+              {' '}
+              <Icon name='cloud download' color='black' size='small' />
+            </div>
           </div>
         </div>
       </a>
@@ -171,7 +184,8 @@ const MenuMark = ({ type, icon, clear }) => {
       onMouseDown={(e) => {
         e.preventDefault();
         toggleMark(editor, type, clear);
-      }}>
+      }}
+    >
       {icon}
     </Menu.Item>
   );
@@ -187,7 +201,8 @@ const MenuElement = ({ type, icon }) => {
       onMouseDown={(e) => {
         e.preventDefault();
         editor.toggleType(type);
-      }}>
+      }}
+    >
       {icon}
     </Menu.Item>
   );
@@ -203,7 +218,8 @@ const MenuAlign = ({ type, icon }) => {
       onMouseDown={(e) => {
         e.preventDefault();
         upsertAlign(editor, { type });
-      }}>
+      }}
+    >
       {icon}
     </Menu.Item>
   );
@@ -235,7 +251,8 @@ const MenuList = ({ type, icon }) => {
       onMouseDown={(e) => {
         e.preventDefault();
         toggleList(editor, { typeList: type });
-      }}>
+      }}
+    >
       {icon}
     </Menu.Item>
   );
@@ -252,7 +269,8 @@ const MenuLink = () => {
         e.preventDefault();
         const url = window.prompt('Enter the URL of the link:'); // eslint-disable-line no-alert
         upsertLinkAtSelection(editor, url);
-      }}>
+      }}
+    >
       <Icon name='linkify' />
     </Menu.Item>
   );
@@ -268,7 +286,8 @@ const MenuDivider = () => {
       onMouseDown={(e) => {
         e.preventDefault();
         Transforms.insertNodes(editor, { type: 'divider', children: [{ text: '' }] });
-      }}>
+      }}
+    >
       <Icon name='minus' />
     </Menu.Item>
   );
@@ -293,7 +312,8 @@ const MenuMedia = () => {
               await image.save();
             }
             Transforms.insertNodes(editor, { type: 'img', resource: image.id, children: [{ text: '' }] });
-          }} />
+          }}
+        />
         <Dropdown.Item
           icon='video'
           content='Video'
@@ -303,7 +323,8 @@ const MenuMedia = () => {
             if (isUrl(url)) {
               Transforms.insertNodes(editor, { type: ELEMENT_MEDIA_EMBED, url, children: [{ text: '' }] });
             }
-          }} />
+          }}
+        />
         <AwaitableDropdownItem
           icon='attach'
           content='Attachment'
@@ -317,7 +338,8 @@ const MenuMedia = () => {
             }
 
             Transforms.insertNodes(editor, { type: 'attachment', resource: attachment.id, children: [{ text: '' }] });
-          }} />
+          }}
+        />
       </Dropdown.Menu>
     </Dropdown>
   );
@@ -340,19 +362,26 @@ const plugins = [
   ImagePlugin(),
   DividerPlugin(),
   AttachmentPlugin(),
-  ResetBlockTypePlugin({ rules: [
-    { types: [ELEMENT_BLOCKQUOTE], defaultType: ELEMENT_PARAGRAPH, hotkey: 'Enter', predicate: isBlockAboveEmpty },
-    { types: [ELEMENT_BLOCKQUOTE], defaultType: ELEMENT_PARAGRAPH, hotkey: 'Backspace', predicate: isSelectionAtBlockStart },
-  ] }),
-  SoftBreakPlugin({ rules: [
-    { hotkey: 'shift+enter' },
-    { hotkey: 'enter', query: { allow: [ELEMENT_BLOCKQUOTE] } },
-  ] }),
-  ExitBreakPlugin({ rules: [
-    { hotkey: 'mod+enter' },
-    { hotkey: 'mod+shift+enter', before: true },
-    { hotkey: 'enter', query: { start: true, end: true, allow: headingTypes } },
-  ] }),
+  ResetBlockTypePlugin({
+    rules: [{
+      types: [ELEMENT_BLOCKQUOTE], defaultType: ELEMENT_PARAGRAPH, hotkey: 'Enter', predicate: isBlockAboveEmpty,
+    }, {
+      types: [ELEMENT_BLOCKQUOTE], defaultType: ELEMENT_PARAGRAPH, hotkey: 'Backspace', predicate: isSelectionAtBlockStart,
+    }],
+  }),
+  SoftBreakPlugin({
+    rules: [
+      { hotkey: 'shift+enter' },
+      { hotkey: 'enter', query: { allow: [ELEMENT_BLOCKQUOTE] } },
+    ],
+  }),
+  ExitBreakPlugin({
+    rules: [
+      { hotkey: 'mod+enter' },
+      { hotkey: 'mod+shift+enter', before: true },
+      { hotkey: 'enter', query: { start: true, end: true, allow: headingTypes } },
+    ],
+  }),
 ];
 
 const withPlugins = [
@@ -366,8 +395,9 @@ const withPlugins = [
   withTrailingNode({ type: ELEMENT_PARAGRAPH, level: 1 }),
 ];
 
-
-export const RichTextEditor = ({ value, onChange, defaultLanguage, disabled, placeholder, resources, ...props }) => {
+export const RichTextEditor = ({
+  value, onChange, defaultLanguage, disabled, placeholder, resources, ...props
+}) => {
   const editor = useMemo(() => pipe(createEditor(), ...withPlugins), []);
 
   const [currentLanguage, setCurrentLanguage] = useState(defaultLanguage);
@@ -397,7 +427,8 @@ export const RichTextEditor = ({ value, onChange, defaultLanguage, disabled, pla
         <Slate
           editor={editor}
           value={document}
-          onChange={onDocumentChange}>
+          onChange={onDocumentChange}
+        >
           {!disabled && (
             <Menu icon size='tiny' className='flex-wrap'>
               <MenuMark type={MARK_BOLD} icon={<Icon name='bold' />} />
@@ -417,7 +448,8 @@ export const RichTextEditor = ({ value, onChange, defaultLanguage, disabled, pla
                 floating
                 options={languageOptions}
                 value={currentLanguage}
-                onChange={onLanguageChange} />
+                onChange={onLanguageChange}
+              />
             </Menu>
           )}
           <EditablePlugins plugins={plugins} spellCheck placeholder={placeholder} readOnly={disabled} />

@@ -1,27 +1,29 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import Joi from '@hapi/joi';
-import { Grid, Menu, Modal, Button, Segment, Form, Header, Input } from 'semantic-ui-react';
+import Joi from 'joi';
+import {
+  Grid, Menu, Modal, Button, Segment, Form, Header, Input,
+} from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
 import { User } from 'objects';
-import { Popup, utils, AwaitableButton, LoadingDots } from 'controls';
+import {
+  Popup, utils, AwaitableButton, LoadingDots,
+} from 'controls';
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
 import { updateProfile, deleteUser } from 'admin/actions/users';
 import { ResourceImageSelector } from 'admin/components/common';
 
-
 const editUserSchema = {
   name: Joi.string().trim().required().max(50).label('Name'),
-  email: Joi.string().email().required().max(50).label('Email'),
+  email: Joi.string().email({ tlds: { allow: false } }).required().max(50).label('Email'),
   photo: Joi.object().label('Profile pic'),
 };
 
 export const UserDetails = ({ match, history }) => {
 
   const isEditing = match.params.action === 'edit';
-  const user = useSelector((state) => state.userInfo.id === match.params.userId ? state.userInfo : state.objects.users[match.params.userId]);
+  const user = useSelector((state) => (state.userInfo.id === match.params.userId ? state.userInfo : state.objects.users[match.params.userId]));
   const isWorking = useSelector((state) => state.siteInfo.isWorking);
 
   const switchToDetailsMode = () => history.replace(`/users/details/${user.id}`);
@@ -30,7 +32,9 @@ export const UserDetails = ({ match, history }) => {
   const goToListing = () => history.replace('/users');
   const deleteUserAndGoToListing = useAsyncSubmit(useDispatchCallback(deleteUser, user), goToListing);
 
-  const { fields: { name, photo, email }, submit, loading } = useFieldset({ schema: editUserSchema, source: user, onSubmit: updateProfileAndGoToDetails, enabled: isEditing });
+  const { fields: { name, photo, email }, submit, loading } = useFieldset({
+    schema: editUserSchema, source: user, onSubmit: updateProfileAndGoToDetails, enabled: isEditing,
+  });
 
   if (!user || user.role === User.role.admin) {
     return (
@@ -67,7 +71,8 @@ export const UserDetails = ({ match, history }) => {
                 <ResourceImageSelector
                   disabled={!isEditing}
                   value={photo.value}
-                  onChange={photo.onChange} />
+                  onChange={photo.onChange}
+                />
               </Grid.Column>
               <Grid.Column computer={16} largeScreen={9} widescreen={9}>
                 <Grid.Row>

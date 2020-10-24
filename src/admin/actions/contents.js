@@ -1,8 +1,12 @@
 import _ from 'lodash';
-import { handleError, showSuccess, showConfirm, showModal } from 'utils/actions';
+import {
+  handleError, showSuccess, showConfirm, showModal,
+} from 'utils/actions';
 
 import { utils } from 'controls';
-import { BaseObject, File, Resource, Content } from 'objects';
+import {
+  BaseObject, File, Resource, Content,
+} from 'objects';
 import { ImportObjectsAssistantModal } from 'admin/components/common';
 import { contentImportDefinition } from 'admin/components/contents/contentSchema';
 
@@ -23,7 +27,7 @@ export const saveContent = (content, silentAndRethrow = false) => handleError(as
       options: ['Save content only', 'Save content and send a push notification'],
       onAccept: (selectedOption) => api
         .saveObject(content)
-        .then(() => selectedOption === 1 ? dispatch(sendContentNotification(content)).then(() => content) : content),
+        .then(() => (selectedOption === 1 ? dispatch(sendContentNotification(content)).then(() => content) : content)),
     })));
 
   } else {
@@ -86,7 +90,6 @@ export const cloneContent = (content) => handleError(async (dispatch, getState, 
   return result;
 }, 'An error ocurred when cloning the content');
 
-
 export const exportContents = ({ contentsIds, definition, onlyData = false }) => handleError((dispatch, getState) => {
 
   let selectedContents = _.isUndefined(contentsIds)
@@ -94,10 +97,14 @@ export const exportContents = ({ contentsIds, definition, onlyData = false }) =>
     : _(contentsIds).map((id) => getState().objects.contents[id]).compact().value();
 
   selectedContents = _.map(selectedContents, (content) => {
-    const { objectId: id, image, documentResources, ...rest } = content.toFullJSON();
+    const {
+      objectId: id, image, documentResources, ...rest
+    } = content.toFullJSON();
     const resource = getState().objects.resources[image.objectId];
     const resources = _(documentResources).map(({ objectId }) => getState().objects.resources[objectId]).compact().value();
-    return { id, image: resource && resource.toFullJSON(), documentResources: _.invokeMap(resources, 'toFullJSON'), ...rest };
+    return {
+      id, image: resource && resource.toFullJSON(), documentResources: _.invokeMap(resources, 'toFullJSON'), ...rest,
+    };
   });
 
   const data = {
@@ -116,9 +123,11 @@ export const exportContents = ({ contentsIds, definition, onlyData = false }) =>
 
 }, 'The contents could not be exported');
 
+export const importContents = ({
+  definition, json, dryRun, logProgress = _.noop, rethrow = false,
+}) => handleError((dispatch, getState, { api }) => {
 
-export const importContents = ({ definition, json, dryRun, logProgress = _.noop, rethrow = false }) => handleError((dispatch, getState, { api }) => {
-
+  // eslint-disable-next-line no-shadow
   const importData = ({ json, dryRun, logProgress }) => dispatch(handleError(async () => {
     // no data to validate
     if (dryRun) {
@@ -209,8 +218,10 @@ export const importContents = ({ definition, json, dryRun, logProgress = _.noop,
     return true;
   }, null, { rethrow: true, silent: true }));
 
-  return json ?
-    importData({ definition, json, dryRun, logProgress })
+  return json
+    ? importData({
+      definition, json, dryRun, logProgress,
+    })
     : dispatch(showModal({
       custom: ImportObjectsAssistantModal,
       onImport: importData,

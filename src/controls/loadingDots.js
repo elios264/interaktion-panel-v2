@@ -5,7 +5,9 @@ import { useState } from 'react';
 import { delay } from './utils';
 import { useEffectAsync, useIsMounted } from './hooks';
 
-export const LoadingDots = ({ interval, maxChars, char, prefix }) => {
+export const LoadingDots = ({
+  interval, maxChars, char, prefix,
+}) => {
   const [count, setCount] = useState(0);
   const isMounted = useIsMounted();
 

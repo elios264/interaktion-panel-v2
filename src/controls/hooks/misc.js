@@ -1,7 +1,8 @@
 import _ from 'lodash';
-import { useEffect, useCallback, useRef, useMemo, useState } from 'react';
+import {
+  useEffect, useCallback, useRef, useMemo, useState,
+} from 'react';
 import { useDispatch } from 'react-redux';
-
 
 export const useAsyncSubmit = (onAccept, onCancel) => useCallback(async (...args) => {
   const result = await onAccept(...args);
@@ -32,7 +33,7 @@ export const useIsMount = () => {
 
 export const useIsMounted = () => {
   const isMountedRef = useRef(true);
-  useEffect(() => () => (isMountedRef.current = false), []);
+  useEffect(() => () => { isMountedRef.current = false; }, []);
   return isMountedRef;
 };
 
@@ -47,7 +48,6 @@ export const useEffectSkipMount = (fn, deps) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 };
-
 
 export const useDebounce = (fn, delay) => useMemo(() => {
   const debouncedFn = _.debounce(fn, delay);

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Grid, Menu } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 

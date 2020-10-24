@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Header, Image, Segment } from 'semantic-ui-react';
 import cx from 'classnames';
 
-export const DisplayMessage = ({ header, content, redirect, helmet, history }) => {
+export const DisplayMessage = ({
+  header, content, redirect, helmet, history,
+}) => {
 
   useEffect(() => {
     if (redirect && history) {
@@ -14,7 +16,6 @@ export const DisplayMessage = ({ header, content, redirect, helmet, history }) =
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   if (!content && redirect) {
     content = 'Wait 3 seconds to be redirected ...';
@@ -37,8 +38,18 @@ export const DisplayMessage = ({ header, content, redirect, helmet, history }) =
         </Segment>
       </div>
       <div className='self-stretch pt3 mt-auto justify-between flex-wrap flex'>
-        <div className='mr3'>Build: <span className='b'>{window.__ENVIRONMENT__.BUILD}</span> Environment: <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span></div>
-        <div>Developed by <a className='contrast dim' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264</a></div>
+        <div className='mr3'>
+          Build:
+          <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
+          {' '}
+          Environment:
+          {' '}
+          <span className='b'>{window.__ENVIRONMENT__.BUILD_ENVIRONMENT}</span>
+        </div>
+        <div>
+          Developed by
+          <a className='contrast dim' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264</a>
+        </div>
       </div>
     </div>
   );

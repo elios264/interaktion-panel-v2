@@ -1,11 +1,11 @@
 import './multiLanguageInput.less';
 
 import _ from 'lodash';
-import React, { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Input, Dropdown, TextArea } from 'semantic-ui-react';
 import cx from 'classnames';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 import { useEffectSkipMount } from './hooks/misc';
 
@@ -22,10 +22,11 @@ export const getJoiLanguagesValidationSchema = (label, customizer = _.identity) 
   acc[value] = customizer(rule, value === window.__ENVIRONMENT__.APP_LOCALE);
 }, {})).label(label).required();
 
-
-export const MultiLanguageInput = ({ value, onChange, defaultLanguage, disabled, ...props }) => {
+export const MultiLanguageInput = ({
+  value, onChange, defaultLanguage, disabled, ...rest
+}) => {
   const [currentLanguage, setCurrentLanguage] = useState(defaultLanguage);
-  const onLanguageChange = useCallback((e, { value }) => setCurrentLanguage(value), [setCurrentLanguage]);
+  const onLanguageChange = useCallback((e, { value: val }) => setCurrentLanguage(val), [setCurrentLanguage]);
   const onChangeInLanguage = useCallback((e, { value: newValue }) => onChange(_.pickBy({ ...value, [currentLanguage]: newValue })), [currentLanguage, onChange, value]);
   const languageOptionsWithTranslation = useMemo(() => _.map(languageOptions, (props) => ({ ...props, description: _.truncate(value[props.value]) })), [value]);
 
@@ -42,15 +43,16 @@ export const MultiLanguageInput = ({ value, onChange, defaultLanguage, disabled,
           options={languageOptionsWithTranslation}
           value={currentLanguage}
           onChange={onLanguageChange}
-          disabled={disabled} />
+          disabled={disabled}
+        />
       )}
       value={value[currentLanguage] || ''}
       onChange={onChangeInLanguage}
       disabled={disabled}
-      {...props} />
+      {...rest}
+    />
   );
 };
-
 
 MultiLanguageInput.propTypes = {
   value: PropTypes.objectOf(PropTypes.string),
@@ -64,9 +66,11 @@ MultiLanguageInput.defaultProps = {
   value: {},
 };
 
-export const MultiLanguageTextArea = ({ value, onChange, className, defaultLanguage, disabled, ...props }) => {
+export const MultiLanguageTextArea = ({
+  value, onChange, className, defaultLanguage, disabled, ...rest
+}) => {
   const [currentLanguage, setCurrentLanguage] = useState(defaultLanguage);
-  const onLanguageChange = useCallback((e, { value }) => setCurrentLanguage(value), [setCurrentLanguage]);
+  const onLanguageChange = useCallback((e, { value: val }) => setCurrentLanguage(val), [setCurrentLanguage]);
   const onChangeInLanguage = useCallback((e, { value: newValue }) => onChange(_.pickBy({ ...value, [currentLanguage]: newValue })), [currentLanguage, onChange, value]);
   const languageOptionsWithTranslation = useMemo(() => _.map(languageOptions, (props) => ({ ...props, description: _.truncate(value[props.value]) })), [value]);
 
@@ -79,7 +83,8 @@ export const MultiLanguageTextArea = ({ value, onChange, className, defaultLangu
         value={value[currentLanguage] || ''}
         onChange={onChangeInLanguage}
         disabled={disabled}
-        {...props} />
+        {...rest}
+      />
       <Dropdown
         className='attached-bottom button-dropdown-fix'
         button
@@ -89,11 +94,11 @@ export const MultiLanguageTextArea = ({ value, onChange, className, defaultLangu
         options={languageOptionsWithTranslation}
         value={currentLanguage}
         disabled={disabled}
-        onChange={onLanguageChange} />
+        onChange={onLanguageChange}
+      />
     </div>
   );
 };
-
 
 MultiLanguageTextArea.propTypes = {
   value: PropTypes.objectOf(PropTypes.string),

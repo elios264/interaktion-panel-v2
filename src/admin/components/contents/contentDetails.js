@@ -1,15 +1,19 @@
 import _ from 'lodash';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Grid, Menu, Modal, Button, Segment, Form, Divider, Message, Input, Dropdown, Label } from 'semantic-ui-react';
+import {
+  Grid, Menu, Modal, Button, Segment, Form, Divider, Message, Input, Dropdown, Label,
+} from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
 import { Content } from 'objects';
 import { ResourceImageSelector } from 'admin/components/common';
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
-import { Popup, LoadingDots, Selector, AwaitableButton, MultiLanguageInput, MultiLanguageTextArea, RichTextEditor, DatePicker, utils, AwaitableDropdownItem } from 'controls';
+import {
+  Popup, LoadingDots, Selector, AwaitableButton, MultiLanguageInput, MultiLanguageTextArea, RichTextEditor, DatePicker, utils, AwaitableDropdownItem,
+} from 'controls';
 
 import { saveContent, deleteContent, cloneContent } from 'admin/actions/contents';
 import { contentSchema, entityTypeContentSchema, entityTypeEventSchema } from './contentSchema';
@@ -21,7 +25,6 @@ const contentTemplate = new Content({
   visibility: Content.visibility.public,
   entityType: Content.entityType.content,
 });
-
 
 const EntityInfoContent = () => null;
 const EntityInfoEvent = ({ location, start, disabled }) => (
@@ -61,20 +64,24 @@ export const ContentDetails = ({ history, match }) => {
   const deleteContentAndGoToListing = useAsyncSubmit(useDispatchCallback(deleteContent, content), () => history.replace(`/contents/${match.params.definitionId}`));
   const cloneContentAndGoToDetails = useAsyncSubmit(useDispatchCallback(cloneContent, content), switchToDetailsMode);
 
-  const cloneSourceContent = useCallback((content) => {
-    const clonedContent = content.copy();
+  const cloneSourceContent = useCallback((contentToClone) => {
+    const clonedContent = contentToClone.copy();
     clonedContent.definition = contentDefinition;
     return clonedContent;
   }, [contentDefinition]);
 
-  const { fields, submit, loading, reset, validator } = useFieldset({
+  const {
+    fields, submit, loading, reset, validator,
+  } = useFieldset({
     schema: contentSchema,
     enabled: isEditing || isCreating,
     onSubmit: saveContentAndGoToDetails,
     source: content || contentTemplate,
     cloneSource: cloneSourceContent,
   });
-  const { image, document, visibility, entityType, entityInfo, title, description } = fields;
+  const {
+    image, document, visibility, entityType, entityInfo, title, description,
+  } = fields;
 
   const { fields: entityInfoFields } = useFieldset({
     validator,
@@ -147,7 +154,8 @@ export const ContentDetails = ({ history, match }) => {
                           disabled={!isEditing && !isCreating}
                           options={visibilityOptions}
                           value={visibility.value}
-                          onChange={visibility.onChange} />
+                          onChange={visibility.onChange}
+                        />
                       </Popup>
                     </Form.Field>
                     <Form.Field error={entityType.errored}>
@@ -157,7 +165,8 @@ export const ContentDetails = ({ history, match }) => {
                           disabled={!isEditing && !isCreating}
                           options={entityTypeOptions}
                           value={entityType.value}
-                          onChange={entityType.onChange} />
+                          onChange={entityType.onChange}
+                        />
                       </Popup>
                     </Form.Field>
                   </Form.Group>
@@ -166,12 +175,16 @@ export const ContentDetails = ({ history, match }) => {
                     <Grid.Row stretched>
                       <Grid.Column>
                         <Form.Field error={image.errored} required>
-                          <label>Image<span className='i silver ml2'>Recommended aspect ratio: 3:2</span></label>
+                          <label>
+                            Image
+                            <span className='i silver ml2'>Recommended aspect ratio: 3:2</span>
+                          </label>
                           <Popup message={image.message} enabled={image.errored}>
                             <ResourceImageSelector
                               disabled={!isEditing && !isCreating}
                               value={image.value}
-                              onChange={image.onChange} />
+                              onChange={image.onChange}
+                            />
                           </Popup>
                         </Form.Field>
                       </Grid.Column>
@@ -187,7 +200,8 @@ export const ContentDetails = ({ history, match }) => {
                               onChange={description.onChange}
                               rows={5}
                               disabled={!isEditing && !isCreating}
-                              placeholder='Short description.' />
+                              placeholder='Short description.'
+                            />
                           </Popup>
                         </Form.Field>
                       </Grid.Column>
@@ -212,7 +226,8 @@ export const ContentDetails = ({ history, match }) => {
                       loading={loading}
                       onClick={isCreating ? reset : switchToDetailsMode}
                       icon={isCreating ? 'repeat' : 'cancel'}
-                      content={isCreating ? 'Start over' : 'Cancel'} />
+                      content={isCreating ? 'Start over' : 'Cancel'}
+                    />
                     <div className='db mt1 di-ns mt0-ns' />
                     <Button
                       type='submit'
@@ -221,7 +236,8 @@ export const ContentDetails = ({ history, match }) => {
                       className='w-100 w-auto-ns'
                       primary
                       icon='edit'
-                      content={isCreating ? `Create ${_.toLower(Content.getEntityTypeName(entityType.value))}!` : 'Save'} />
+                      content={isCreating ? `Create ${_.toLower(Content.getEntityTypeName(entityType.value))}!` : 'Save'}
+                    />
                   </Grid.Row>
                 )}
               </Grid.Column>
@@ -232,7 +248,8 @@ export const ContentDetails = ({ history, match }) => {
                   onChange={document.onChange}
                   disabled={!isEditing && !isCreating}
                   resources={resources}
-                  placeholder='Enter your text here...' />
+                  placeholder='Enter your text here...'
+                />
               </Grid.Column>
             </Grid>
           </Form>

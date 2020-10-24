@@ -1,7 +1,9 @@
 import _ from 'lodash';
 import Parse from 'parse';
 import { debounceCall } from 'controls/utils';
-import { ContentDefinition, Content, Config, User, Resource, EventLog, BaseObject } from 'objects';
+import {
+  ContentDefinition, Content, Config, User, Resource, EventLog, BaseObject,
+} from 'objects';
 import { buildQuery, handleOperation } from 'utils/api';
 import { AnalyticsProvider } from './analyticsProvider';
 
@@ -21,6 +23,7 @@ export class Api {
   }
 
   realTimeSubs = [];
+
   onEvent = () => console.error('Call initialize with onEventCallback first');
 
   async initialize({ dispatch, getState }) {
@@ -129,12 +132,15 @@ export class Api {
   }, this, 'Updating user');
 
   createManager = ({ email, name }) => handleOperation(() => Parse.Cloud.run('create-manager', { name, email }), this, 'Creating manager')
+
   createUser = ({ email, name }) => handleOperation(() => Parse.Cloud.run('create-user', { name, email }), this, 'Creating user')
 
   deleteUser = (user) => handleOperation(() => Parse.Cloud.run('delete-user', { id: user.id }), this, 'Deleting user')
+
   requestPasswordReset = (email) => handleOperation(() => Parse.User.requestPasswordReset(email), this, 'Requesting password reset')
 
   deleteObject = (object) => handleOperation(() => object.destroy(), this, 'Deleting record')
+
   deleteObjects = (objects) => handleOperation(() => Parse.Object.destroyAll(objects), this, `Deleting ${_.size(objects)} records`)
 
   saveObject = (object, attributes) => handleOperation(() => {

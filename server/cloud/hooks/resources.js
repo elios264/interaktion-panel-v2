@@ -26,10 +26,13 @@ const generateResourceDerivedData = async (resourceUrl, thumbnail) => {
 
   return {
     thumbnail: buffer ? buffer.toString('base64') : undefined,
-    height, width, format, size, hash,
+    height,
+    width,
+    format,
+    size,
+    hash,
   };
 };
-
 
 const extractData = (source, { thumbnail: thumbnailColumn, metadata }) => async (req) => {
   const { object } = req;

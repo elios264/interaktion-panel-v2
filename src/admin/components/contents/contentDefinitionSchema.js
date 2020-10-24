@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { ContentDefinition } from 'objects';
 import { getJoiLanguagesValidationSchema } from 'controls';
 

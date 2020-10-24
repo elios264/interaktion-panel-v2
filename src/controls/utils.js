@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { Fragment } from 'react';
+import { Children, Fragment } from 'react';
 import { parseToPredicate } from 'search-parser';
 import XLSX from 'xlsx';
 import moment from 'moment';
@@ -7,7 +7,6 @@ import downscale from 'downscale';
 import fileDialog from 'file-dialog';
 import { nanoid } from 'nanoid';
 import crypto from 'crypto';
-
 
 const makeFilterable = (propName, columns) => (item) => {
   item[propName] = item[propName]
@@ -27,7 +26,7 @@ const currencyFormatter = new Intl.NumberFormat(window.__ENVIRONMENT__.APP_LOCAL
 
 export const generateUniqueId = (length = 10) => nanoid(length);
 export const normalizeStr = _.flow(_.trim, _.toLower, _.deburr);
-export const flattenReactChildren = (children) => _.flatten(React.Children.map(children, (child) => _.get(child, 'type') === Fragment ? flattenReactChildren(child.props.children) : child));
+export const flattenReactChildren = (children) => _.flatten(Children.map(children, (child) => (_.get(child, 'type') === Fragment ? flattenReactChildren(child.props.children) : child)));
 export const formatCurrency = currencyFormatter.format;
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 export const formatDate = (date, format = 'DD-MMM-YYYY HH:mm') => moment(date).format(format);
@@ -66,7 +65,10 @@ export const toReadable = (file, readerFn = 'readAsDataURL') => new Promise((res
 export const loadImageBase64FromFile = (file) => new Promise((res) => {
   const newImg = new Image();
   newImg.onload = () => res(newImg);
-  toReadable(file).then((base64) => (newImg.src = base64));
+  toReadable(file).then((base64) => {
+    newImg.src = base64;
+    return base64;
+  });
 });
 export const selectImages = async ({ multiple = true } = {}) => {
   const files = await selectFiles({ accept: 'image/*', multiple });
@@ -79,11 +81,11 @@ export const selectImages = async ({ multiple = true } = {}) => {
     let newHeight = image.height;
 
     if (newWidth > 1920) {
-      newHeight = newHeight * 1920 / newWidth;
+      newHeight = (newHeight * 1920) / newWidth;
       newWidth = 1920;
     }
     if (newHeight > 1080) {
-      newWidth = newWidth * 1080 / newHeight;
+      newWidth = (newWidth * 1080) / newHeight;
       newHeight = 1080;
     }
 
@@ -106,7 +108,7 @@ export const downloadBlob = (blob, fileName) => {
     window.URL.revokeObjectURL(elem.href);
   }
 };
-export const debounceCall = (method, delay = 250) => {
+export const debounceCall = (method, wait = 250) => {
   let timeout = null;
   let items = [];
   return (arg1) => {
@@ -114,10 +116,12 @@ export const debounceCall = (method, delay = 250) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
       method(items); items = [];
-    }, delay);
+    }, wait);
   };
 };
-export const filterObjects = (source, columns, { search, sortDir, sortBy, preserveCache = true }) => {
+export const filterObjects = (source, columns, {
+  search, sortDir, sortBy, preserveCache = true,
+}) => {
   search = _.replace(normalizeStr(search), /[()]/g, '');
 
   const sortByName = _.get(columns[sortBy], 'valueRaw');
@@ -146,9 +150,9 @@ export const filterObjects = (source, columns, { search, sortDir, sortBy, preser
 export const toDataArray = (entries, columns, formattedColumns) => {
 
   const formatRow = (rowData) => _.map(columns, ({ value, valueRaw }) => {
-    const getFinalValue = () => _.hasIn(rowData, valueRaw)
+    const getFinalValue = () => (_.hasIn(rowData, valueRaw)
       ? _.get(rowData, valueRaw)
-      : value({ rowData });
+      : value({ rowData }));
 
     if (_.get(formattedColumns, valueRaw, false) === false) {
       return getFinalValue();
@@ -168,7 +172,9 @@ export const arrayToXLSXBlob = (dataArray, sheetName) => {
   const worksheet = XLSX.utils.aoa_to_sheet(dataArray);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-  const blobData = XLSX.write(workbook, { type: 'array', bookType: 'xlsx', compression: true, bookSST: true, cellDates: true });
+  const blobData = XLSX.write(workbook, {
+    type: 'array', bookType: 'xlsx', compression: true, bookSST: true, cellDates: true,
+  });
   return new Blob([blobData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 };
 

@@ -1,13 +1,16 @@
 import PropTypes from 'prop-types';
-import React, { useState, useRef, useLayoutEffect } from 'react';
-import { Modal, Button, TextArea, Form, Ref } from 'semantic-ui-react';
+import { useState, useRef, useLayoutEffect } from 'react';
+import {
+  Modal, Button, TextArea, Form, Ref,
+} from 'semantic-ui-react';
 import { useEffectAsync } from 'controls/hooks';
 import moment from 'moment';
 
 import { jsonKeys } from '../types';
 
-
-export const ImportStep = ({ onFinish, onClose, onImport, header, json }) => {
+export const ImportStep = ({
+  onFinish, onClose, onImport, header, json,
+}) => {
   const isRestore = json[jsonKeys.isRestore];
   const textAreaRef = useRef();
   const [importing, setImporting] = useState(true);
@@ -44,7 +47,8 @@ export const ImportStep = ({ onFinish, onClose, onImport, header, json }) => {
             value={logText}
             rows={15}
             className='w-100 overflow-y-scroll'
-            style={{ resize: 'none' }} />
+            style={{ resize: 'none' }}
+          />
         </Ref>
       </Modal.Content>
       {importing ? (

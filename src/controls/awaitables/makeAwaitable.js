@@ -1,14 +1,15 @@
 import _ from 'lodash';
-import React, { useState, useEffect, useRef } from 'react';
+import {
+  createElement, useState, useEffect, useRef,
+} from 'react';
 import PropTypes from 'prop-types';
-
 
 export const makeAwaitable = ({ event, props }) => (wrappedComponent) => {
   const Awaitable = ({ [event]: onEvent, ...extraProps }) => {
     const [awaiting, setAwaiting] = useState(false);
     const mounted = useRef(true);
 
-    useEffect(() => () => (mounted.current = false), []);
+    useEffect(() => () => { mounted.current = false; }, []);
 
     const awaitingProps = awaiting ? props : {};
     const handleEvent = async (...args) => {
@@ -22,7 +23,7 @@ export const makeAwaitable = ({ event, props }) => (wrappedComponent) => {
       }
     };
 
-    return React.createElement(wrappedComponent, { [event]: handleEvent, ...extraProps, ...awaitingProps });
+    return createElement(wrappedComponent, { [event]: handleEvent, ...extraProps, ...awaitingProps });
   };
 
   Awaitable.propTypes = { [event]: PropTypes.func.isRequired };

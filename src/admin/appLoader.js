@@ -1,24 +1,21 @@
-/* eslint-disable import/first */
 import 'react-virtualized/styles.css';
 import 'semantic-ui-less/semantic.less';
-import 'theme/theme.less';
 import 'tachyons';
+import 'theme/theme.less';
 
-import React from 'react';
 import moment from 'moment';
-
-moment.locale(window.__ENVIRONMENT__.APP_LOCALE);
-
 import ReactDOM from 'react-dom';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { BrowserRouter, Route } from 'react-router-dom';
 
-import { Api } from './api';
-import { App } from './components/app';
-import { rootReducer } from './reducers';
-import { initialize } from './actions/initializers';
+moment.locale(window.__ENVIRONMENT__.APP_LOCALE);
+
+const { Api } = require('./api');
+const { App } = require('./components/app');
+const { rootReducer } = require('./reducers');
+const { initialize } = require('./actions/initializers');
 
 const api = new Api();
 const composeEnhancers = process.env.NODE_ENV === 'production' ? compose : (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose);
@@ -32,7 +29,7 @@ ReactDOM.render(
       <Route component={App} />
     </BrowserRouter>
   </Provider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 
 if (module.hot) {

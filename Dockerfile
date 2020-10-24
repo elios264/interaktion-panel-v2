@@ -17,12 +17,13 @@ RUN npm run build && \
 FROM mhart/alpine-node:slim-12
 
 ARG SOURCE_COMMIT=latest
+ARG ENVIRONMENT=prod
 
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/ .
 
 ENV BUILD $SOURCE_COMMIT
-ENV NODE_ENV production
+ENV NODE_ENV $ENVIRONMENT
 
 EXPOSE ${APP_PORT}
 CMD [ "node", "server.js" ]

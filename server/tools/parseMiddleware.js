@@ -1,9 +1,10 @@
 const ParseDashboard = require('parse-dashboard');
 const { ParseServer } = require('parse-server');
+const parseDefaults = require('parse-server/lib/defaults');
+
 const { AnalyticsAdapter, EmailAdapter } = require('../cloud/adapters');
 // const { AzureStorageAdapter } = require('./azureStorageAdapter');
 
-const parseDefaults = require('parse-server/lib/defaults');
 parseDefaults.default.protectedFields = { }; // {"_User":{"*":["email"]}}, removing default
 
 module.exports = ({ isDev }) => {
@@ -20,7 +21,7 @@ module.exports = ({ isDev }) => {
     mountPath: process.env.PARSE_PATH,
     schemaCacheTTL: isDev ? 5000 : 1000 * 60 * 60,
     enableSingleSchemaCache: !isDev,
-    port: parseInt(process.env.APP_PORT),
+    port: parseInt(process.env.APP_PORT, 10),
     publicServerURL: `${process.env.APP_URL}${process.env.PARSE_PATH}`,
     cloud: './server/cloud',
     serverURL: `http://localhost:${process.env.APP_PORT}${process.env.PARSE_PATH}`,
@@ -34,7 +35,7 @@ module.exports = ({ isDev }) => {
         pass: process.env.EMAIL_PASSWORD,
         sender: process.env.EMAIL_SENDER,
         host: process.env.EMAIL_HOST,
-        port: parseInt(process.env.EMAIL_PORT),
+        port: parseInt(process.env.EMAIL_PORT, 10),
       },
     },
     customPages: {

@@ -1,7 +1,6 @@
 import { handleError, showSuccess } from 'utils/actions';
 import { downloadInitialData } from './initializers';
 
-
 export const login = (loginData) => handleError(async (dispatch, getState, { api }) => {
   await api.login(loginData);
   dispatch(downloadInitialData());

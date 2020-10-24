@@ -31,7 +31,6 @@ const recreateSchedule = async (job) => {
   }
 };
 
-
 /**
  * (Re)creates all schedules (crons) for all _JobSchedule from the Parse server
  */
@@ -104,7 +103,7 @@ const createCronJobs = (job) => {
         },
         null, // on complete
         true, // start
-        PARSE_TIMEZONE // timezone
+        PARSE_TIMEZONE, // timezone
       ),
     ];
   }
@@ -148,7 +147,7 @@ const createCronJobs = (job) => {
     },
     null, // on complete
     false, // start
-    PARSE_TIMEZONE // timezone
+    PARSE_TIMEZONE, // timezone
   );
 
   // if startDate is before now, start the cron now
@@ -166,7 +165,7 @@ const createCronJobs = (job) => {
     },
     null, // on complete
     true, // start
-    PARSE_TIMEZONE // timezone
+    PARSE_TIMEZONE, // timezone
   );
 
   return [startCron, actualJob];

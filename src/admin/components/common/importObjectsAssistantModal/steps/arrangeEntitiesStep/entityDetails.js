@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useMemo, useCallback, useRef } from 'react';
+import {
+  memo, useMemo, useCallback, useRef,
+} from 'react';
 import { List, Checkbox } from 'semantic-ui-react';
 import { useSelector, batch, useStore } from 'react-redux';
 import cx from 'classnames';
@@ -8,7 +10,9 @@ import cx from 'classnames';
 import { EntityMatcher } from './entityMatcher';
 import { actions } from '../../types';
 
-export const EntityDetails = ({ definition, json, fields, initialFields }) => {
+export const EntityDetails = ({
+  definition, json, fields, initialFields,
+}) => {
   const { property, propertyFilterer = _.stubTrue } = definition;
 
   const fieldsRef = useRef();
@@ -24,26 +28,28 @@ export const EntityDetails = ({ definition, json, fields, initialFields }) => {
     text: definition.displayName(storeEntity, store.getState().objects),
   })), [filteredStoreEntities, definition, store]);
 
-  const actionOptions = useMemo(() => [
-    { key: actions.create, value: actions.create, text: 'will be created', disabled: json.references[property] },
-    { key: actions.update, value: actions.update, text: 'will update', disabled: json.references[property] },
-    { key: actions.ignore, value: actions.ignore, text: 'will be ignored' },
-    { key: actions.reference, value: actions.reference, text: 'is a reference to', disabled: !definition.allowReferences },
-  ], [definition.allowReferences, json.references, property]);
+  const actionOptions = useMemo(() => [{
+    key: actions.create, value: actions.create, text: 'will be created', disabled: json.references[property],
+  }, {
+    key: actions.update, value: actions.update, text: 'will update', disabled: json.references[property],
+  }, { key: actions.ignore, value: actions.ignore, text: 'will be ignored' }, {
+    key: actions.reference, value: actions.reference, text: 'is a reference to', disabled: !definition.allowReferences,
+  }],
+  [definition.allowReferences, json.references, property]);
 
-  const onFieldChange = useCallback(({ definition, field, entity, value }) => batch(() => {
-    const { property, children } = definition;
+  const onFieldChange = useCallback(({
+    definition: def, field, entity, value,
+  }) => batch(() => {
+    const { property: prop, children } = def;
 
     // here I set the value of the duplicated field to undefined
     if (field === 'value') {
-
-      _(json[property])
+      _(json[prop])
         .filter(({ id }) => id !== entity.id)
-        .map(({ id }) => fieldsRef.current[`${property}-${id}-value`])
-        .filter((field) => field.value === value)
+        .map(({ id }) => fieldsRef.current[`${prop}-${id}-value`])
+        .filter((fld) => fld.value === value)
         .invokeMap('onChange')
         .value();
-
     }
 
     // here I add or ignore the children depending on the parent.
@@ -54,9 +60,9 @@ export const EntityDetails = ({ definition, json, fields, initialFields }) => {
         let childrenIdsToUpdate = _.flatMap([entity], accessor);
 
         if (value === actions.ignore) {
-          const allCreateOrUpdateEntitiesChildrenIds = _(json[property])
+          const allCreateOrUpdateEntitiesChildrenIds = _(json[prop])
             .filter(({ id }) => id !== entity.id)
-            .filter(({ id }) => _.some([actions.update, actions.create], (action) => action === fieldsRef.current[`${property}-${id}-action`].value))
+            .filter(({ id }) => _.some([actions.update, actions.create], (action) => action === fieldsRef.current[`${prop}-${id}-action`].value))
             .flatMap(accessor)
             .uniq()
             .value();
@@ -98,7 +104,8 @@ export const EntityDetails = ({ definition, json, fields, initialFields }) => {
           actionField={fields[`${property}-${key}-action`]}
           valueField={fields[`${property}-${key}-value`]}
           actionOptions={actionOptions}
-          valueOptions={valueOptions} />
+          valueOptions={valueOptions}
+        />
       ))}
     </List>
   );
@@ -111,7 +118,9 @@ EntityDetails.propTypes = {
   initialFields: PropTypes.object.isRequired,
 };
 
-EntityDetails.Header = React.memo(({ definition, json, fields, initialFields }) => {
+EntityDetails.Header = memo(({
+  definition, json, fields, initialFields,
+}) => {
   const { property, title } = definition;
 
   const allSelected = _(json[property])

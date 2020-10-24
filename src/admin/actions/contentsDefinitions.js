@@ -1,5 +1,7 @@
 import _ from 'lodash';
-import { handleError, showSuccess, showWarning, showConfirm } from 'utils/actions';
+import {
+  handleError, showSuccess, showWarning, showConfirm,
+} from 'utils/actions';
 
 export const saveContentDefinition = (contentDefinition, silentAndRethrow = false) => handleError(async (dispatch, getState, { api }) => {
 
@@ -10,7 +12,6 @@ export const saveContentDefinition = (contentDefinition, silentAndRethrow = fals
   api.logEvent('save-content-definition', result);
   return result;
 }, silentAndRethrow ? null : 'The section could not be saved', { silent: silentAndRethrow, rethrow: silentAndRethrow });
-
 
 export const deleteContentDefinition = (contentDefinition) => handleError(async (dispatch, getState, { api }) => {
   const hasContents = _.some(getState().objects.contents, (content) => content.definition.id === contentDefinition.id);

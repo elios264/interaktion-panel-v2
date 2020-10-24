@@ -1,6 +1,8 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { Segment, Button, Header, Grid, Form } from 'semantic-ui-react';
+import {
+  Segment, Button, Header, Grid, Form,
+} from 'semantic-ui-react';
 
 import { Popup, getJoiLanguagesValidationSchema, MultiLanguageInput } from 'controls';
 import { useFieldset, useDispatchCallback } from 'controls/hooks';
@@ -14,7 +16,9 @@ export const PrivacyPolicy = () => {
   const privacyPolicyConfig = useSelector((state) => state.siteInfo.config['privacy-policy-url']);
   const privacyPolicyConfigInstance = useMemo(() => ({ privacyPolicyUrl: privacyPolicyConfig.value }), [privacyPolicyConfig.valueString]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { fields: { privacyPolicyUrl }, submit, loading, reset } = useFieldset({
+  const {
+    fields: { privacyPolicyUrl }, submit, loading, reset,
+  } = useFieldset({
     schema: privacyPolicySchema,
     onSubmit: useDispatchCallback(savePrivacyPolicyUrl),
     source: privacyPolicyConfigInstance,
@@ -28,7 +32,8 @@ export const PrivacyPolicy = () => {
             content='Privacy policy url'
             size='large'
             subheader='Configure privacy policy url.'
-            icon='info' />
+            icon='info'
+          />
         </div>
         <Grid>
           <Grid.Column>
@@ -50,7 +55,8 @@ export const PrivacyPolicy = () => {
             loading={loading}
             onClick={reset}
             icon='cancel'
-            content='Cancel' />
+            content='Cancel'
+          />
           <div className='db mt1 di-ns mt0-ns' />
           <Button
             type='submit'
@@ -59,7 +65,8 @@ export const PrivacyPolicy = () => {
             className='w-100 w-auto-ns'
             primary
             icon='edit'
-            content='Save' />
+            content='Save'
+          />
         </div>
       </Form>
     </Segment>

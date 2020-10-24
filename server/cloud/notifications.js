@@ -17,7 +17,7 @@ cloud.setupFunction('set-installation', async (req) => {
   const installation = await new Parse.Query(DeviceInstallation)
     .equalTo('installationId', installationId)
     .first(cloud.masterPermissions)
-    .then((installation) => installation || new DeviceInstallation({ installationId }));
+    .then((deviceInstallation) => deviceInstallation || new DeviceInstallation({ installationId }));
 
   _.each(_.pick(properties, allowedProperties), (value, key) => {
     if (value === null) {
@@ -47,17 +47,17 @@ cloud.setupFunction('send-content-notification', async (req) => {
     new Parse.Query('Config')
       .equalTo('name', 'client-features')
       .first(cloud.masterPermissions)
-      .then((setting) => setting ? JSON.parse(setting.get('value')) : {})
-      .then(({ authMode }) => authMode || types.authMode.private),
+      .then((setting) => (setting ? JSON.parse(setting.get('value')) : {}))
+      .then((config) => config.authMode || types.authMode.private),
     new Parse.Query('Content')
       .equalTo('objectId', contentId)
       .select('visibility', 'title', 'description')
       .first(cloud.masterPermissions)
-      .then((content) => !content ? undefined : ({
-        id: content.id,
-        updatedAt: content.updatedAt,
-        ...content.attributes,
-      })),
+      .then((con) => (!con ? undefined : ({
+        id: con.id,
+        updatedAt: con.updatedAt,
+        ...con.attributes,
+      }))),
   ]);
 
   if (!content) {
@@ -100,7 +100,7 @@ cloud.setupFunction('send-content-notification', async (req) => {
     _(messages)
       .chunk(100)
       .map((batch) => notificationsClient.sendPushNotificationsAsync(batch))
-      .value()
+      .value(),
   ).then(_.flatten);
 
   const faultyInstallations = _(tickets)

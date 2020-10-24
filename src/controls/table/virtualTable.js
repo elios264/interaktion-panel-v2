@@ -1,9 +1,13 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/static-property-placement */
 import './virtualTable.less';
 
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Table, Column, AutoSizer, SortDirection } from 'react-virtualized';
+import { Component } from 'react';
+import {
+  Table, Column, AutoSizer, SortDirection,
+} from 'react-virtualized';
 import { createSelector } from 'reselect';
 import { Checkbox } from 'semantic-ui-react';
 import cx from 'classnames';
@@ -11,7 +15,7 @@ import cx from 'classnames';
 import * as utils from '../utils';
 import { BoundCheckbox } from '../bindables';
 
-const sortDirMapping = { 'asc': SortDirection.ASC, 'desc': SortDirection.DESC };
+const sortDirMapping = { asc: SortDirection.ASC, desc: SortDirection.DESC };
 const noRowsRenderer = () => <div className='no-rows'>No data to display</div>;
 
 const formatTableColumns = (cols, includeHidden = false) => _(utils.flattenReactChildren(cols))
@@ -19,7 +23,9 @@ const formatTableColumns = (cols, includeHidden = false) => _(utils.flattenReact
   .compact()
   .filter((col) => !col.props.internal && (includeHidden || col.props.visible))
   .map('props')
-  .map(({ disableSearch, cellRenderer, cellDataGetter, dataKey, searchKey, label, columnData }) => ({
+  .map(({
+    disableSearch, cellRenderer, cellDataGetter, dataKey, searchKey, label, columnData,
+  }) => ({
     label,
     valueRaw: dataKey,
     value: (searchKey || disableSearch)
@@ -29,7 +35,6 @@ const formatTableColumns = (cols, includeHidden = false) => _(utils.flattenReact
       : ({ rowData }) => cellRenderer({ columnData, rowData, cellData: cellDataGetter({ rowData, dataKey }) }),
   }))
   .value();
-
 
 export { Column };
 export class VirtualTable extends Component {
@@ -44,7 +49,7 @@ export class VirtualTable extends Component {
     source: PropTypes.oneOfType([
       PropTypes.objectOf(PropTypes.object),
       PropTypes.arrayOf(PropTypes.object),
-    ]).isRequired,
+    ]),
     sortSearchParams: PropTypes.shape({
       sortBy: PropTypes.string,
       sortDir: PropTypes.string,
@@ -107,7 +112,10 @@ export class VirtualTable extends Component {
     return _.isEmpty(newState) ? null : newState;
   }
 
-  state = { }
+  constructor() {
+    super();
+    this.state = {};
+  }
 
   componentDidMount() {
     this.componentDidUpdate();
@@ -122,6 +130,7 @@ export class VirtualTable extends Component {
     }
   }
 
+  // eslint-disable-next-line react/sort-comp
   filterRows = createSelector(
     (state, props) => props.source,
     (state, props) => props.sortSearchParams,
@@ -133,12 +142,12 @@ export class VirtualTable extends Component {
 
       return {
         rows,
-        getRowClassName: ({ index }) => cx('data-row', { 'selected': highlightedRows.has(_.get(rows[index], this.props.keyAccessor, null)) }),
+        getRowClassName: ({ index }) => cx('data-row', { selected: highlightedRows.has(_.get(rows[index], this.props.keyAccessor, null)) }),
         getRow: ({ index }) => rows[index],
         originalLength: _.size(source),
         filteredLength: _.size(rows),
       };
-    }
+    },
   );
 
   getCurrentRows = () => this.filterRows(this.state, this.props).rows;
@@ -162,7 +171,7 @@ export class VirtualTable extends Component {
     const { selectedRows } = this.state;
     const { keyAccessor, showSelection } = this.props;
     const rows = this.getCurrentRows();
-    const numberOfCurrentCheckedRows = _.sumBy(rows, (row) => selectedRows.has(_.get(row, keyAccessor)) ? 1 : 0);
+    const numberOfCurrentCheckedRows = _.sumBy(rows, (row) => (selectedRows.has(_.get(row, keyAccessor)) ? 1 : 0));
 
     const isChecked = numberOfCurrentCheckedRows === 0
       ? false
@@ -186,7 +195,7 @@ export class VirtualTable extends Component {
 
     this.setState(
       { selectedRows: new Set(selectedRows) },
-      () => _.invoke(this.props, 'onSelectionChange', selectedRows)
+      () => _.invoke(this.props, 'onSelectionChange', selectedRows),
     );
   }
 
@@ -212,13 +221,16 @@ export class VirtualTable extends Component {
     this.props.onSortChange({ sortBy, sortDir });
   }
 
-
   render() {
-    const { rows, getRow, originalLength, filteredLength, getRowClassName } = this.filterRows(this.state, this.props);
-    const { children, rowHeight, headerHeight, maxHeight, showSelection, onSortChange, showHeader, className, sortSearchParams, minWidth, showTotals, renderNoRows } = this.props;
+    const {
+      rows, getRow, originalLength, filteredLength, getRowClassName,
+    } = this.filterRows(this.state, this.props);
+    const {
+      children, rowHeight, headerHeight, maxHeight, showSelection, onSortChange, showHeader, className, sortSearchParams, minWidth, showTotals, renderNoRows,
+    } = this.props;
     const { selectedRows } = this.state;
     const { sortDir, sortBy } = sortSearchParams;
-    const extraProps = _.omit(this.props, _.keys(VirtualTable.propTypes));
+    const extraProps = _.omit(this.props, _.keys(VirtualTable.propTypes)); // eslint-disable-line react/forbid-foreign-prop-types
     const selectionCount = selectedRows.size;
     const flattenedChildren = utils.flattenReactChildren(children);
     return ([
@@ -239,7 +251,8 @@ export class VirtualTable extends Component {
             rowHeight={rowHeight}
             noRowsRenderer={renderNoRows ? noRowsRenderer : undefined}
             className={cx('virtual-table', className)}
-            {...extraProps}>
+            {...extraProps}
+          >
             {showSelection && (
               <Column
                 dataKey='selectionKey'
@@ -249,7 +262,8 @@ export class VirtualTable extends Component {
                 disableSort
                 disableSearch
                 cellRenderer={this.renderSelectionCell}
-                headerRenderer={this.renderSelectionHeaderCell} />
+                headerRenderer={this.renderSelectionHeaderCell}
+              />
             )}
             {_.filter(flattenedChildren, 'props.visible')}
           </Table>

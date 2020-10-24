@@ -36,9 +36,8 @@ cloud.setupFunction('get-client-data', async (req) => {
     .find(cloud.masterPermissions)
     .then((config) => _(config)
       .keyBy((setting) => _.camelCase(setting.get('name')))
-      .mapValues((setting) => setting ? JSON.parse(setting.get('value')) : {})
-      .value()
-    );
+      .mapValues((setting) => (setting ? JSON.parse(setting.get('value')) : {}))
+      .value());
 
   const config = {
     features: {
@@ -65,8 +64,14 @@ cloud.setupFunction('get-client-data', async (req) => {
   ]);
 
   const contents = _(contentsData)
-    .map(({ id, createdAt, updatedAt, attributes }) => ({ id, createdAt, updatedAt, ...attributes }))
-    .map(({ id, createdAt, updatedAt, definition, image, document, title, description, documentResources, entityType, entityInfo, order }) => ({
+    .map(({
+      id, createdAt, updatedAt, attributes,
+    }) => ({
+      id, createdAt, updatedAt, ...attributes,
+    }))
+    .map(({
+      id, createdAt, updatedAt, definition, image, document, title, description, documentResources, entityType, entityInfo, order,
+    }) => ({
       id,
       createdAt,
       updatedAt,
@@ -89,7 +94,9 @@ cloud.setupFunction('get-client-data', async (req) => {
   const sections = _(contentDefinitionsData)
     .map(({ id, attributes }) => ({ id, ...attributes }))
     .filter(({ id }) => sectionHasContents[id])
-    .map(({ id, title, mobileView, image, description, order }) => ({
+    .map(({
+      id, title, mobileView, image, description, order,
+    }) => ({
       id,
       mobileView,
       order,

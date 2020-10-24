@@ -2,7 +2,9 @@
 const _ = require('lodash');
 const cloud = require('../cloudUtils');
 
-const validationOpts = { abortEarly: true, escapeHtml: true, convert: true, allowUnknown: true };
+const validationOpts = {
+  abortEarly: true, escapeHtml: true, convert: true, allowUnknown: true,
+};
 
 const validate = (schema) => (req) => {
   const { object } = req;
@@ -11,7 +13,7 @@ const validate = (schema) => (req) => {
   if (error) {
     throw new Parse.Error(Parse.Error.VALIDATION_ERROR, error.message);
   } else {
-    const setProps = _.pickBy(newObj, (value, key) => (_.isUndefined(value) || value instanceof Parse.Relation) ? false : object.get(key) !== value);
+    const setProps = _.pickBy(newObj, (value, key) => ((_.isUndefined(value) || value instanceof Parse.Relation) ? false : object.get(key) !== value));
     const unsetProps = _.difference(_.keys(object.attributes), _.keys(newObj));
     object.set(setProps);
     _.each(unsetProps, (prop) => object.unset(prop));
@@ -30,7 +32,6 @@ const readOnly = (options, ...fieldNames) => (req) => {
   if (master && allowMaster) {
     return;
   }
-
 
   if (!object.isNew()) {
     const modifiedFields = _.intersection(object.dirtyKeys(), fieldNames);
@@ -129,7 +130,6 @@ const setupPointerRefCountWatch = ({ watch, counter }) => {
   if (_.some(watch, (cls) => _.split(cls, '.')[0] !== watchClassName)) {
     throw new Error('different classNames are not supported');
   }
-
 
   const pointerRefCountWatcher = pointerRefCountWatch(counter, watch);
   cloud.setupTrigger('afterSave', watchClassName, pointerRefCountWatcher);

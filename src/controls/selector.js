@@ -1,39 +1,35 @@
 import _ from 'lodash';
-import React, { PureComponent } from 'react';
+import { memo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown } from 'semantic-ui-react';
 
-export class Selector extends PureComponent {
+export const Selector = memo(({ value, onChange, ...extraProps }) => {
 
-  static propTypes = {
-    value: PropTypes.any,
-    onChange: PropTypes.func,
-  }
+  const onOptionSelected = useCallback((e, { value: v }) => {
+    onChange(v);
+  }, [onChange]);
 
-  static defaultProps = {
-    onChange: _.noop,
-  }
+  return (
+    <Dropdown
+      fluid
+      placeholder='Select...'
+      selection
+      selectOnNavigation={false}
+      selectOnBlur={false}
+      onChange={onOptionSelected}
+      value={_.isNil(value) ? null : value}
+      {...extraProps}
+    />
+  );
 
-  onOptionSelected = (e, { value }) => {
-    const { onChange } = this.props;
-    onChange(value);
-  }
+});
 
-  render() {
-    const { value } = this.props;
-    const extraProps = _.omit(this.props, _.keys(Selector.propTypes));
+Selector.propTypes = {
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.bool]),
+  onChange: PropTypes.func,
+};
 
-    return (
-      <Dropdown
-        fluid
-        placeholder='Select...'
-        selection
-        selectOnNavigation={false}
-        selectOnBlur={false}
-        onChange={this.onOptionSelected}
-        value={_.isNil(value) ? null : value}
-        {...extraProps} />
-    );
-  }
-
-}
+Selector.defaultProps = {
+  onChange: _.noop,
+  value: undefined,
+};

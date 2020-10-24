@@ -1,6 +1,5 @@
 import './app.less';
 
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Route, Switch, Redirect } from 'react-router-dom';
@@ -61,7 +60,8 @@ export const App = hot(() => {
                 <Redirect to='/' />
               </Switch>
             </Navigation>
-          )} />
+          )}
+          />
         </Switch>
         <ModalController modals={modals} />
       </ErrorBoundary>

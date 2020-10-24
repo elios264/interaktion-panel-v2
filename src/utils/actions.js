@@ -1,7 +1,11 @@
 import _ from 'lodash';
-import { showError, showModal, showSuccess, showConfirm, showWarning } from 'controls/modals';
+import {
+  showError, showModal, showSuccess, showConfirm, showWarning,
+} from 'controls/modals';
 
-export { showError, showModal, showSuccess, showConfirm, showWarning };
+export {
+  showError, showModal, showSuccess, showConfirm, showWarning,
+};
 
 export const handleError = (fn, errorMessage = '', { rethrow = false, silent = false } = {}) => async (dispatch, ...rest) => {
   try {

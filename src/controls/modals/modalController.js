@@ -1,5 +1,7 @@
 import _ from 'lodash';
-import React, { PureComponent } from 'react';
+import {
+  isValidElement, cloneElement, createElement, PureComponent,
+} from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Button } from 'semantic-ui-react';
 
@@ -28,23 +30,17 @@ ModalController.propTypes = { modals: PropTypes.arrayOf(modalProps).isRequired }
 
 class ModalImplementation extends PureComponent {
 
-  static propTypes = {
-    modal: modalProps,
-  }
-
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = { loading: false };
     this.accept = this.onActionClick.bind(this, 'accept');
     this.cancel = this.onActionClick.bind(this, 'cancel');
     this.extra = this.onActionClick.bind(this, 'extra');
   }
 
-  state = { loading: false }
-
   onCloseRequest = () => {
-    const { onClose } = this.props.modal;
-    onClose(null, { key: 'cancel' });
+    const { modal } = this.props;
+    modal.onClose(null, { key: 'cancel' });
   }
 
   async onActionClick(actionName) {
@@ -56,7 +52,7 @@ class ModalImplementation extends PureComponent {
 
     let result; let error;
     try {
-      if (React.isValidElement(action)) {
+      if (isValidElement(action)) {
         result = await _.invoke(action, 'props.onClick');
       } else if (_.isFunction(action)) {
         result = await action();
@@ -71,29 +67,39 @@ class ModalImplementation extends PureComponent {
     onClose(error, { key: actionName, result });
   }
 
-
   renderButton = (actionName, extraProps = {}) => {
+    const { modal } = this.props;
     const { loading } = this.state;
-    const { [actionName]: action } = this.props.modal.options.actions;
+    const { [actionName]: action } = modal.options.actions;
 
-    if (React.isValidElement(action)) {
-      return React.cloneElement(action, { loading, disabled: loading, onClick: this[actionName] });
-    } else if (_.isFunction(action) || action === true) {
-      return React.createElement(Button, { ...extraProps, loading, disabled: loading, onClick: this[actionName] });
-    } else if (_.isString(action)) {
-      return React.createElement(Button, { ...extraProps, content: action, loading, disabled: loading, onClick: this[actionName] });
-    } else if (_.isObject(action)) {
-      return React.createElement(Button, { ...action, loading, disabled: loading, onClick: this[actionName] });
+    if (isValidElement(action)) {
+      return cloneElement(action, { loading, disabled: loading, onClick: this[actionName] });
+    }
+    if (_.isFunction(action) || action === true) {
+      return createElement(Button, {
+        ...extraProps, loading, disabled: loading, onClick: this[actionName],
+      });
+    }
+    if (_.isString(action)) {
+      return createElement(Button, {
+        ...extraProps, content: action, loading, disabled: loading, onClick: this[actionName],
+      });
+    }
+    if (_.isObject(action)) {
+      return createElement(Button, {
+        ...action, loading, disabled: loading, onClick: this[actionName],
+      });
     }
 
     return null;
   };
 
-
   render() {
     const { modal } = this.props;
     const { onClose, options } = modal;
-    const { content, header, body, custom: CustomModal, actions: ignored, ...rest } = options;
+    const {
+      content, header, body, custom: CustomModal, actions: ignored, ...rest
+    } = options;
 
     if (CustomModal) {
       return <CustomModal {..._.omit(options, ['custom'])} onClose={onClose} />;
@@ -101,11 +107,13 @@ class ModalImplementation extends PureComponent {
 
     return (
       <Modal {...rest} open onClose={this.onCloseRequest} closeOnDimmerClick={false}>
-        { !body ?
-          <>
-            {header && <Modal.Header content={header} /> }
-            {content && <Modal.Content content={content} /> }
-          </> : body}
+        { !body
+          ? (
+            <>
+              {header && <Modal.Header content={header} /> }
+              {content && <Modal.Content content={content} /> }
+            </>
+          ) : body}
         <Modal.Actions>
           {this.renderButton('extra', { className: 'fl' })}
           {this.renderButton('cancel', { secondary: true, content: 'Cancel' })}
@@ -117,3 +125,7 @@ class ModalImplementation extends PureComponent {
   }
 
 }
+
+ModalImplementation.propTypes = {
+  modal: modalProps,
+};

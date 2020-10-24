@@ -1,8 +1,9 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import Joi from '@hapi/joi';
-import { Form, Button, Modal, Input } from 'semantic-ui-react';
+import Joi from 'joi';
+import {
+  Form, Button, Modal, Input,
+} from 'semantic-ui-react';
 
 import { User } from 'objects';
 import { Popup } from 'controls';
@@ -12,7 +13,7 @@ import { createManager } from 'admin/actions/managers';
 const newManagerTemplate = new User();
 const newManagerSchema = {
   name: Joi.string().trim().required().max(50).label('Name'),
-  email: Joi.string().email().required().max(50).label('Email'),
+  email: Joi.string().email({ tlds: { allow: false } }).required().max(50).label('Email'),
 };
 
 export const CreateManagerModal = ({ onCancel }) => {
