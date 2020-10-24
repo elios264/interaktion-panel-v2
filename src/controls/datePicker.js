@@ -372,7 +372,7 @@ class RangePicker extends PureComponent {
         open={open}
         on='click'
         basic
-        offset='-10, 10'
+        offset={[-10, 10]}
       >
         <Helmet><style>{rangePickerStyles}</style></Helmet>
         <div>

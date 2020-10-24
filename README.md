@@ -53,7 +53,6 @@
 - APP_LOCALE
 
 TODO:
-- check on tachyons
 - page contents feature -> directly view content in app,
 
 --- TODO FOR MONEY -------
