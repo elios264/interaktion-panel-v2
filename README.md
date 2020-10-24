@@ -52,10 +52,8 @@
 - APP_CURRENCY
 - APP_LOCALE
 
-TODO:
+--- TODO -------
 - page contents feature -> directly view content in app,
-
---- TODO FOR MONEY -------
 - react fast refresh
 - add justify center
 - enabled/disabled users,
