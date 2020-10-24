@@ -19,7 +19,7 @@ import { useResourceImageRenderer } from 'admin/hooks';
 import { deleteSelectedContents, exportContents, importContents } from 'admin/actions/contents';
 import { deleteContentDefinition } from 'admin/actions/contentsDefinitions';
 
-const defaultParams = { sortBy: 'updatedAt', sortDir: 'desc', search: '' };
+const defaultParams = { sortBy: 'order', sortDir: 'desc', search: '' };
 const linkRenderer = ({ cellData, rowData }) => <Link to={`/contents/${rowData.definition.id}/details/${rowData.id}`}>{cellData}</Link>; // eslint-disable-line react/prop-types
 const visibilityRenderer = ({ cellData }) => labelRenderer({ cellData: Content.getVisibilityName(cellData), columnData: { color: Content.getVisibilityColor(cellData) } });
 
@@ -148,6 +148,11 @@ export const ContentList = ({ match, location, history }) => {
               flexGrow={1}
               maxWidth={250}
               cellRenderer={dateRenderer}
+            />
+            <Column
+              label='Order'
+              dataKey='order'
+              width={140}
             />
           </VirtualTable>
         </Segment>

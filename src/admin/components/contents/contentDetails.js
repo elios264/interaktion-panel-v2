@@ -22,6 +22,7 @@ const visibilityOptions = _.map(Content.visibility, (value, key) => ({ key, valu
 const entityTypeOptions = _.map(Content.entityType, (value, key) => ({ key, value, text: Content.getEntityTypeName(value) }));
 
 const contentTemplate = new Content({
+  order: 0,
   visibility: Content.visibility.public,
   entityType: Content.entityType.content,
 });
@@ -80,7 +81,7 @@ export const ContentDetails = ({ history, match }) => {
     cloneSource: cloneSourceContent,
   });
   const {
-    image, document, visibility, entityType, entityInfo, title, description,
+    image, document, visibility, entityType, entityInfo, title, description, order,
   } = fields;
 
   const { fields: entityInfoFields } = useFieldset({
@@ -189,6 +190,12 @@ export const ContentDetails = ({ history, match }) => {
                         </Form.Field>
                       </Grid.Column>
                       <Grid.Column>
+                        <Form.Field error={order.errored} required>
+                          <label>Order</label>
+                          <Popup message={order.message} enabled={order.errored}>
+                            <Input value={_.isUndefined(order.value) ? '' : order.value} onChange={order.onChange} autoComplete='off' type='number' min={1} max={9999} />
+                          </Popup>
+                        </Form.Field>
                         <Form.Field error={description.errored} className='flex flex-column' required>
                           <label>Description</label>
                           <Popup message={description.message} enabled={description.errored}>
