@@ -193,7 +193,7 @@ export const ContentDetails = ({ history, match }) => {
                         <Form.Field error={order.errored} required>
                           <label>Order</label>
                           <Popup message={order.message} enabled={order.errored}>
-                            <Input value={_.isUndefined(order.value) ? '' : order.value} onChange={order.onChange} autoComplete='off' type='number' min={1} max={9999} />
+                            <Input value={_.isUndefined(order.value) ? '' : order.value} onChange={order.onChange} autoComplete='off' type='number' min={0} max={9999} />
                           </Popup>
                         </Form.Field>
                         <Form.Field error={description.errored} className='flex flex-column' required>
