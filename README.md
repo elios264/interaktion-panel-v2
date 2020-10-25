@@ -54,6 +54,7 @@
 
 --- TODO -------
 - page contents feature -> directly view content in app,
+- remove realtime
 - react fast refresh
 - add justify center
 - enabled/disabled users,
