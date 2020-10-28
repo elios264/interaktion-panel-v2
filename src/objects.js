@@ -84,7 +84,6 @@ export class Config extends BaseObject {
       name,
       visibility,
       value: JSON.stringify(attributes),
-      __type: 'Object',
       className: 'Config',
     });
   }

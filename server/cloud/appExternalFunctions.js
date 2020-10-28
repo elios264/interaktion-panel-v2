@@ -68,11 +68,7 @@ cloud.setupFunction('get-client-data', async (req) => {
   ]);
 
   const pages = _(pagesData)
-    .map(({
-      id, createdAt, updatedAt, attributes,
-    }) => ({
-      id, createdAt, updatedAt, ...attributes,
-    }))
+    .map(({ id, attributes }) => ({ id, ...attributes }))
     .map(({
       id, createdAt, updatedAt, document, title, description, documentResources, order,
     }) => ({
@@ -87,11 +83,7 @@ cloud.setupFunction('get-client-data', async (req) => {
     .value();
 
   const contents = _(contentsData)
-    .map(({
-      id, createdAt, updatedAt, attributes,
-    }) => ({
-      id, createdAt, updatedAt, ...attributes,
-    }))
+    .map(({ id, attributes }) => ({ id, ...attributes }))
     .map(({
       id, createdAt, updatedAt, definition, image, document, title, description, documentResources, entityType, entityInfo, order,
     }) => ({
