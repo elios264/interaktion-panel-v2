@@ -21,6 +21,7 @@ export const downloadInitialData = () => handleError(async (dispatch, getState, 
     api.getObjects('EventLog'),
     api.getObjects('ContentDefinition'),
     api.getObjects('Content'),
+    api.getObjects('Page'),
   ];
 
   const firstError = await Promise.allSettled(operations).then((results) => _.find(results, ['status', 'rejected']));

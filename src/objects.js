@@ -222,3 +222,39 @@ export class Content extends BaseObject {
   static getVisibilityName = (visibility) => getValue(visibility, { [Content.visibility.none]: 'Hidden', [Content.visibility.public]: 'Public', [Content.visibility.members]: 'Members' }, visibility);
   static getVisibilityColor = (visibility) => getValue(visibility, { [Content.visibility.none]: 'grey', [Content.visibility.public]: 'blue', [Content.visibility.members]: 'green' }, 'grey');
 }
+
+export class Page extends BaseObject {
+  constructor(attributes) { super('Page', attributes); }
+
+  get visibility() { return this.get('visibility'); }
+  set visibility(value) { this.setAttr('visibility', value); }
+  get visibilityName() { return Content.getVisibilityName(this.visibility); }
+
+  get order() { return this.get('order'); }
+  set order(value) { this.setAttr('order', value); }
+
+  get title() { return this.get('title'); }
+  set title(value) { this.setAttr('title', value); }
+
+  get description() { return this.get('description'); }
+  set description(value) { this.setAttr('description', value); }
+
+  get documentResources() { return this.get('documentResources'); }
+  set documentResources(value) { this.setAttr('documentResources', value); }
+
+  get document() { return this.get('document'); }
+  set document(value) {
+    this.setAttr('document', value);
+    if (value) {
+      const resources = [];
+      _.each(value, ([node]) => Content.getDocumentResources(node, resources));
+      this.documentResources = _(resources).uniq().map((id) => new Resource({ id })).value();
+    } else {
+      this.documentResources = [];
+    }
+  }
+
+  static visibility = Content.visibility;
+  static getVisibilityName = Content.getVisibilityName
+  static getVisibilityColor = Content.getVisibilityColor
+}

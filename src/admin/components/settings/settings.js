@@ -2,6 +2,7 @@ import { Grid, Menu } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
 import { ContentDefinitionsOrder } from './contentDefinitionsOrder';
+import { PagesOrder } from './pagesOrder';
 import { ClientFeatures } from './clientFeatures';
 import { PrivacyPolicy } from './privacyPolicy';
 
@@ -17,6 +18,7 @@ export const Settings = () => (
             <PrivacyPolicy />
           </Grid.Column>
           <Grid.Column computer={16} largeScreen={8} widescreen={8} className='pt4-m pt0-l'>
+            <PagesOrder />
             <ContentDefinitionsOrder />
           </Grid.Column>
         </Grid.Row>

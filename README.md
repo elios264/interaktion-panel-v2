@@ -54,8 +54,12 @@
 
 --- TODO -------
 - page contents feature -> directly view content in app,
+- remove realtime
+- replace grid storage for azure storage. -> use import to restore images.
+- option to define contents order
 - react fast refresh
 - add justify center
+- fix tachyons values, make same as semantic
 - enabled/disabled users,
 - option to allow/disable registration
 - title optional on content details

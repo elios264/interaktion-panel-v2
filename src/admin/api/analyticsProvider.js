@@ -38,9 +38,17 @@ export class AnalyticsProvider {
       'restore-collection': _.identity,
       'import-collection': _.identity,
 
+      'sent-page-notification': titleLanguageParams,
+      'save-page': titleLanguageParams,
+      'delete-page': titleLanguageParams,
+
+      'restore-pages': _.stubObject,
+      'import-pages': _.stubObject,
+
       'update-privacy-policy': _.stubObject,
       'update-client-features': _.stubObject,
       'update-content-definitions-order': _.stubObject,
+      'update-pages-order': _.stubObject,
     };
 
     const definition = definitions[actionName];

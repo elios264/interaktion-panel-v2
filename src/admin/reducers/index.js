@@ -11,6 +11,7 @@ const objectsReducer = combineReducers({
   eventLogs: createCRUDObjectReducer('EventLog'),
   contentDefinitions: createCRUDObjectReducer('ContentDefinition'),
   contents: createCRUDObjectReducer('Content'),
+  pages: createCRUDObjectReducer('Page'),
 });
 
 export const rootReducer = combineReducers({

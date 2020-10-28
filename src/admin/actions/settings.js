@@ -14,6 +14,19 @@ export const saveContentDefinitionsOrders = ({ contentDefinitions }) => handleEr
   return result;
 }, 'Could not update the sections order');
 
+export const savePagesOrder = ({ pages }) => handleError(async (dispatch, getState, { api }) => {
+
+  const pagesToSave = _.map(pages, (page, i) => {
+    page.order = i;
+    return page;
+  });
+
+  const result = await api.saveObjects(pagesToSave);
+  dispatch(showSuccess({ content: 'The pages order has been successfully updated.' }));
+  api.logEvent('update-pages-order');
+  return result;
+}, 'Could not update the pages order');
+
 export const saveClientFeatures = (value) => handleError(async (dispatch, getState, { api }) => {
   const result = await api.saveObject(getState().siteInfo.config['client-features'].copy(), { value });
   dispatch(showSuccess({ content: 'The client features have been updated.' }));
