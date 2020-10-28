@@ -118,7 +118,7 @@ const pageSchema = Joi.object({
 
 cloud.setupTrigger('beforeSave', 'Page', validationsHooks.validate(pageSchema));
 cloud.setupTrigger('beforeSave', 'Page', validationsHooks.assignACL({ getPermission: (object) => [object.visibility, role.admin] }));
-validationsHooks.setupPointerRefCountWatch({ watch: 'Content.documentResources', counter: 'Resource.refs' });
+validationsHooks.setupPointerRefCountWatch({ watch: 'Page.documentResources', counter: 'Resource.refs' });
 
 const deviceInstallationSchema = Joi.object({
   installationId: Joi.string().required().max(100),
