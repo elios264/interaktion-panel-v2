@@ -65,6 +65,7 @@ export const ResetPasswordForm = memo(({ location }) => {
       <div className='mt3 justify-between flex-wrap flex'>
         <div className='mr3'>
           Build:
+          {' '}
           <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
           {' '}
           Environment:
@@ -73,6 +74,7 @@ export const ResetPasswordForm = memo(({ location }) => {
         </div>
         <div>
           Developed by
+          {' '}
           <a className='contrast dim' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264</a>
         </div>
       </div>
