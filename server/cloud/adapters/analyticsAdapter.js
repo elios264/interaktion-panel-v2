@@ -14,9 +14,7 @@ class AnalyticsAdapter {
     const sessionToken = _.result(req, 'auth.user.getSessionToken');
     const { dimensions } = parameters;
 
-    new EventLog().save({ userId, eventName, dimensions }, { sessionToken });
-
-    return Promise.resolve({});
+    return new EventLog().save({ userId, eventName, dimensions }, { sessionToken });
   }
 
 }

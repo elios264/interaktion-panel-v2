@@ -113,6 +113,7 @@ export const ConfirmArrangementStep = ({
         ) : (
           <Message warning>
             Before performing an import it's recommended to create a backup just in case you want to go back later,
+            {' '}
             <AwaitableAnchor className='pointer' onClick={onExport}>click here</AwaitableAnchor>
             {' '}
             if you want to.

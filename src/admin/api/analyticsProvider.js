@@ -38,9 +38,17 @@ export class AnalyticsProvider {
       'restore-collection': _.identity,
       'import-collection': _.identity,
 
+      'sent-page-notification': titleLanguageParams,
+      'save-page': titleLanguageParams,
+      'delete-page': titleLanguageParams,
+
+      'restore-pages': _.stubObject,
+      'import-pages': _.stubObject,
+
       'update-privacy-policy': _.stubObject,
       'update-client-features': _.stubObject,
       'update-content-definitions-order': _.stubObject,
+      'update-pages-order': _.stubObject,
     };
 
     const definition = definitions[actionName];
@@ -49,10 +57,10 @@ export class AnalyticsProvider {
       throw new Error(`Unknown actionName: ${actionName}`);
     }
 
-    await Promise.all([
-      Parse.Cloud.run('set-last-activity-now'),
+    const [log] = await Promise.all([
       Parse.Analytics.track(actionName, definition(dimensions)),
+      Parse.Cloud.run('set-last-activity-now'),
     ]);
-    return true;
+    return log;
   }
 }

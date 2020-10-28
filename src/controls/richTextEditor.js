@@ -293,9 +293,8 @@ const MenuDivider = () => {
   );
 };
 
-const MenuMedia = () => {
+const MenuMedia = ({ resources, saveResource }) => {
   const editor = useSlate();
-  const resources = useContext(ResourcesContext);
 
   return (
     <Dropdown item simple icon='attach'>
@@ -309,7 +308,8 @@ const MenuMedia = () => {
             const src = await utils.selectImages({ multiple: false }).then(([file]) => File.fromNativeFile(file));
             const image = _.find(resources, ['fileHash', src.localHash]) || new Resource({ src });
             if (!image.id) {
-              await image.save();
+              const success = await saveResource(image);
+              if (!success) { return; }
             }
             Transforms.insertNodes(editor, { type: 'img', resource: image.id, children: [{ text: '' }] });
           }}
@@ -334,9 +334,9 @@ const MenuMedia = () => {
             const src = await utils.selectFiles({ multiple: false }).then(([file]) => File.fromNativeFile(file));
             const attachment = _.find(resources, ['fileHash', src.localHash]) || new Resource({ src });
             if (!attachment.id) {
-              await attachment.save();
+              const success = await saveResource(attachment);
+              if (!success) { return; }
             }
-
             Transforms.insertNodes(editor, { type: 'attachment', resource: attachment.id, children: [{ text: '' }] });
           }}
         />
@@ -396,7 +396,7 @@ const withPlugins = [
 ];
 
 export const RichTextEditor = ({
-  value, onChange, defaultLanguage, disabled, placeholder, resources, ...props
+  value, onChange, defaultLanguage, disabled, placeholder, resources, saveResource, ...props
 }) => {
   const editor = useMemo(() => pipe(createEditor(), ...withPlugins), []);
 
@@ -441,7 +441,7 @@ export const RichTextEditor = ({
               <MenuAlign type={ELEMENT_ALIGN_RIGHT} icon={<Icon name='align right' />} />
               <MenuList type={ELEMENT_UL} icon={<Icon name='list ul' />} />
               <MenuLink />
-              <MenuMedia />
+              <MenuMedia resources={resources} saveResource={saveResource} />
               <MenuDivider />
               <Dropdown
                 item
@@ -466,6 +466,7 @@ RichTextEditor.propTypes = {
   disabled: PropTypes.bool,
   placeholder: PropTypes.string,
   resources: PropTypes.object.isRequired,
+  saveResource: PropTypes.func.isRequired,
 };
 
 RichTextEditor.defaultProps = {

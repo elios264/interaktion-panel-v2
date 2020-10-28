@@ -7,7 +7,8 @@ import { createCRUDObjectReducer, cleanWhenNoUser } from 'utils/reducers';
 const configReducer = createCRUDObjectReducer('Config', { key: 'name' });
 const config = cleanWhenNoUser((state, action) => {
   const newConfig = configReducer(state, action);
-  return _.defaults(newConfig, defaultConfig);
+  const noChanges = state === newConfig;
+  return noChanges ? newConfig : _.defaults({}, newConfig, defaultConfig);
 });
 
 const isWorking = (state = 0, action) => {

@@ -37,9 +37,17 @@ const actionDefinitions = {
   'restore-collection': { desc: ({ collection }) => `Has performed a restore on collection: "${collection}"` },
   'import-collection': { desc: ({ collection }) => `Has performed an import on collection: "${collection}"` },
 
+  'sent-page-notification': { desc: ({ name }) => `Has sent a push notification for page "${name}"` },
+  'save-page': { desc: ({ name }) => `Has saved the page "${name}"` },
+  'delete-page': { desc: ({ name }) => `Has deleted the page "${name}"` },
+
+  'restore-pages': { desc: () => 'Has performed a restore on the pages' },
+  'import-pages': { desc: () => 'Has performed an import on the pages' },
+
   'update-privacy-policy': { desc: () => 'Has updated the privacy policy url' },
   'update-client-features': { desc: () => 'Has updated the client features' },
-  'update-content-definitions-order': { desc: () => 'Has updated the customers offers order' },
+  'update-content-definitions-order': { desc: () => 'Has updated the sections order' },
+  'update-pages-order': { desc: () => 'Has updated the pages order' },
 };
 
 const eventRenderer = ({ rowData }) => {

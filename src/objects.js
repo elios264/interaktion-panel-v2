@@ -6,6 +6,8 @@ import path from 'path';
 import { Buffer } from 'buffer';
 import { getValue, getMD5Base64Hash, toReadable } from 'controls/utils';
 
+Parse.Object.disableSingleInstance();
+
 const isEmpty = (val) => (_.isPlainObject(val) ? _.isEmpty(val) : _.isNil(val) || val === '');
 const toFullJSON = (object) => object['_toFullJSON']();
 const copy = (object) => {
@@ -58,15 +60,8 @@ export class User extends Parse.User {
   set role(value) { this.setAttr('role', value); }
 
   get lastActivity() { return this.get('lastActivity'); }
-  get sessionToken() { return this.getSessionToken(); }
 
   copy() { return copy(this); }
-
-  static withSessionToken = (user, token) => {
-    user = BaseObject.toFullJSON(user);
-    user.sessionToken = token;
-    return BaseObject.fromJSON(user);
-  }
 
   static role = Object.freeze({ client: 'Client', admin: 'Admin' });
 }
@@ -74,6 +69,7 @@ export class User extends Parse.User {
 export class Config extends BaseObject {
 
   constructor(attributes) { super('Config', attributes); }
+
   get name() { return this.get('name'); }
   get valueString() { return this.get('value'); }
 
@@ -83,7 +79,15 @@ export class Config extends BaseObject {
   get value() { return JSON.parse(this.get('value')); }
   set value(value) { this.setAttr('value', JSON.stringify(value)); }
 
-  static create(name, attributes, visibility) { return new Config({ name, visibility, value: JSON.stringify(attributes) }); }
+  static create(name, attributes, visibility) {
+    return BaseObject.fromJSON({
+      name,
+      visibility,
+      value: JSON.stringify(attributes),
+      __type: 'Object',
+      className: 'Config',
+    });
+  }
 
   static authMode = Object.freeze({ private: 'private', mixed: 'mixed', public: 'public' })
 }
@@ -222,3 +226,47 @@ export class Content extends BaseObject {
   static getVisibilityName = (visibility) => getValue(visibility, { [Content.visibility.none]: 'Hidden', [Content.visibility.public]: 'Public', [Content.visibility.members]: 'Members' }, visibility);
   static getVisibilityColor = (visibility) => getValue(visibility, { [Content.visibility.none]: 'grey', [Content.visibility.public]: 'blue', [Content.visibility.members]: 'green' }, 'grey');
 }
+
+export class Page extends BaseObject {
+  constructor(attributes) { super('Page', attributes); }
+
+  get visibility() { return this.get('visibility'); }
+  set visibility(value) { this.setAttr('visibility', value); }
+  get visibilityName() { return Content.getVisibilityName(this.visibility); }
+
+  get order() { return this.get('order'); }
+  set order(value) { this.setAttr('order', value); }
+
+  get title() { return this.get('title'); }
+  set title(value) { this.setAttr('title', value); }
+
+  get description() { return this.get('description'); }
+  set description(value) { this.setAttr('description', value); }
+
+  get documentResources() { return this.get('documentResources'); }
+  set documentResources(value) { this.setAttr('documentResources', value); }
+
+  get document() { return this.get('document'); }
+  set document(value) {
+    this.setAttr('document', value);
+    if (value) {
+      const resources = [];
+      _.each(value, ([node]) => Content.getDocumentResources(node, resources));
+      this.documentResources = _(resources).uniq().map((id) => new Resource({ id })).value();
+    } else {
+      this.documentResources = [];
+    }
+  }
+
+  static visibility = Content.visibility;
+  static getVisibilityName = Content.getVisibilityName
+  static getVisibilityColor = Content.getVisibilityColor
+}
+
+BaseObject.registerSubclass('_User', User);
+BaseObject.registerSubclass('Resource', Resource);
+BaseObject.registerSubclass('Config', Config);
+BaseObject.registerSubclass('EventLog', EventLog);
+BaseObject.registerSubclass('ContentDefinition', ContentDefinition);
+BaseObject.registerSubclass('Content', Content);
+BaseObject.registerSubclass('Page', Page);

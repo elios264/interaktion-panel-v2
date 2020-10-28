@@ -16,6 +16,7 @@ export const Navigation = ({ children }) => {
   const userInfo = useSelector((state) => state.userInfo);
   const userPhotoResource = useSelector((state) => state.objects.resources[_.get(state.userInfo.photo, 'id')] || emptyResource);
   const contentDefinitions = useSelector((state) => state.objects.contentDefinitions);
+  const pages = useSelector((state) => state.objects.pages);
 
   return (
     <div className='min-vh-100 relative'>
@@ -51,6 +52,21 @@ export const Navigation = ({ children }) => {
             <Menu.Item as={NavLink} to='/contents/create' name='createContent'>
               <Icon name='plus' />
               New section
+            </Menu.Item>
+          </Menu.Menu>
+        </Menu.Item>
+        <Menu.Item>
+          <Icon name='sticky note outline' />
+          Pages
+          <Menu.Menu>
+            {_(pages).sortBy('order').map(({ title, id }) => (
+              <Menu.Item key={id} as={NavLink} to={`/pages/${id}`} name={id}>
+                {title[window.__ENVIRONMENT__.APP_LOCALE]}
+              </Menu.Item>
+            )).value()}
+            <Menu.Item as={NavLink} to='/pages/create' name='createPage'>
+              <Icon name='plus' />
+              New page
             </Menu.Item>
           </Menu.Menu>
         </Menu.Item>

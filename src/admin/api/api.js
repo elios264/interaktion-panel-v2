@@ -1,19 +1,9 @@
 import _ from 'lodash';
 import Parse from 'parse';
-import { debounceCall } from 'controls/utils';
-import {
-  ContentDefinition, Content, Config, User, Resource, EventLog, BaseObject,
-} from 'objects';
+
+import { User, BaseObject } from 'objects';
 import { buildQuery, handleOperation } from 'utils/api';
 import { AnalyticsProvider } from './analyticsProvider';
-
-Parse.Object.disableSingleInstance();
-Parse.Object.registerSubclass('_User', User);
-Parse.Object.registerSubclass('Resource', Resource);
-Parse.Object.registerSubclass('Config', Config);
-Parse.Object.registerSubclass('EventLog', EventLog);
-Parse.Object.registerSubclass('ContentDefinition', ContentDefinition);
-Parse.Object.registerSubclass('Content', Content);
 
 export class Api {
 
@@ -21,8 +11,6 @@ export class Api {
     Parse.initialize(window.__ENVIRONMENT__.PARSE_APPID);
     Parse.serverURL = `${window.__ENVIRONMENT__.APP_URL}${window.__ENVIRONMENT__.PARSE_PATH}`;
   }
-
-  realTimeSubs = [];
 
   onEvent = () => console.error('Call initialize with onEventCallback first');
 
@@ -39,52 +27,11 @@ export class Api {
     }
 
     if (user) {
-      this.initializeRealTime();
       this.onEvent({ type: 'SET_USER', user });
       Parse.Cloud.run('set-last-activity-now');
     }
 
     return user;
-  }
-
-  async initializeRealTime() {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Initializing real time');
-    }
-
-    if (this.realTimeSubs.length) {
-      throw new Parse.Error(Parse.Error.COMMAND_UNAVAILABLE, 'Real time has already been initialized');
-    }
-
-    const realTimeQueries = [
-      buildQuery('_User'),
-      buildQuery('Config'),
-      buildQuery('Resource'),
-      buildQuery('EventLog'),
-      buildQuery('ContentDefinition'),
-      buildQuery('Content'),
-    ];
-
-    this.realTimeSubs = await Promise.all(realTimeQueries.map(async (query) => {
-      const name = query.className;
-      const subscription = await query.subscribe();
-
-      subscription.on('create', debounceCall((objects) => this.onEvent({ type: `${name}_ADDED`, objects }), 500));
-      subscription.on('update', debounceCall((objects) => this.onEvent({ type: `${name}_UPDATED`, objects }), 500));
-      subscription.on('delete', debounceCall((objects) => this.onEvent({ type: `${name}_REMOVED`, objects }), 500));
-
-      return subscription;
-    }));
-  }
-
-  terminateRealTime = () => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Terminating real time');
-    }
-    this.realTimeSubs.forEach((s) => {
-      s.removeAllListeners('create'); s.removeAllListeners('update'); s.removeAllListeners('delete');
-    });
-    this.realTimeSubs = [];
   }
 
   login = ({ email, password }) => handleOperation(async () => {
@@ -100,14 +47,11 @@ export class Api {
       throw new Error('Invalid role');
     }
 
-    this.initializeRealTime();
-
     this.onEvent({ type: 'SET_USER', user });
     return user;
   }, this, 'Logging in', { login: true })
 
   logout() {
-    this.terminateRealTime();
     Parse.User.logOut();
     this.onEvent({ type: 'SET_USER', user: null });
   }
@@ -115,42 +59,74 @@ export class Api {
   updateProfile = (user) => handleOperation(async () => {
     if (user instanceof User) {
       await user.save();
-    } else {
-      await Parse.User.current().save(user);
-      await Parse.User.current().fetch();
     }
+    this.onEvent({ type: 'SET_USER', user });
     return true;
   }, this, 'Updating profile')
 
   updateUser = (user) => handleOperation(async () => {
-
     if (user.photo && user.dirty('photo') && !user.photo.id) {
       await user.photo.save();
     }
-    await Parse.Cloud.run('update-user', { user: BaseObject.toFullJSON(user), fields: user.dirtyKeys() });
-
+    const { user: result } = await Parse.Cloud.run('update-user', { user: BaseObject.toFullJSON(user), fields: user.dirtyKeys() });
+    this.onEvent({ type: '_User_UPDATED', objects: [result] });
+    return result;
   }, this, 'Updating user');
 
-  createManager = ({ email, name }) => handleOperation(() => Parse.Cloud.run('create-manager', { name, email }), this, 'Creating manager')
+  createManager = ({ email, name }) => handleOperation(async () => {
+    const { user } = await Parse.Cloud.run('create-manager', { name, email });
+    this.onEvent({ type: '_User_ADDED', objects: [user] });
+    return user;
+  }, this, 'Creating manager')
 
-  createUser = ({ email, name }) => handleOperation(() => Parse.Cloud.run('create-user', { name, email }), this, 'Creating user')
+  createUser = ({ email, name }) => handleOperation(async () => {
+    const { user } = await Parse.Cloud.run('create-user', { name, email });
+    this.onEvent({ type: '_User_ADDED', objects: [user] });
+    return user;
+  }, this, 'Creating user')
 
-  deleteUser = (user) => handleOperation(() => Parse.Cloud.run('delete-user', { id: user.id }), this, 'Deleting user')
+  deleteUser = (user) => handleOperation(async () => {
+    const result = await Parse.Cloud.run('delete-user', { id: user.id });
+    this.onEvent({ type: '_User_REMOVED', objects: [user] });
+    return result;
+  }, this, 'Deleting user')
 
   requestPasswordReset = (email) => handleOperation(() => Parse.User.requestPasswordReset(email), this, 'Requesting password reset')
 
-  deleteObject = (object) => handleOperation(() => object.destroy(), this, 'Deleting record')
+  deleteObject = (object) => handleOperation(async () => {
+    await object.destroy();
+    this.onEvent({ type: `${object.className}_REMOVED`, objects: [object] });
+    return object;
+  }, this, 'Deleting record')
 
-  deleteObjects = (objects) => handleOperation(() => Parse.Object.destroyAll(objects), this, `Deleting ${_.size(objects)} records`)
+  deleteObjects = (objects) => handleOperation(async () => {
+    const results = await Parse.Object.destroyAll(objects);
 
-  saveObject = (object, attributes) => handleOperation(() => {
+    _(objects).groupBy('className').each((classNameObjects, className) => {
+      this.onEvent({ type: `${className}_REMOVED`, objects: classNameObjects });
+    });
+
+    return results;
+  }, this, `Deleting ${_.size(objects)} records`)
+
+  saveObject = (object, attributes) => handleOperation(async () => {
     _.each(attributes, (value, prop) => {
       object[prop] = value;
     });
-    return object.save();
+    const result = await object.save();
+    this.onEvent({ type: `${object.className}_UPDATED`, objects: [object] });
+    return result;
   }, this, 'Saving record')
 
-  saveObjects = (objects) => handleOperation(() => Parse.Object.saveAll(objects), this, `Saving ${_.size(objects)} records`)
+  saveObjects = (objects) => handleOperation(async () => {
+    const results = await Parse.Object.saveAll(objects);
+
+    _(objects).groupBy('className').each((classNameObjects, className) => {
+      this.onEvent({ type: `${className}_UPDATED`, objects: classNameObjects });
+    });
+
+    return results;
+  }, this, `Saving ${_.size(objects)} records`)
 
   getObjects = (className, queryParams = {}, { dispatch = true } = {}) => handleOperation(async () => {
     const query = buildQuery(className, queryParams);
@@ -170,32 +146,11 @@ export class Api {
     return objects;
   }, this, `Fetching records: ${className}`)
 
-  getRelatedObjects = (object, relation, queryParams, dispatchEvent = false) => handleOperation(async () => {
-    relation = object.relation(relation);
-
-    const query = buildQuery(relation.query(), queryParams);
-    const objects = await query.find();
-
-    if (dispatchEvent && objects.length) {
-      this.onEvent({ type: `${relation.targetClassName}_ADDED`, objects });
-    }
-
-    return objects;
-  }, this, 'Fetching related records')
-
-  removeRelatedObjects = (object, relation, objects) => handleOperation(() => {
-    if (!objects.length) {
-      return false;
-    }
-
-    relation = object.relation(relation);
-    relation.remove(objects);
-
-    return object.save();
-  }, this, 'Deleting related records')
-
   runCloudCode = (name, data) => handleOperation(() => Parse.Cloud.run(name, data), this, `Performing operation: ${name}`)
 
-  logEvent = (actionName, dimensions) => handleOperation(() => this.analytics.log(actionName, dimensions), this, `Logging event: ${actionName}`)
-
+  logEvent = (actionName, dimensions) => handleOperation(async () => {
+    const log = await this.analytics.log(actionName, dimensions);
+    this.onEvent({ type: 'EventLog_ADDED', objects: [BaseObject.fromJSON({ ...log, __type: 'Object', className: 'EventLog' })] });
+    return true;
+  }, this, `Logging event: ${actionName}`)
 }

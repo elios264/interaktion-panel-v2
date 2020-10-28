@@ -13,6 +13,7 @@ import { UsersList, UserDetails } from './users';
 import { Logbook } from './logbook';
 import { Settings } from './settings';
 import { ContentDefinitionDetails, ContentList, ContentDetails } from './contents';
+import { PageDetails } from './pages';
 
 export const App = hot(() => {
   const modals = useSelector((state) => state.modals);
@@ -53,6 +54,9 @@ export const App = hot(() => {
                 <Route exact path='/contents/:definitionId' component={ContentList} />
                 <Route exact path='/contents/:definitionId/:action(create)' component={ContentDetails} />
                 <Route exact path='/contents/:definitionId/details/:contentId/:action(edit)?' component={ContentDetails} />
+
+                <Route exact path='/pages/:action(create)' component={PageDetails} />
+                <Route exact path='/pages/:pageId/:action(edit)?' component={PageDetails} />
 
                 <Route exact path='/settings' component={Settings} />
                 <Route exact path='/logbook' component={Logbook} />

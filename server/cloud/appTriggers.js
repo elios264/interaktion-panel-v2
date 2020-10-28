@@ -107,6 +107,19 @@ validationsHooks.setupPointerRefCountWatch({ watch: 'Content.definition', counte
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.image', counter: 'Resource.refs' });
 validationsHooks.setupPointerRefCountWatch({ watch: 'Content.documentResources', counter: 'Resource.refs' });
 
+const pageSchema = Joi.object({
+  visibility: Joi.string().valid(..._.values(visibility)).default(visibility.none),
+  title: Joi.object({ [process.env.APP_LOCALE]: Joi.string().trim().max(200).required() }).pattern(/.*/, Joi.string().trim().max(200)).required(),
+  description: Joi.object({ [process.env.APP_LOCALE]: Joi.string().trim().max(2000).required() }).pattern(/.*/, Joi.string().trim().max(2000)).required(),
+  document: Joi.object({ [process.env.APP_LOCALE]: Joi.array().items(Joi.object()).required() }).pattern(/.*/, Joi.array().items(Joi.object())).required(),
+  documentResources: Joi.array().items(Joi.object().instance(Parse.Object)).max(50),
+  order: Joi.number().default(0),
+});
+
+cloud.setupTrigger('beforeSave', 'Page', validationsHooks.validate(pageSchema));
+cloud.setupTrigger('beforeSave', 'Page', validationsHooks.assignACL({ getPermission: (object) => [object.visibility, role.admin] }));
+validationsHooks.setupPointerRefCountWatch({ watch: 'Content.documentResources', counter: 'Resource.refs' });
+
 const deviceInstallationSchema = Joi.object({
   installationId: Joi.string().required().max(100),
   deviceName: Joi.string().required().max(100),

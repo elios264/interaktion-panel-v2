@@ -51,7 +51,7 @@ cloud.setupFunction('get-client-data', async (req) => {
     return { config };
   }
 
-  const [contentDefinitionsData, contentsData] = await Promise.all([
+  const [contentDefinitionsData, contentsData, pagesData] = await Promise.all([
     new Parse.Query('ContentDefinition')
       .equalTo('enabled', true)
       .include('image')
@@ -61,7 +61,30 @@ cloud.setupFunction('get-client-data', async (req) => {
       .containedIn('visibility', [types.visibility.members, types.visibility.public])
       .include(['image', 'documentResources'])
       .find(cloud.getUserPermissions(req)),
+    new Parse.Query('Page')
+      .containedIn('visibility', [types.visibility.members, types.visibility.public])
+      .include(['documentResources'])
+      .find(cloud.getUserPermissions(req)),
   ]);
+
+  const pages = _(pagesData)
+    .map(({
+      id, createdAt, updatedAt, attributes,
+    }) => ({
+      id, createdAt, updatedAt, ...attributes,
+    }))
+    .map(({
+      id, createdAt, updatedAt, document, title, description, documentResources, order,
+    }) => ({
+      id,
+      createdAt,
+      updatedAt,
+      title: title[language] || title[defaultLanguage],
+      description: description[language] || description[defaultLanguage],
+      order,
+      document: getContentDocument(_.get(document[language] || document[defaultLanguage], '[0]', { children: [] }), _.keyBy(documentResources, 'id')),
+    }))
+    .value();
 
   const contents = _(contentsData)
     .map(({
@@ -110,5 +133,6 @@ cloud.setupFunction('get-client-data', async (req) => {
     config,
     sections,
     contents,
+    pages,
   };
 });

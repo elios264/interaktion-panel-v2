@@ -25,7 +25,6 @@ module.exports = ({ isDev }) => {
     publicServerURL: `${process.env.APP_URL}${process.env.PARSE_PATH}`,
     cloud: './server/cloud',
     serverURL: `http://localhost:${process.env.APP_PORT}${process.env.PARSE_PATH}`,
-    liveQuery: { classNames: ['_User', 'Config', 'Resource', 'EventLog', 'ContentDefinition', 'Content'] },
     passwordPolicy: { validatorPattern: /^(?=.*[a-z])(?=.*[0-9])(?=.{8,})/ },
     analyticsAdapter: new AnalyticsAdapter(),
     emailAdapter: {
@@ -58,8 +57,6 @@ module.exports = ({ isDev }) => {
     useEncryptedPasswords: true,
     trustProxy: isDev ? 0 : 1,
   }, { allowInsecureHTTP: isDev });
-
-  parseServer.createLiveQueryServer = ParseServer.createLiveQueryServer;
 
   return { parseDashboard, parseServer };
 };
