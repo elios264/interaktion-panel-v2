@@ -15,6 +15,7 @@ import {
   Popup, LoadingDots, Selector, AwaitableButton, MultiLanguageInput, MultiLanguageTextArea, RichTextEditor, DatePicker, utils, AwaitableDropdownItem,
 } from 'controls';
 
+import { saveResource } from 'admin/actions/resources';
 import { saveContent, deleteContent, cloneContent } from 'admin/actions/contents';
 import { contentSchema, entityTypeContentSchema, entityTypeEventSchema } from './contentSchema';
 
@@ -59,6 +60,7 @@ export const ContentDetails = ({ history, match }) => {
   const contentDefinition = useSelector((state) => state.objects.contentDefinitions[match.params.definitionId]);
   const resources = useSelector((state) => state.objects.resources);
 
+  const saveRes = useDispatchCallback(saveResource);
   const switchToDetailsMode = (newContent) => history.replace(`/contents/${match.params.definitionId}/details/${(newContent instanceof Content) ? newContent.id : content.id}`);
   const saveContentAndGoToDetails = useAsyncSubmit(useDispatchCallback(saveContent), switchToDetailsMode);
   const deleteContentAndGoToListing = useAsyncSubmit(useDispatchCallback(deleteContent, content), () => history.replace(`/contents/${match.params.definitionId}`));
@@ -248,6 +250,7 @@ export const ContentDetails = ({ history, match }) => {
                   onChange={document.onChange}
                   disabled={!isEditing && !isCreating}
                   resources={resources}
+                  saveResource={saveRes}
                   placeholder='Enter your text here...'
                 />
               </Grid.Column>

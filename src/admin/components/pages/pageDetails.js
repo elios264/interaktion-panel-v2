@@ -12,6 +12,7 @@ import {
   Popup, LoadingDots, Selector, AwaitableButton, MultiLanguageInput, MultiLanguageTextArea, RichTextEditor, utils,
 } from 'controls';
 
+import { saveResource } from 'admin/actions/resources';
 import { savePage, deletePage } from 'admin/actions/pages';
 import { pageSchema } from './pageSchema';
 
@@ -30,6 +31,7 @@ export const PageDetails = ({ history, match }) => {
   const page = useSelector((state) => state.objects.pages[match.params.pageId]);
   const resources = useSelector((state) => state.objects.resources);
 
+  const saveRes = useDispatchCallback(saveResource);
   const switchToDetailsMode = (newPage) => history.replace(`/pages/${(newPage instanceof Page) ? newPage.id : page.id}`);
   const savePageAndGoToDetails = useAsyncSubmit(useDispatchCallback(savePage), switchToDetailsMode);
   const deletePageAndGoToCreate = useAsyncSubmit(useDispatchCallback(deletePage, page), () => history.replace('/pages/create'));
@@ -155,6 +157,7 @@ export const PageDetails = ({ history, match }) => {
                   value={document.value}
                   onChange={document.onChange}
                   disabled={!isEditing && !isCreating}
+                  saveResource={saveRes}
                   resources={resources}
                   placeholder='Enter your text here...'
                 />
