@@ -53,9 +53,9 @@
 - APP_LOCALE
 
 --- TODO -------
-- update libs
 - replace grid storage for azure storage. -> use import to restore images.
 - option to define contents order
+- check if  __type: 'Object' is required
 
 - try to deploy on sashido
 - react fast refresh
