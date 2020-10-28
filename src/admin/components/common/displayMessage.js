@@ -40,6 +40,7 @@ export const DisplayMessage = ({
       <div className='self-stretch pt3 mt-auto justify-between flex-wrap flex'>
         <div className='mr3'>
           Build:
+          {' '}
           <span className='b'>{window.__ENVIRONMENT__.BUILD}</span>
           {' '}
           Environment:
@@ -48,6 +49,7 @@ export const DisplayMessage = ({
         </div>
         <div>
           Developed by
+          {' '}
           <a className='contrast dim' href='mailto:elios264@outlook.com' rel='noopener noreferrer' target='_blank'>elios264</a>
         </div>
       </div>
