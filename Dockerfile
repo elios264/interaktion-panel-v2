@@ -1,5 +1,5 @@
 #Perform full build
-FROM mhart/alpine-node:12 as build
+FROM mhart/alpine-node:14 as build
 WORKDIR /usr/src/app
 RUN apk add --no-cache git python make gcc g++
 COPY patches/ ./patches/
@@ -14,7 +14,7 @@ RUN npm run build && \
     npm ci --prod
 
 #Build final image
-FROM mhart/alpine-node:slim-12
+FROM mhart/alpine-node:slim-14
 
 ARG SOURCE_COMMIT=latest
 ARG ENVIRONMENT=prod

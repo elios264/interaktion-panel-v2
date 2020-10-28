@@ -8,10 +8,12 @@ class AzureStorageAdapter {
     this.client = new BlobServiceClient.fromConnectionString(connectionString); // eslint-disable-line new-cap
   }
 
-  async createFile(filename, data) {
+  async createFile(filename, data, contentType) {
     const containerClient = this.client.getContainerClient(this.container);
     const blockBlobClient = containerClient.getBlockBlobClient(filename);
-    const uploadBlobResponse = await blockBlobClient.upload(data, data.length);
+    const uploadBlobResponse = await blockBlobClient.upload(data, data.length, {
+      blobHTTPHeaders: { blobContentType: contentType },
+    });
 
     return uploadBlobResponse;
   }

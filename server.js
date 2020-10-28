@@ -44,7 +44,7 @@ if (isDev) {
 
   const webpackConfig = require('./webpack.config');
   const compiler = webpack(webpackConfig);
-  const middleware = webpackDevMiddleware(compiler, { publicPath: webpackConfig.output.publicPath, stats: { colors: true, chunks: false } });
+  const middleware = webpackDevMiddleware(compiler);
   const hotMiddleware = webpackHotMiddleware(compiler);
 
   app.use(middleware);
