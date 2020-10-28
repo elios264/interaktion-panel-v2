@@ -6,6 +6,8 @@ import path from 'path';
 import { Buffer } from 'buffer';
 import { getValue, getMD5Base64Hash, toReadable } from 'controls/utils';
 
+Parse.Object.disableSingleInstance();
+
 const isEmpty = (val) => (_.isPlainObject(val) ? _.isEmpty(val) : _.isNil(val) || val === '');
 const toFullJSON = (object) => object['_toFullJSON']();
 const copy = (object) => {
@@ -74,6 +76,7 @@ export class User extends Parse.User {
 export class Config extends BaseObject {
 
   constructor(attributes) { super('Config', attributes); }
+
   get name() { return this.get('name'); }
   get valueString() { return this.get('value'); }
 
@@ -83,7 +86,15 @@ export class Config extends BaseObject {
   get value() { return JSON.parse(this.get('value')); }
   set value(value) { this.setAttr('value', JSON.stringify(value)); }
 
-  static create(name, attributes, visibility) { return new Config({ name, visibility, value: JSON.stringify(attributes) }); }
+  static create(name, attributes, visibility) {
+    return BaseObject.fromJSON({
+      name,
+      visibility,
+      value: JSON.stringify(attributes),
+      __type: 'Object',
+      className: 'Config',
+    });
+  }
 
   static authMode = Object.freeze({ private: 'private', mixed: 'mixed', public: 'public' })
 }
@@ -258,3 +269,11 @@ export class Page extends BaseObject {
   static getVisibilityName = Content.getVisibilityName
   static getVisibilityColor = Content.getVisibilityColor
 }
+
+BaseObject.registerSubclass('_User', User);
+BaseObject.registerSubclass('Resource', Resource);
+BaseObject.registerSubclass('Config', Config);
+BaseObject.registerSubclass('EventLog', EventLog);
+BaseObject.registerSubclass('ContentDefinition', ContentDefinition);
+BaseObject.registerSubclass('Content', Content);
+BaseObject.registerSubclass('Page', Page);
