@@ -60,15 +60,8 @@ export class User extends Parse.User {
   set role(value) { this.setAttr('role', value); }
 
   get lastActivity() { return this.get('lastActivity'); }
-  get sessionToken() { return this.getSessionToken(); }
 
   copy() { return copy(this); }
-
-  static withSessionToken = (user, token) => {
-    user = BaseObject.toFullJSON(user);
-    user.sessionToken = token;
-    return BaseObject.fromJSON(user);
-  }
 
   static role = Object.freeze({ client: 'Client', admin: 'Admin' });
 }

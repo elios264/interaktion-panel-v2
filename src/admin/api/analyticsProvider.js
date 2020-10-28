@@ -57,10 +57,10 @@ export class AnalyticsProvider {
       throw new Error(`Unknown actionName: ${actionName}`);
     }
 
-    await Promise.all([
-      Parse.Cloud.run('set-last-activity-now'),
+    const [log] = await Promise.all([
       Parse.Analytics.track(actionName, definition(dimensions)),
+      Parse.Cloud.run('set-last-activity-now'),
     ]);
-    return true;
+    return log;
   }
 }

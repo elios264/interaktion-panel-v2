@@ -2,7 +2,6 @@ import _ from 'lodash';
 import { handleError, showSuccess } from 'utils/actions';
 
 export const saveContentDefinitionsOrders = ({ contentDefinitions }) => handleError(async (dispatch, getState, { api }) => {
-
   const contentDefinitionsToSave = _.map(contentDefinitions, (contentDefinition, i) => {
     contentDefinition.order = i;
     return contentDefinition;
@@ -15,7 +14,6 @@ export const saveContentDefinitionsOrders = ({ contentDefinitions }) => handleEr
 }, 'Could not update the sections order');
 
 export const savePagesOrder = ({ pages }) => handleError(async (dispatch, getState, { api }) => {
-
   const pagesToSave = _.map(pages, (page, i) => {
     page.order = i;
     return page;

@@ -5,7 +5,6 @@ const cors = require('cors');
 const path = require('path');
 const express = require('express');
 const compression = require('compression');
-const http = require('http');
 const { parseMiddleware, htmlForCSR } = require('./server/tools');
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -65,8 +64,6 @@ if (isDev) {
   });
 }
 
-const httpServer = http.createServer(app);
-httpServer.listen(parseInt(process.env.APP_PORT, 10));
-parseServer.createLiveQueryServer(httpServer);
-
-console.log(`Server started! on ${process.env.APP_URL} and port ${process.env.APP_PORT}`);
+app.listen(parseInt(process.env.APP_PORT, 10), () => {
+  console.log(`Server started! on ${process.env.APP_URL} and port ${process.env.APP_PORT}`);
+});

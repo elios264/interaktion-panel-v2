@@ -41,8 +41,8 @@ const actionDefinitions = {
   'save-page': { desc: ({ name }) => `Has saved the page "${name}"` },
   'delete-page': { desc: ({ name }) => `Has deleted the page "${name}"` },
 
-  'restore-pages': { desc: () => 'Has restored the pages' },
-  'import-pages': { desc: () => 'Has imported the pages' },
+  'restore-pages': { desc: () => 'Has performed a restore on the pages' },
+  'import-pages': { desc: () => 'Has performed an import on the pages' },
 
   'update-privacy-policy': { desc: () => 'Has updated the privacy policy url' },
   'update-client-features': { desc: () => 'Has updated the client features' },

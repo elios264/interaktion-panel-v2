@@ -53,10 +53,11 @@
 - APP_LOCALE
 
 --- TODO -------
-- page contents feature -> directly view content in app,
-- remove realtime
+- update libs
 - replace grid storage for azure storage. -> use import to restore images.
 - option to define contents order
+
+- try to deploy on sashido
 - react fast refresh
 - add justify center
 - fix tachyons values, make same as semantic

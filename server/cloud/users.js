@@ -28,7 +28,7 @@ cloud.setupFunction('create-manager', async (req) => {
 
   await Parse.User.requestPasswordReset(email);
 
-  return { success: true, userId: user.id };
+  return { success: true, user };
 });
 
 cloud.setupFunction('create-user', async (req) => {
@@ -46,7 +46,7 @@ cloud.setupFunction('create-user', async (req) => {
 
   await Parse.User.requestPasswordReset(email);
 
-  return { success: true, userId: user.id };
+  return { success: true, user };
 });
 
 cloud.setupFunction('update-user', async (req) => {
@@ -59,7 +59,7 @@ cloud.setupFunction('update-user', async (req) => {
 
   await user.save(null, cloud.masterPermissions);
 
-  return { success: true, userId: user.id };
+  return { success: true, user };
 });
 
 cloud.setupFunction('delete-user', async (req) => {
