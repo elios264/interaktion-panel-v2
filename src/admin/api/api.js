@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Parse from 'parse';
 
-import { User, BaseObject } from 'objects';
+import { User, BaseObject, Resource } from 'objects';
 import { buildQuery, handleOperation } from 'utils/api';
 import { AnalyticsProvider } from './analyticsProvider';
 
@@ -13,6 +13,26 @@ export class Api {
   }
 
   onEvent = () => console.error('Call initialize with onEventCallback first');
+
+  onEventForChildrenResources = (objects) => {
+    const [resources, pointerResources] = _(objects)
+      .castArray()
+      .filter((object) => !(object instanceof Resource))
+      .flatMap((object) => _.flatMap(object.attributes, (value) => {
+        if (value instanceof Resource) return [value];
+        if (_.isArray(value) && value[0] instanceof Resource) return value;
+        return [];
+      }))
+      .partition((resource) => resource.src)
+      .value();
+
+    if (resources.length) {
+      this.onEvent({ type: 'Resource_UPDATED', objects: resources });
+    }
+    if (pointerResources.length) {
+      this.getObjects('Resource', { containedIn: { objectId: _.map(pointerResources, 'id') } });
+    }
+  }
 
   async initialize({ dispatch, getState }) {
     this.onEvent = dispatch;
@@ -57,10 +77,9 @@ export class Api {
   }
 
   updateProfile = (user) => handleOperation(async () => {
-    if (user instanceof User) {
-      await user.save();
-    }
+    await user.save();
     this.onEvent({ type: 'SET_USER', user });
+    this.onEventForChildrenResources(user);
     return true;
   }, this, 'Updating profile')
 
@@ -70,6 +89,7 @@ export class Api {
     }
     const { user: result } = await Parse.Cloud.run('update-user', { user: BaseObject.toFullJSON(user), fields: user.dirtyKeys() });
     this.onEvent({ type: '_User_UPDATED', objects: [result] });
+    this.onEventForChildrenResources(user);
     return result;
   }, this, 'Updating user');
 
@@ -115,6 +135,7 @@ export class Api {
     });
     const result = await object.save();
     this.onEvent({ type: `${object.className}_UPDATED`, objects: [object] });
+    this.onEventForChildrenResources(object);
     return result;
   }, this, 'Saving record')
 
@@ -124,6 +145,7 @@ export class Api {
     _(objects).groupBy('className').each((classNameObjects, className) => {
       this.onEvent({ type: `${className}_UPDATED`, objects: classNameObjects });
     });
+    this.onEventForChildrenResources(results);
 
     return results;
   }, this, `Saving ${_.size(objects)} records`)
@@ -150,7 +172,7 @@ export class Api {
 
   logEvent = (actionName, dimensions) => handleOperation(async () => {
     const log = await this.analytics.log(actionName, dimensions);
-    this.onEvent({ type: 'EventLog_ADDED', objects: [BaseObject.fromJSON({ ...log, __type: 'Object', className: 'EventLog' })] });
+    this.onEvent({ type: 'EventLog_ADDED', objects: [BaseObject.fromJSON({ ...log, className: 'EventLog' })] });
     return true;
   }, this, `Logging event: ${actionName}`)
 }

@@ -11,7 +11,7 @@ import {
   Slate, useSlate, withReact, useSelected, useReadOnly,
 } from 'slate-react';
 import {
-  Menu, Icon, Dropdown, Loader,
+  Menu, Icon, Dropdown,
 } from 'semantic-ui-react';
 import { withHistory } from 'slate-history';
 import {
@@ -73,9 +73,7 @@ import { File, Resource } from 'objects';
 import * as utils from './utils';
 import { languageOptions } from './multiLanguageInput';
 import { useEffectSkipMount } from './hooks/misc';
-import { makeAwaitable } from './awaitables';
 
-const AwaitableDropdownItem = makeAwaitable({ event: 'onMouseDown', props: { icon: <Loader active inline size='tiny' className='icon' /> } })(Dropdown.Item);
 const ResourcesContext = createContext({});
 
 const ImageElement = ({
@@ -299,7 +297,7 @@ const MenuMedia = ({ resources, saveResource }) => {
   return (
     <Dropdown item simple icon='attach'>
       <Dropdown.Menu>
-        <AwaitableDropdownItem
+        <Dropdown.Item
           icon='image'
           content='Image'
           onMouseDown={async (e) => {
@@ -325,7 +323,7 @@ const MenuMedia = ({ resources, saveResource }) => {
             }
           }}
         />
-        <AwaitableDropdownItem
+        <Dropdown.Item
           icon='attach'
           content='Attachment'
           onMouseDown={async (e) => {

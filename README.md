@@ -53,9 +53,7 @@
 - APP_LOCALE
 
 --- TODO -------
-- resources non realtime support.
 - option to define contents order
-- check if  __type: 'Object' is required
 
 - try to deploy on sashido
 - react fast refresh
