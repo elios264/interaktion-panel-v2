@@ -23,7 +23,8 @@ WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/ .
 
 ENV BUILD $SOURCE_COMMIT
-ENV NODE_ENV $ENVIRONMENT
+ENV BUILD_ENVIRONMENT $ENVIRONMENT
+ENV NODE_ENV production
 
 EXPOSE ${APP_PORT}
 CMD [ "node", "server.js" ]

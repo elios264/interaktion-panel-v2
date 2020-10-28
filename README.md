@@ -53,8 +53,7 @@
 - APP_LOCALE
 
 --- TODO -------
-- resources realtime support.
-- replace grid storage for azure storage. -> use import to restore images.
+- resources non realtime support.
 - option to define contents order
 - check if  __type: 'Object' is required
 
