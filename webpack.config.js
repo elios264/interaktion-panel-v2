@@ -55,7 +55,7 @@ module.exports = {
     ifDev(new webpack.SourceMapDevToolPlugin({ filename: '[file].map', exclude: /node_modules/ })),
     ifProd(new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ['**/*', path.join(process.cwd(), 'logs/**/*')], verbose: true })),
     ifProd(new webpack.LoaderOptionsPlugin({ minimize: true, debug: false })),
-    new MomentLocalesPlugin(),
+    new MomentLocalesPlugin({ localesToKeep: [process.env.APP_LOCALE] }),
     ifDev(new webpack.HotModuleReplacementPlugin()),
     new AssetsPlugin({
       filename: 'rendering-manifest.json',

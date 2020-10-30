@@ -20,7 +20,6 @@ import {
   EditablePlugins,
   ItalicPlugin,
   UnderlinePlugin,
-  AlignPlugin,
   HeadingPlugin,
   ListPlugin,
   BlockquotePlugin,
@@ -42,13 +41,18 @@ import {
   isMarkActive,
   isNodeTypeIn,
   toggleMark,
-  upsertAlign,
   upsertLinkAtSelection,
   toggleList,
   isBlockAboveEmpty,
   isSelectionAtBlockStart,
   getNodeDeserializer,
+  getElementDeserializer,
   getRenderElement,
+  getRenderElements,
+  unwrapNodesByType,
+  wrapNodes,
+
+  StyledElement,
 
   ELEMENT_MEDIA_EMBED,
   ELEMENT_LINK,
@@ -74,7 +78,56 @@ import * as utils from './utils';
 import { languageOptions } from './multiLanguageInput';
 import { useEffectSkipMount } from './hooks/misc';
 
+const ELEMENT_ALIGN_JUSTIFY = 'align_justify';
+
 const ResourcesContext = createContext({});
+
+const AlignPlugin = () => {
+
+  const alignLeft = {
+    component: StyledElement,
+    type: ELEMENT_ALIGN_LEFT,
+    rootProps: { className: 'slate-align-left', styles: { root: { textAlign: 'left' } } },
+  };
+  const alignCenter = {
+    component: StyledElement,
+    type: ELEMENT_ALIGN_CENTER,
+    rootProps: { className: 'slate-align-center', styles: { root: { textAlign: 'center' } } },
+  };
+  const alignRight = {
+    component: StyledElement,
+    type: ELEMENT_ALIGN_RIGHT,
+    rootProps: { className: 'slate-align-right', styles: { root: { textAlign: 'right' } } },
+  };
+  const alignJustify = {
+    component: StyledElement,
+    type: ELEMENT_ALIGN_JUSTIFY,
+    rootProps: { className: 'slate-align-justify', styles: { root: { textAlign: 'justify' } } },
+  };
+
+  return ({
+    renderElement: getRenderElements([{ ...alignLeft }, alignCenter, alignRight, alignJustify]),
+    deserialize: {
+      element: _.flatMap([alignCenter, alignRight, alignJustify], (align) => getElementDeserializer({
+        type: align.type,
+        rules: [{ className: align.rootProps.className }, { nodeNames: 'DIV', style: align.rootProps.styles.root }],
+      })),
+    },
+  });
+};
+AlignPlugin.upsertAlign = (editor, { type }) => {
+  if (!editor.selection) return;
+
+  unwrapNodesByType(editor, [
+    ELEMENT_ALIGN_LEFT,
+    ELEMENT_ALIGN_CENTER,
+    ELEMENT_ALIGN_RIGHT,
+    ELEMENT_ALIGN_JUSTIFY,
+  ]);
+
+  if (!type) return;
+  wrapNodes(editor, { type, children: [] }, { mode: 'lowest' });
+};
 
 const ImageElement = ({
   attributes, className, children, element,
@@ -215,7 +268,7 @@ const MenuAlign = ({ type, icon }) => {
       active={isNodeTypeIn(editor, type)}
       onMouseDown={(e) => {
         e.preventDefault();
-        upsertAlign(editor, { type });
+        AlignPlugin.upsertAlign(editor, { type });
       }}
     >
       {icon}
@@ -273,7 +326,6 @@ const MenuLink = () => {
     </Menu.Item>
   );
 };
-
 const MenuDivider = () => {
   const editor = useSlate();
 
@@ -290,7 +342,6 @@ const MenuDivider = () => {
     </Menu.Item>
   );
 };
-
 const MenuMedia = ({ resources, saveResource }) => {
   const editor = useSlate();
 
@@ -437,6 +488,7 @@ export const RichTextEditor = ({
               <MenuAlign type={ELEMENT_ALIGN_LEFT} icon={<Icon name='align left' />} />
               <MenuAlign type={ELEMENT_ALIGN_CENTER} icon={<Icon name='align center' />} />
               <MenuAlign type={ELEMENT_ALIGN_RIGHT} icon={<Icon name='align right' />} />
+              <MenuAlign type={ELEMENT_ALIGN_JUSTIFY} icon={<Icon name='align justify' />} />
               <MenuList type={ELEMENT_UL} icon={<Icon name='list ul' />} />
               <MenuLink />
               <MenuMedia resources={resources} saveResource={saveResource} />

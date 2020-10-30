@@ -48,16 +48,14 @@
 - EMAIL_HOST
 - EMAIL_PORT
 - APP_LOGO_URL
-- APP_FAVICON_URL
+- APP_FAVICON_URL`
 - APP_CURRENCY
 - APP_LOCALE
 
 --- TODO -------
-- option to define contents order
-
 - try to deploy on sashido
+- put node code in webpack bundler
 - react fast refresh
-- add justify center
 - fix tachyons values, make same as semantic
 - enabled/disabled users,
 - option to allow/disable registration
