@@ -119,8 +119,8 @@ cloud.setupFunction('send-content-notification', async (req) => {
   const defaultLanguage = process.env.APP_LOCALE;
   const notificationData = {
     action: 'view_content',
-    contentId,
-    contentUpdatedAt: moment(content.updatedAt).toISOString(),
+    id: contentId,
+    updatedAt: moment(content.updatedAt).toISOString(),
   };
   const messages = _.map(installations, ({ language, token, installation }) => ({
     to: token,
@@ -163,8 +163,8 @@ cloud.setupFunction('send-page-notification', async (req) => {
   const defaultLanguage = process.env.APP_LOCALE;
   const notificationData = {
     action: 'view_page',
-    pageId,
-    pageUpdatedAt: moment(page.updatedAt).toISOString(),
+    id: pageId,
+    updatedAt: moment(page.updatedAt).toISOString(),
   };
   const messages = _.map(installations, ({ language, token, installation }) => ({
     to: token,
