@@ -192,7 +192,7 @@ export const ContentDetails = ({ history, match }) => {
                         </Form.Field>
                       </Grid.Column>
                       <Grid.Column>
-                        <Form.Field error={order.errored} required>
+                        <Form.Field error={order.errored} required style={{ flexGrow: 0 }}>
                           <label>Order</label>
                           <Popup message={order.message} enabled={order.errored}>
                             <Input value={_.isUndefined(order.value) ? '' : order.value} onChange={order.onChange} autoComplete='off' type='number' min={0} max={9999} disabled={!isEditing && !isCreating} />
