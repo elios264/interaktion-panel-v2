@@ -1,2 +1,0 @@
-#!/bin/bash
-docker build  --build-arg SOURCE_COMMIT=${SOURCE_COMMIT:0:8} --build-arg ENVIRONMENT=$ENVIRONMENT -f $DOCKERFILE_PATH -t $IMAGE_NAME .
