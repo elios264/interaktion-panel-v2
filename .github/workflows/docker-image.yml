@@ -24,7 +24,4 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile -t luxury-world-madrid --build-arg ENVIRONMENT=prod-lwm --build-arg SOURCE_COMMIT=${{steps.vars.outputs.sha_short}}
     - name: Docker Push
-      env: PUSH_PATH: '${{ env.DOCKER_USER }}/luxury-world-madrid'
-      run: |
-        echo $PUSH_PATH
-        docker push $PUSH_PATH
+      run: docker push ${{secrets.DOCKER_USER_LWM}}/luxury-world-madrid
