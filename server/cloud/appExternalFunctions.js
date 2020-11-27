@@ -47,9 +47,10 @@ cloud.setupFunction('get-client-data', async (req) => {
     privacyPolicyUrl: privacyPolicyUrl[language] || privacyPolicyUrl[defaultLanguage],
   };
 
-  if (config.features.authMode === types.authMode.private && !req.user) {
-    return { config };
-  }
+  // this app needs the pages available before sign in
+  // if (config.features.authMode === types.authMode.private && !req.user) {
+  //   return { config };
+  // }
 
   const [contentDefinitionsData, contentsData, pagesData] = await Promise.all([
     new Parse.Query('ContentDefinition')
