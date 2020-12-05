@@ -53,10 +53,12 @@
 - APP_LOCALE
 
 --- TODO -------
-- try to deploy on sashido
-- put node code in webpack bundler
-- react fast refresh
-- fix tachyons values, make same as semantic
-- enabled/disabled users,
 - option to allow/disable registration
-- title optional on content details
+- specify content order
+- try these:
+  - https://github.com/codex-team/editor.js
+  - https://github.com/Jungwoo-An/react-editor-js
+
+- enabled/disabled users,
+- put node code in webpack bundler
+- fix tachyons values, make same as semantic
