@@ -53,7 +53,6 @@
 - APP_LOCALE
 
 --- TODO -------
-- option to allow/disable registration
 - specify content order
 - try these:
   - https://github.com/codex-team/editor.js

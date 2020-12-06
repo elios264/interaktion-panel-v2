@@ -42,6 +42,7 @@ cloud.setupFunction('get-client-data', async (req) => {
   const config = {
     features: {
       ...clientFeatures,
+      allowSignup: clientFeatures.allowSignup || false,
       authMode: clientFeatures.authMode || types.authMode.private,
     },
     privacyPolicyUrl: privacyPolicyUrl[language] || privacyPolicyUrl[defaultLanguage],
