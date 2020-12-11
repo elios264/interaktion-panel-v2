@@ -23,6 +23,7 @@ export const contentSchema = {
   title: getJoiLanguagesValidationSchema('Title', (r) => r.max(200)),
   description: getJoiLanguagesValidationSchema('Description', (r) => r.max(2000)),
   document: Joi.object({ [window.__ENVIRONMENT__.APP_LOCALE]: Joi.array().required().label(`Document ${window.__ENVIRONMENT__.APP_LOCALE}`) }).pattern(/.*/, Joi.array().label('Document')).required().label('Document'),
+  order: Joi.number().integer().min(0).max(9999).required().label('Order'),
 };
 
 const contentImportSchema = {

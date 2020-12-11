@@ -15,8 +15,8 @@ import { ResourceImageSelector } from 'admin/components/common';
 import { saveContentDefinition } from 'admin/actions/contentsDefinitions';
 import { contentDefinitionSchema } from './contentDefinitionSchema';
 
-export const enabledOptions = [{ key: 1, text: ContentDefinition.getEnabledName(true), value: true }, { key: 2, text: ContentDefinition.getEnabledName(false), value: false }];
-export const mobileViewOptions = [
+const enabledOptions = [{ key: 1, text: ContentDefinition.getEnabledName(true), value: true }, { key: 2, text: ContentDefinition.getEnabledName(false), value: false }];
+const mobileViewOptions = [
   {
     key: 0,
     value: ContentDefinition.mobileView.chess,
@@ -36,8 +36,29 @@ export const mobileViewOptions = [
     image: { src: require('img/contents/listingView.png') },
   },
 ];
+const sortContentsByOptions = [
+  {
+    key: 0,
+    value: ContentDefinition.sortContentsBy.createdAt,
+    text: ContentDefinition.getSortContentsByName(ContentDefinition.sortContentsBy.createdAt),
+  },
+  {
+    key: 1,
+    value: ContentDefinition.sortContentsBy.updatedAt,
+    text: ContentDefinition.getSortContentsByName(ContentDefinition.sortContentsBy.updatedAt),
+  },
+  {
+    key: 2,
+    value: ContentDefinition.sortContentsBy.order,
+    text: ContentDefinition.getSortContentsByName(ContentDefinition.sortContentsBy.order),
+  },
+];
 
-const contentDefinitionTemplate = new ContentDefinition({ mobileView: ContentDefinition.mobileView.chess, enabled: true });
+const contentDefinitionTemplate = new ContentDefinition({
+  enabled: true,
+  mobileView: ContentDefinition.mobileView.chess,
+  sortContentsBy: ContentDefinition.sortContentsBy.createdAt,
+});
 
 export const ContentDefinitionDetails = ({ history, match }) => {
   const isEditing = match.params.action === 'edit';
@@ -57,7 +78,7 @@ export const ContentDefinitionDetails = ({ history, match }) => {
     source: contentDefinition || contentDefinitionTemplate,
   });
   const {
-    enabled, title, description, mobileView, image,
+    enabled, title, description, mobileView, image, sortContentsBy,
   } = fields;
 
   if (!isCreating && !contentDefinition) {
@@ -95,14 +116,14 @@ export const ContentDefinitionDetails = ({ history, match }) => {
                         <MultiLanguageInput value={title.value} onChange={title.onChange} autoComplete='off' />
                       </Popup>
                     </Form.Field>
-                  </Form.Group>
-                  <Form.Group widths='equal'>
                     <Form.Field error={enabled.errored} required>
                       <label>Status</label>
                       <Popup message={enabled.message} enabled={enabled.errored}>
                         <Selector options={enabledOptions} value={enabled.value} onChange={enabled.onChange} />
                       </Popup>
                     </Form.Field>
+                  </Form.Group>
+                  <Form.Group widths='equal'>
                     <Form.Field error={mobileView.errored} required>
                       <label>Mobile view</label>
                       <Popup message={mobileView.message} enabled={mobileView.errored}>
@@ -110,6 +131,16 @@ export const ContentDefinitionDetails = ({ history, match }) => {
                           options={mobileViewOptions}
                           value={mobileView.value}
                           onChange={mobileView.onChange}
+                        />
+                      </Popup>
+                    </Form.Field>
+                    <Form.Field error={sortContentsBy.errored} required>
+                      <label>Contents order</label>
+                      <Popup message={sortContentsBy.message} enabled={sortContentsBy.errored}>
+                        <Selector
+                          options={sortContentsByOptions}
+                          value={sortContentsBy.value}
+                          onChange={sortContentsBy.onChange}
                         />
                       </Popup>
                     </Form.Field>

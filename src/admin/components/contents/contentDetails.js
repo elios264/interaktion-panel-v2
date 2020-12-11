@@ -8,7 +8,7 @@ import {
 } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
-import { Content } from 'objects';
+import { Content, ContentDefinition } from 'objects';
 import { ResourceImageSelector } from 'admin/components/common';
 import { useFieldset, useAsyncSubmit, useDispatchCallback } from 'controls/hooks';
 import {
@@ -23,6 +23,7 @@ const visibilityOptions = _.map(Content.visibility, (value, key) => ({ key, valu
 const entityTypeOptions = _.map(Content.entityType, (value, key) => ({ key, value, text: Content.getEntityTypeName(value) }));
 
 const contentTemplate = new Content({
+  order: 0,
   visibility: Content.visibility.public,
   entityType: Content.entityType.content,
 });
@@ -82,7 +83,7 @@ export const ContentDetails = ({ history, match }) => {
     cloneSource: cloneSourceContent,
   });
   const {
-    image, document, visibility, entityType, entityInfo, title, description,
+    image, document, visibility, entityType, entityInfo, title, description, order,
   } = fields;
 
   const { fields: entityInfoFields } = useFieldset({
@@ -191,6 +192,14 @@ export const ContentDetails = ({ history, match }) => {
                         </Form.Field>
                       </Grid.Column>
                       <Grid.Column>
+                        {contentDefinition.sortContentsBy === ContentDefinition.sortContentsBy.order && (
+                          <Form.Field error={order.errored} required style={{ flexGrow: 0 }}>
+                            <label>Order</label>
+                            <Popup message={order.message} enabled={order.errored}>
+                              <Input value={_.isUndefined(order.value) ? '' : order.value} onChange={order.onChange} autoComplete='off' type='number' min={0} max={9999} disabled={!isEditing && !isCreating} />
+                            </Popup>
+                          </Form.Field>
+                        )}
                         <Form.Field error={description.errored} className='flex flex-column' required>
                           <label>Description</label>
                           <Popup message={description.message} enabled={description.errored}>

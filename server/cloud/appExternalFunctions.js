@@ -111,10 +111,11 @@ cloud.setupFunction('get-client-data', async (req) => {
     .map(({ id, attributes }) => ({ id, ...attributes }))
     .filter(({ id }) => sectionHasContents[id])
     .map(({
-      id, title, mobileView, image, description, order,
+      id, title, mobileView, image, description, order, sortContentsBy,
     }) => ({
       id,
       mobileView,
+      sortContentsBy,
       order,
       title: title[language] || title[defaultLanguage],
       description: description[language] || description[defaultLanguage],

@@ -53,7 +53,6 @@
 - APP_LOCALE
 
 --- TODO -------
-- specify content order
 - try these:
   - https://github.com/codex-team/editor.js
   - https://github.com/Jungwoo-An/react-editor-js

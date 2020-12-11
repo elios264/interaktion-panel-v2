@@ -7,7 +7,7 @@ import {
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-import { Content } from 'objects';
+import { Content, ContentDefinition } from 'objects';
 import { LoadingDots, AwaitableDropdownItem } from 'controls';
 import {
   VirtualTable, Column, dateRenderer, labelRenderer,
@@ -19,7 +19,6 @@ import { useResourceImageRenderer } from 'admin/hooks';
 import { deleteSelectedContents, exportContents, importContents } from 'admin/actions/contents';
 import { deleteContentDefinition } from 'admin/actions/contentsDefinitions';
 
-const defaultParams = { sortBy: 'updatedAt', sortDir: 'desc', search: '' };
 const linkRenderer = ({ cellData, rowData }) => <Link to={`/contents/${rowData.definition.id}/details/${rowData.id}`}>{cellData}</Link>; // eslint-disable-line react/prop-types
 const visibilityRenderer = ({ cellData }) => labelRenderer({ cellData: Content.getVisibilityName(cellData), columnData: { color: Content.getVisibilityColor(cellData) } });
 
@@ -33,6 +32,11 @@ export const ContentList = ({ match, location, history }) => {
   const contents = useSelector((state) => state.objects.contents);
   const definitionContents = useMemo(() => _.filter(contents, (content) => content.definition.id === _.get(definition, 'id')), [definition, contents]);
 
+  const defaultParams = useMemo(() => ({
+    sortBy: _.get(definition, 'sortContentsBy', ContentDefinition.sortContentsBy.createdAt),
+    sortDir: _.get(definition, 'sortContentsBy', ContentDefinition.sortContentsBy.createdAt) === ContentDefinition.sortContentsBy.order ? 'asc' : 'desc',
+    search: '',
+  }), [definition]);
   const urlParams = useUrlParams(location.search, defaultParams);
   const onSortChange = useUrlParamsHandler({ history, location });
   const onSearchChange = useUrlParamsHandler({ history, location, key: 'search' });
@@ -149,6 +153,13 @@ export const ContentList = ({ match, location, history }) => {
               maxWidth={250}
               cellRenderer={dateRenderer}
             />
+            {definition.sortContentsBy === ContentDefinition.sortContentsBy.order && (
+              <Column
+                label='Order'
+                dataKey='order'
+                width={140}
+              />
+            )}
           </VirtualTable>
         </Segment>
       </div>

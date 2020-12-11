@@ -56,7 +56,7 @@ const schemaDefinitions = [{
     get: publicAccess, find: publicAccess, create: adminAccess, update: adminAccess, delete: adminAccess, addField: noAccess,
   },
   columns: {
-    enabled: 'Boolean', title: 'Object', mobileView: 'String', order: 'Number', image: { type: 'Pointer', targetClass: 'Resource' }, description: 'Object', refs: 'Number',
+    enabled: 'Boolean', title: 'Object', mobileView: 'String', order: 'Number', image: { type: 'Pointer', targetClass: 'Resource' }, description: 'Object', refs: 'Number', sortContentsBy: 'String',
   },
 }, {
   className: 'Content',

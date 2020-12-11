@@ -8,5 +8,6 @@ export const contentDefinitionSchema = {
   title: getJoiLanguagesValidationSchema('Title', (r) => r.max(200)),
   description: getJoiLanguagesValidationSchema('Description', (r) => r.max(2000)),
   mobileView: Joi.string().valid(..._.values(ContentDefinition.mobileView)).required().label('Mobile view'),
+  sortContentsBy: Joi.string().valid(..._.values(ContentDefinition.sortContentsBy)).required().label('Contents order'),
   image: Joi.object().required().label('Image'),
 };
