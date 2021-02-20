@@ -27,7 +27,7 @@ const validationsHooks = require('./hooks/validations');
 const resourceHooks = require('./hooks/resources');
 const usersHooks = require('./hooks/users');
 const {
-  role, mobileView, contentType, visibility,
+  role, mobileView, contentType, visibility, sortContentsBy,
 } = require('./types');
 
 const userSchema = Joi.object({
@@ -79,6 +79,7 @@ const contentDefinitionSchema = Joi.object({
   description: Joi.object({ [process.env.APP_LOCALE]: Joi.string().trim().max(2000).required() }).pattern(/.*/, Joi.string().trim().max(2000)).required(),
   image: Joi.object().instance(Parse.Object).required(),
   mobileView: Joi.string().valid(..._.values(mobileView)).required(),
+  sortContentsBy: Joi.string().valid(..._.values(sortContentsBy)).required(),
   refs: Joi.number().default(0),
   order: Joi.number().default(0),
 });

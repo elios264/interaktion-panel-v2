@@ -140,6 +140,9 @@ export class ContentDefinition extends BaseObject {
   get mobileView() { return this.get('mobileView'); }
   set mobileView(value) { this.setAttr('mobileView', value); }
 
+  get sortContentsBy() { return this.get('sortContentsBy'); }
+  set sortContentsBy(value) { this.setAttr('sortContentsBy', value); }
+
   get image() { return this.get('image'); }
   set image(value) { this.setAttr('image', value); }
 
@@ -154,11 +157,14 @@ export class ContentDefinition extends BaseObject {
 
   get enabledName() { return ContentDefinition.getEnabledName(this.enabled); }
   get mobileViewName() { return ContentDefinition.getMobileViewName(this.mobileView); }
+  get sortContentsByName() { return ContentDefinition.getSortContentsByName(this.sortContentsBy); }
 
   static getEnabledName = (value) => (value ? 'Enabled' : 'Disabled');
   static mobileView = Object.freeze({ chess: 'chess', full: 'full', list: 'list' });
+  static sortContentsBy = Object.freeze({ updatedAt: 'updatedAt', createdAt: 'createdAt', order: 'order' });
 
   static getMobileViewName = (mobileView) => getValue(mobileView, { [ContentDefinition.mobileView.chess]: 'Chess', [ContentDefinition.mobileView.full]: 'Full', [ContentDefinition.mobileView.list]: 'List' }, mobileView);
+  static getSortContentsByName = (sortContentsBy) => getValue(sortContentsBy, { [ContentDefinition.sortContentsBy.updatedAt]: 'Update date', [ContentDefinition.sortContentsBy.createdAt]: 'Creation date', [ContentDefinition.sortContentsBy.order]: 'Manual order' }, sortContentsBy);
 }
 
 export class Content extends BaseObject {

@@ -10,6 +10,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const AssetsPlugin = require('assets-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const isDev = process.env.NODE_ENV !== 'production';
 const ifDev = (then) => (isDev ? then : null);
@@ -20,7 +21,7 @@ module.exports = {
   profile: true,
   mode: isDev ? 'development' : 'production',
   entry: {
-    admin: [ifDev('webpack-hot-middleware/client'), ifDev('react-hot-loader/patch'), './admin/appLoader'].filter(_.identity),
+    admin: [ifDev('webpack-hot-middleware/client'), './admin/appLoader'].filter(_.identity),
   },
   optimization: {
     runtimeChunk: isDev,
@@ -47,7 +48,6 @@ module.exports = {
     alias: {
       '@': path.resolve(__dirname, './src'), // include your file like this in less files: ~@/yourFile.less
       '../../theme.config$': path.join(__dirname, './src/theme/semantic/theme.config.less'), // semantic requirement
-      'react-dom': isDev ? '@hot-loader/react-dom' : 'react-dom',
     },
   },
   plugins: [
@@ -56,7 +56,6 @@ module.exports = {
     ifProd(new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ['**/*', path.join(process.cwd(), 'logs/**/*')], verbose: true })),
     ifProd(new webpack.LoaderOptionsPlugin({ minimize: true, debug: false })),
     new MomentLocalesPlugin({ localesToKeep: [process.env.APP_LOCALE] }),
-    ifDev(new webpack.HotModuleReplacementPlugin()),
     new AssetsPlugin({
       filename: 'rendering-manifest.json',
       entrypoints: true,
@@ -64,6 +63,8 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({ filename: isDev ? '[name].css' : '[name].bundle.[contenthash].css' }),
     ifProd(new CopyWebpackPlugin({ patterns: [{ from: path.resolve(__dirname, './assets/static') }] })),
+    ifDev(new webpack.HotModuleReplacementPlugin()),
+    ifDev(new ReactRefreshWebpackPlugin()),
   ].filter(_.identity),
   module: {
     rules: [{

@@ -2,8 +2,8 @@
 const cloud = require('../cloudUtils');
 const types = require('../types');
 
-const forbidSignupIfAuthPublic = async (req) => {
-  if (req.master) {
+const forbidSignupIfAppropriate = async (req) => {
+  if (req.master || req.original) {
     return;
   }
 
@@ -12,9 +12,9 @@ const forbidSignupIfAuthPublic = async (req) => {
     .first(cloud.masterPermissions)
     .then((setting) => (setting ? JSON.parse(setting.get('value')) : {}));
 
-  const mode = clientFeatures.authMode || types.authMode.private;
+  const { authMode = types.authMode.private, allowSignup } = clientFeatures;
 
-  if (!req.original && mode === types.authMode.public) {
+  if (authMode === types.authMode.public || !allowSignup) {
     throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, 'Signup deactivated');
   }
 };
@@ -25,9 +25,9 @@ const forbidLoginIfAuthPublic = async (req) => {
     .first(cloud.masterPermissions)
     .then((setting) => (setting ? JSON.parse(setting.get('value')) : {}));
 
-  const mode = clientFeatures.authMode || types.authMode.private;
+  const { authMode = types.authMode.private } = clientFeatures;
 
-  if (req.object.get('role') === types.role.client && mode === types.authMode.public) {
+  if (req.object.get('role') === types.role.client && authMode === types.authMode.public) {
     throw new Parse.Error(Parse.Error.OPERATION_FORBIDDEN, 'Login deactivated');
   }
 };
@@ -74,7 +74,7 @@ const removeSessionsAndRoles = async (req) => {
 
 const setupUsersRoleManagement = () => {
   Parse.Cloud.beforeLogin(forbidLoginIfAuthPublic);
-  cloud.setupTrigger('beforeSave', Parse.User, forbidSignupIfAuthPublic);
+  cloud.setupTrigger('beforeSave', Parse.User, forbidSignupIfAppropriate);
   cloud.setupTrigger('beforeSave', Parse.User, ensureAppropriateRole);
   cloud.setupTrigger('afterSave', Parse.User, assignToCorrespondingRole);
   cloud.setupTrigger('beforeDelete', Parse.User, removeSessionsAndRoles);

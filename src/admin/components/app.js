@@ -3,7 +3,6 @@ import './app.less';
 import { useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import { hot } from 'react-hot-loader/root';
 
 import { ModalController } from 'controls/modals';
 import { DisplayMessage, Navigation, ErrorBoundary } from './common';
@@ -15,7 +14,7 @@ import { Settings } from './settings';
 import { ContentDefinitionDetails, ContentList, ContentDetails } from './contents';
 import { PageDetails } from './pages';
 
-export const App = hot(() => {
+export const App = () => {
   const modals = useSelector((state) => state.modals);
   const userInfo = useSelector((state) => state.userInfo);
   const initializing = useSelector((state) => state.siteInfo.initializing);
@@ -71,4 +70,4 @@ export const App = hot(() => {
       </ErrorBoundary>
     </div>
   );
-});
+};
